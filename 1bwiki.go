@@ -44,7 +44,6 @@ func savePage(c *echo.Context) error {
 		Deleted:   false,
 		Len:       1,
 		ParentID:  0,
-		Sha1:      "aaaa",
 	}
 	if t.Verify() == nil && r.Verify() == nil {
 		p := m.Page{
@@ -70,7 +69,7 @@ func init() {
 	db.Exec(`create table if not exists revision (id integer primary key,
 			pagetitle text, textid integer, comment text, userid int,
 			usertext text, minor integer, deleted integer, len integer,
-			parentid integer, sha1 text)`)
+			parentid integer)`)
 	db.Exec(`create table if not exists page (title text primary key,
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer)`)

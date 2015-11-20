@@ -13,11 +13,10 @@ type Revision struct {
 	Deleted   bool
 	Len       int
 	ParentID  int
-	Sha1      string
 }
 
 func (r Revision) Verify() error {
-	if r.PageTitle == "" || r.UserText == "" || r.Len < 1 || r.Sha1 == "" {
+	if r.PageTitle == "" || r.UserText == "" || r.Len < 1 {
 		return errors.New("Invalid revision")
 	}
 	return nil
