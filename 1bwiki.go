@@ -26,9 +26,6 @@ func wikiPage(c *echo.Context) error {
 	} else {
 		t = u
 	}
-	// If title lowercase beginning redirect to uppercase cali_s -> Calie_s
-	// goes for namespace too
-	// If title has spaces redirect to have _
 	p := m.GetPage(n, t)
 	if p != nil {
 		return c.String(http.StatusOK, "Page Exists")
@@ -37,6 +34,28 @@ func wikiPage(c *echo.Context) error {
 }
 
 func savePage(c *echo.Context) error {
+	t := m.Text{Text: c.Form("text")}
+	r := m.Revision{
+		PageTitle: c.Form("title"),
+		Comment:   c.Form("summary"),
+		UserID:    1, // TODO :(
+		UserText:  "pepp",
+		Minor:     false,
+		Deleted:   false,
+		Len:       1,
+		ParentID:  0,
+		Sha1:      "aaaa",
+	}
+	if t.Verify() == nil && r.Verify() == nil {
+		p := m.Page{
+			Title:     c.Form("title"),
+			Namespace: c.Form("namespace"),
+			NiceTitle: strings.Replace(c.Form("title"), "_", " ", -1),
+			Redirect:  false,
+			Len:       1,
+		}
+		p.SavePage(t, r)
+	}
 	return c.String(http.StatusOK, "page not saved")
 }
 
@@ -64,5 +83,6 @@ func main() {
 
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
+
 	e.Run(":8000")
 }

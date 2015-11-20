@@ -8,9 +8,16 @@
 
 <h1>Create Page</h1>
 
-<form action="/save" method="post">
+<form action="/save?action=create" method="post">
 	<input type="hidden" name="namespace" value="@namespace">
 	<input type="hidden" name="title"  value="@title">
-	<textarea></textarea>
-	<button>Submit</button>
+	<textarea name="text"></textarea>
+
+	<br>
+	<br>
+	<label>Edit Summary</label>
+	<br>
+	<input type="text" name="summary">
+	<br>
+	<button type="submit">Submit</button>
 </form>

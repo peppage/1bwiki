@@ -1,15 +1,24 @@
 package model
 
+import "errors"
+
 type Revision struct {
-	ID        int
+	ID        int64
 	PageTitle string
-	TextID    int
+	TextID    int64
 	Comment   string
-	UserId    int
+	UserID    int
 	UserText  string
 	Minor     bool
 	Deleted   bool
 	Len       int
-	ParentId  int
+	ParentID  int
 	Sha1      string
+}
+
+func (r Revision) Verify() error {
+	if r.PageTitle == "" || r.UserText == "" || r.Len < 1 || r.Sha1 == "" {
+		return errors.New("Invalid revision")
+	}
+	return nil
 }
