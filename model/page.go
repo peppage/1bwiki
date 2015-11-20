@@ -1,7 +1,12 @@
 package model
 
 type Page struct {
-	ID int
+	Title      string
+	Namespace  string
+	NiceTitle  string
+	Redirect   bool
+	RevisionId int
+	Len        int
 }
 
 func GetPage(ID string) *Page {
