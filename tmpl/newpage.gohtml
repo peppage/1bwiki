@@ -2,9 +2,15 @@
     import (
         "1bwiki/tmpl/layout/base"
     )
+    var namespace string
+    var title string
 }
 
 <h1>Create Page</h1>
 
-<textarea></textarea>
-<button>Submit</button>
+<form action="/save" method="post">
+	<input type="hidden" name="namespace" value="@namespace">
+	<input type="hidden" name="title"  value="@title">
+	<textarea></textarea>
+	<button>Submit</button>
+</form>

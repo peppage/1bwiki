@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	m "1bwiki/model"
-	t "1bwiki/tmpl"
+	"1bwiki/tmpl"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
@@ -15,11 +16,28 @@ import (
 
 func wikiPage(c *echo.Context) error {
 	fmt.Println(c.Request().URL)
-	p := m.GetPage("sss")
+	u := strings.Trim(c.Request().URL.String(), "/")
+	n := ""
+	t := ""
+	if strings.Contains(u, ":") {
+		split := strings.Split(u, ":")
+		n = split[0]
+		t = split[1]
+	} else {
+		t = u
+	}
+	// If title lowercase beginning redirect to uppercase cali_s -> Calie_s
+	// goes for namespace too
+	// If title has spaces redirect to have _
+	p := m.GetPage(n, t)
 	if p != nil {
 		return c.String(http.StatusOK, "Page Exists")
 	}
-	return c.HTML(http.StatusOK, t.Newpage())
+	return c.HTML(http.StatusOK, tmpl.Newpage(n, t))
+}
+
+func savePage(c *echo.Context) error {
+	return c.String(http.StatusOK, "page not saved")
 }
 
 func init() {
@@ -44,5 +62,6 @@ func main() {
 	e.Static("/static", "static")
 
 	e.Get("/*", wikiPage)
+	e.Post("/save", savePage)
 	e.Run(":8000")
 }
