@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	m "1bwiki/model"
+	t "1bwiki/tmpl"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
@@ -17,7 +19,7 @@ func wikiPage(c *echo.Context) error {
 	if p != nil {
 		return c.String(http.StatusOK, "Page Exists")
 	}
-	return c.String(http.StatusOK, "Page Doesn't Exist")
+	return c.HTML(http.StatusOK, t.Newpage())
 }
 
 func init() {
