@@ -58,6 +58,7 @@ func init() {
 func main() {
 	e := echo.New()
 	e.Use(mw.Logger())
+	e.Use(fixUrl())
 	e.StripTrailingSlash()
 	e.Static("/static", "static")
 
