@@ -1,7 +1,5 @@
 package model
 
-import "errors"
-
 type Revision struct {
 	ID        int64
 	PageTitle string
@@ -17,7 +15,7 @@ type Revision struct {
 
 func (r Revision) Verify() error {
 	if r.PageTitle == "" || r.UserText == "" || r.Len < 1 {
-		return errors.New("Invalid revision")
+		return logger.Error("Invalid revision")
 	}
 	return nil
 }

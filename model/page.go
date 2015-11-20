@@ -1,7 +1,5 @@
 package model
 
-import "fmt"
-
 type Page struct {
 	Title      string
 	Namespace  string
@@ -25,21 +23,28 @@ func GetPage(namespace string, title string) *PageView {
 	return &p
 }
 
-func (p Page) SavePage(t Text, r Revision) {
+func (p Page) SavePage(t Text, r Revision) error {
+	var err error
 	tx := db.MustBegin()
 	result := tx.MustExec(`INSERT INTO text (text) VALUES ($1)`, t.Text)
 	lastID, _ := result.LastInsertId()
 	r.TextID = lastID
-	result = tx.MustExec(`INSERT INTO revision (pagetitle, textid, comment, userid, usertext, minor,
+	result, err = tx.Exec(`INSERT INTO revision (pagetitle, textid, comment, userid, usertext, minor,
 						deleted, len, parentid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 		r.PageTitle, r.TextID, r.Comment, r.UserID, r.UserText, r.Minor, r.Deleted, r.Len, r.ParentID)
+	if err != nil {
+		tx.Rollback()
+		return logger.Error("Insert revision failed", "err", err)
+	}
 	lastID, _ = result.LastInsertId()
 	r.ID = lastID
 	p.RevisionID = r.ID
 	tx.MustExec(`INSERT INTO page (title, namespace, nicetitle, redirect, revisionid, len)
 						VALUES ($1, $2, $3, $4, $5, $6)`, p.Title, p.Namespace, p.NiceTitle, p.Redirect, p.RevisionID, p.Len)
-	err := tx.Commit()
+	err = tx.Commit()
 	if err != nil {
-		fmt.Println(err)
+		tx.Rollback()
+		return logger.Error("Transaction failed", "err", err)
 	}
+	return nil
 }

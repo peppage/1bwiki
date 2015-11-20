@@ -1,7 +1,5 @@
 package model
 
-import "errors"
-
 type Text struct {
 	ID   int64
 	Text string
@@ -9,7 +7,7 @@ type Text struct {
 
 func (t Text) Verify() error {
 	if t.Text == "" {
-		return errors.New("Empty text")
+		return logger.Error("Empty text")
 	}
 	return nil
 }
