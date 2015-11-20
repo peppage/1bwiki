@@ -42,7 +42,7 @@ func savePage(c *echo.Context) error {
 		UserText:  "pepp",
 		Minor:     false,
 		Deleted:   false,
-		Len:       1,
+		Len:       len(c.Form("text")),
 		ParentID:  0,
 	}
 	if t.Verify() == nil && r.Verify() == nil {
@@ -51,7 +51,7 @@ func savePage(c *echo.Context) error {
 			Namespace: c.Form("namespace"),
 			NiceTitle: strings.Replace(c.Form("title"), "_", " ", -1),
 			Redirect:  false,
-			Len:       1,
+			Len:       len(c.Form("text")),
 		}
 		p.SavePage(t, r)
 		return c.Redirect(http.StatusSeeOther, p.Title)
