@@ -31,7 +31,7 @@ func (p Page) SavePage(t Text, r Revision) {
 	lastID, _ := result.LastInsertId()
 	r.TextID = lastID
 	result = tx.MustExec(`INSERT INTO revision (pagetitle, textid, comment, userid, usertext, minor,
-						deleted, len, parentid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+						deleted, len, parentid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 		r.PageTitle, r.TextID, r.Comment, r.UserID, r.UserText, r.Minor, r.Deleted, r.Len, r.ParentID)
 	lastID, _ = result.LastInsertId()
 	r.ID = lastID
