@@ -9,8 +9,8 @@ type Page struct {
 	Len        int
 }
 
-func GetPage(ID string) *Page {
+func GetPage(namespace string, title string) *Page {
 	var p *Page
-	db.Select(&p, `SELECT * FROM pages WHERE ID = $1`, ID)
+	db.Select(&p, `SELECT * FROM pages WHERE title = $1 and namespace  = $2`, title, namespace)
 	return p
 }
