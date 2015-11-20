@@ -1,3 +1,5 @@
 *.db
 *.db-journal
 *.exe
+tmpl/*.go
+tmpl/layout/*.go
