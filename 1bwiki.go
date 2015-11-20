@@ -27,7 +27,7 @@ func wikiPage(c *echo.Context) error {
 		t = u
 	}
 	pv := m.GetPage(n, t)
-	if pv != nil {
+	if pv.NiceTitle != "" {
 		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, pv.Text))
 	}
 	return c.HTML(http.StatusOK, tmpl.Newpage(n, t))
