@@ -26,9 +26,9 @@ func wikiPage(c *echo.Context) error {
 	} else {
 		t = u
 	}
-	p := m.GetPage(n, t)
-	if p != nil {
-		return c.String(http.StatusOK, "Page Exists")
+	pv := m.GetPage(n, t)
+	if pv != nil {
+		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, pv.Text))
 	}
 	return c.HTML(http.StatusOK, tmpl.Newpage(n, t))
 }
@@ -55,8 +55,9 @@ func savePage(c *echo.Context) error {
 			Len:       1,
 		}
 		p.SavePage(t, r)
+		return c.Redirect(http.StatusSeeOther, p.Title)
 	}
-	return c.String(http.StatusOK, "page not saved")
+	return echo.NewHTTPError(http.StatusBadRequest, "Save page not valid")
 }
 
 func init() {
@@ -64,6 +65,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	// Convert to transaction
 	db.Exec(`create table if not exists text (id integer primary KEY, text blob)`)
 	db.Exec(`create table if not exists revision (id integer primary key,
 			pagetitle text, textid integer, comment text, userid int,

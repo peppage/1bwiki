@@ -11,10 +11,19 @@ type Page struct {
 	Len        int
 }
 
-func GetPage(namespace string, title string) *Page {
-	var p *Page
-	db.Select(&p, `SELECT * FROM pages WHERE title = $1 AND namespace  = $2`, title, namespace)
-	return p
+type PageView struct {
+	Title     string
+	NiceTitle string
+	Text      string
+}
+
+func GetPage(namespace string, title string) *PageView {
+	var p PageView
+	db.QueryRowx(`select page.title, page.nicetitle, text.text FROM page JOIN revision ON
+				page.revisionid = revision.id JOIN text
+				ON revision.textid = text.id WHERE title = $1
+				AND namespace  = $2`, title, namespace).StructScan(&p)
+	return &p
 }
 
 func (p Page) SavePage(t Text, r Revision) {
