@@ -1,8 +1,10 @@
 package main
 
 import (
+	"net"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo"
 )
@@ -23,6 +25,39 @@ func fixURL() echo.MiddlewareFunc {
 				}
 			}
 			return next(c)
+		}
+	}
+}
+
+func Logger() echo.MiddlewareFunc {
+	return func(h echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			req := c.Request()
+			res := c.Response()
+
+			remoteAddr := req.RemoteAddr
+			if ip := req.Header.Get(echo.XRealIP); ip != "" {
+				remoteAddr = ip
+			} else if ip = req.Header.Get(echo.XForwardedFor); ip != "" {
+				remoteAddr = ip
+			} else {
+				remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
+			}
+
+			start := time.Now()
+			if err := h(c); err != nil {
+				c.Error(err)
+			}
+			stop := time.Now()
+			method := req.Method
+			path := req.URL.Path
+			if path == "" {
+				path = "/"
+			}
+			size := res.Size()
+
+			logger.Debug("", "remote", remoteAddr, "method", method, "path", path, "code", res.Status(), "time", stop.Sub(start), "size", size)
+			return nil
 		}
 	}
 }

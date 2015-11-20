@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -10,12 +9,14 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/mgutz/logxi/v1"
 )
 
+var logger log.Logger
+
 func wikiPage(c *echo.Context) error {
-	fmt.Println(c.Request().URL)
+	logger.Debug("wikipage", "url", c.Request().URL.String())
 	u := strings.Trim(c.Request().URL.String(), "/")
 	n := ""
 	t := ""
@@ -60,6 +61,7 @@ func savePage(c *echo.Context) error {
 }
 
 func init() {
+	logger = log.New("1bwiki")
 	db, err := sqlx.Connect("sqlite3", "./1bwiki.db")
 	if err != nil {
 		panic(err)
@@ -77,7 +79,7 @@ func init() {
 
 func main() {
 	e := echo.New()
-	e.Use(mw.Logger())
+	e.Use(Logger())
 	e.Use(fixURL())
 	e.StripTrailingSlash()
 	e.Static("/static", "static")
