@@ -30,3 +30,12 @@ func GetRevisions() ([]*Revision, error) {
 	}
 	return revs, nil
 }
+
+func GetPageRevisions(title string) ([]*Revision, error) {
+	var revs []*Revision
+	err := db.Select(&revs, `SELECT * FROM revision WHERE pagetitle=$1 ORDER BY id DESC`, title)
+	if err != nil {
+		return revs, logger.Error("Unable to get revisions for page", "page", title, "err", err)
+	}
+	return revs, nil
+}

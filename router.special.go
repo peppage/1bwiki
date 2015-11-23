@@ -20,6 +20,12 @@ func action(c *echo.Context) error {
 			pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
 		}
 		return c.HTML(http.StatusOK, tmpl.Editpage(pv))
+	} else if c.Query("action") == "history" {
+		revs, err := m.GetPageRevisions(c.Query("title"))
+		if err != nil {
+			echo.NewHTTPError(http.StatusInternalServerError, "")
+		}
+		return c.HTML(http.StatusOK, tmpl.Pagerevs(c.Query("title"), revs))
 	}
 	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
 }

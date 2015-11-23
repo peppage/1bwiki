@@ -1,0 +1,23 @@
+@{
+	import (
+		"time"
+
+		m "1bwiki/model"
+
+		"1bwiki/tmpl/layout/base"
+	)
+	var title string
+	var revs []*m.Revision
+}
+
+<h1>@title: Revision History</h1>
+
+@for _, v := range revs {
+	@{
+		t := time.Unix(v.TimeStamp, 0).UTC()
+		tOut := t.Format("15:04 2 Jan 2006")
+	}
+	<span>
+		@tOut <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a>|contribs)..(@v.Len bytes) (@v.LenDiff) (@v.Comment)<br>
+	</span>
+}
