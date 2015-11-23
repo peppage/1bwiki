@@ -19,3 +19,12 @@ func (r Revision) Verify() error {
 	}
 	return nil
 }
+
+func GetRevisions() ([]*Revision, error) {
+	var revs []*Revision
+	err := db.Select(&revs, `SELECT * FROM revision ORDER BY id DESC`)
+	if err != nil {
+		return revs, logger.Error("Unable to select all revisions", "err", err)
+	}
+	return revs, nil
+}

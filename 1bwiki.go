@@ -93,10 +93,12 @@ func main() {
 	e.StripTrailingSlash()
 	e.Static("/static", "static")
 
-	e.Get("/B:edit", edit)
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
+
+	e.Get("/B:edit", edit)
+	e.Get("/B:edits", edits)
 
 	e.Run(":8000")
 }

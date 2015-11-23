@@ -23,3 +23,11 @@ func edit(c *echo.Context) error {
 	}
 	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
 }
+
+func edits(c *echo.Context) error {
+	revs, err := m.GetRevisions()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "")
+	}
+	return c.HTML(http.StatusOK, tmpl.Edits(revs))
+}
