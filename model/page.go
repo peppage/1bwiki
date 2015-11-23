@@ -32,8 +32,8 @@ func (p Page) SavePage(t Text, r Revision) error {
 	lastID, _ := result.LastInsertId()
 	r.TextID = lastID
 	result, err = tx.Exec(`INSERT INTO revision (pagetitle, textid, comment, userid, usertext, minor,
-						deleted, len, parentid, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-		r.PageTitle, r.TextID, r.Comment, r.UserID, r.UserText, r.Minor, r.Deleted, r.Len, r.ParentID, r.TimeStamp)
+						deleted, len, parentid, timestamp, lendiff) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+		r.PageTitle, r.TextID, r.Comment, r.UserID, r.UserText, r.Minor, r.Deleted, r.Len, r.ParentID, r.TimeStamp, r.LenDiff)
 	if err != nil {
 		tx.Rollback()
 		return logger.Error("Insert revision failed", "err", err)

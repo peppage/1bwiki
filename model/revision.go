@@ -12,6 +12,7 @@ type Revision struct {
 	Len       int
 	ParentID  int
 	TimeStamp int64
+	LenDiff   int
 }
 
 func (r Revision) Verify() error {

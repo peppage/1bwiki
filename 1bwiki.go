@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -46,6 +47,11 @@ func wikiPage(c *echo.Context) error {
 
 func savePage(c *echo.Context) error {
 	t := m.Text{Text: c.Form("text")}
+	l, err := strconv.Atoi(c.Form("len"))
+	if err != nil {
+		l = 0
+		logger.Warn("save page len Atoi failed")
+	}
 	r := m.Revision{
 		PageTitle: c.Form("title"),
 		Comment:   c.Form("summary"),
@@ -56,6 +62,7 @@ func savePage(c *echo.Context) error {
 		Len:       len(c.Form("text")),
 		ParentID:  0,
 		TimeStamp: time.Now().Unix(),
+		LenDiff:   len(c.Form("text")) - l,
 	}
 	if t.Verify() == nil && r.Verify() == nil {
 		p := m.Page{
@@ -82,7 +89,7 @@ func init() {
 	db.Exec(`create table if not exists revision (id integer primary key,
 			pagetitle text, textid integer, comment text, userid int,
 			usertext text, minor integer, deleted integer, len integer,
-			parentid integer, timestamp integer)`)
+			parentid integer, timestamp integer, lendiff integer)`)
 	db.Exec(`create table if not exists page (title text,
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer, PRIMARY KEY(title, namespace))`)
