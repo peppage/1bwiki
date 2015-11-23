@@ -83,9 +83,9 @@ func init() {
 			pagetitle text, textid integer, comment text, userid int,
 			usertext text, minor integer, deleted integer, len integer,
 			parentid integer, timestamp integer)`)
-	db.Exec(`create table if not exists page (title text primary key,
+	db.Exec(`create table if not exists page (title text,
 			namespace text, nicetitle text, redirect integer, revisionid integer,
-			len integer)`)
+			len integer, PRIMARY KEY(title, namespace))`)
 }
 
 func main() {
