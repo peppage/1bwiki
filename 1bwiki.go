@@ -15,6 +15,10 @@ import (
 
 var logger log.Logger
 
+func root(c *echo.Context) error {
+	return c.Redirect(http.StatusMovedPermanently, "/Main_Page")
+}
+
 func wikiPage(c *echo.Context) error {
 	logger.Debug("wikipage", "url", c.Request().URL.String())
 	u := strings.Trim(c.Request().URL.String(), "/")
@@ -84,6 +88,7 @@ func main() {
 	e.StripTrailingSlash()
 	e.Static("/static", "static")
 
+	e.Get("/", root)
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
 
