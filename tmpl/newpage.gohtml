@@ -1,12 +1,18 @@
 @{
-    import (
-        "1bwiki/tmpl/layout/base"
-    )
-    var namespace string
-    var title string
+	import (
+		"strings"
+
+		"1bwiki/tmpl/layout/base"
+	)
+	var namespace string
+	var title string
 }
 
-<h1>Create Page</h1>
+@{
+	niceTitle := strings.Replace(title, "_", " ", -1)
+}
+
+<h1>Creating @niceTitle</h1>
 
 <form action="/save?action=create" method="post">
 	<input type="hidden" name="namespace" value="@namespace">
