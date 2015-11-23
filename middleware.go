@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -35,15 +34,6 @@ func Logger() echo.MiddlewareFunc {
 			req := c.Request()
 			res := c.Response()
 
-			remoteAddr := req.RemoteAddr
-			if ip := req.Header.Get(echo.XRealIP); ip != "" {
-				remoteAddr = ip
-			} else if ip = req.Header.Get(echo.XForwardedFor); ip != "" {
-				remoteAddr = ip
-			} else {
-				remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
-			}
-
 			start := time.Now()
 			if err := h(c); err != nil {
 				c.Error(err)
@@ -54,9 +44,8 @@ func Logger() echo.MiddlewareFunc {
 			if path == "" {
 				path = "/"
 			}
-			size := res.Size()
 
-			logger.Debug("", "remote", remoteAddr, "method", method, "path", path, "code", res.Status(), "time", stop.Sub(start), "size", size)
+			logger.Debug("", "method", method, "path", path, "code", res.Status(), "time", stop.Sub(start).String())
 			return nil
 		}
 	}
