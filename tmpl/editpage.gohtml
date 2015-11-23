@@ -1,0 +1,29 @@
+@{
+	import (
+		m "1bwiki/model"
+
+		"1bwiki/tmpl/layout/base"
+	)
+	var pv *m.PageView
+}
+
+@if pv.Text == "" {
+	<h1>Creating @pv.NiceTitle</h1>
+} else {
+	<h1>Editing @pv.NiceTitle</h1>
+}
+
+
+<form action="/save" method="post">
+	<input type="hidden" name="namespace" value="@pv.NameSpace">
+	<input type="hidden" name="title"  value="@pv.Title">
+	<textarea name="text">@pv.Text</textarea>
+
+	<br>
+	<br>
+	<label>Edit Summary</label>
+	<br>
+	<input type="text" name="summary">
+	<br>
+	<button type="submit">Submit</button>
+</form>

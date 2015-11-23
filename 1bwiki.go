@@ -15,13 +15,8 @@ import (
 
 var logger log.Logger
 
-func root(c *echo.Context) error {
-	return c.Redirect(http.StatusMovedPermanently, "/Main_Page")
-}
-
-func wikiPage(c *echo.Context) error {
-	logger.Debug("wikipage", "url", c.Request().URL.String())
-	u := strings.Trim(c.Request().URL.String(), "/")
+func parseTitle(title string) (string, string) {
+	u := strings.Trim(title, "/")
 	n := ""
 	t := ""
 	if strings.Contains(u, ":") {
@@ -31,11 +26,35 @@ func wikiPage(c *echo.Context) error {
 	} else {
 		t = u
 	}
-	pv := m.GetPage(n, t)
+	return n, t
+}
+
+func root(c *echo.Context) error {
+	return c.Redirect(http.StatusMovedPermanently, "/Main_Page")
+}
+
+func wikiPage(c *echo.Context) error {
+	n, t := parseTitle(c.Request().URL.String())
+	pv := m.GetPageView(n, t)
+
 	if pv.NiceTitle != "" {
 		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, pv.Text))
 	}
-	return c.HTML(http.StatusOK, tmpl.Newpage(n, t))
+	return c.Redirect(http.StatusTemporaryRedirect, "/B:edit?title="+n+t+"&action=edit")
+}
+
+func edit(c *echo.Context) error {
+	n, t := parseTitle(c.Query("title"))
+	if c.Query("action") == "edit" {
+		pv := m.GetPageView(n, t)
+		if pv.NiceTitle == "" {
+			pv.NameSpace = n
+			pv.Title = t
+			pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
+		}
+		return c.HTML(http.StatusOK, tmpl.Editpage(pv))
+	}
+	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
 }
 
 func savePage(c *echo.Context) error {
@@ -88,6 +107,7 @@ func main() {
 	e.StripTrailingSlash()
 	e.Static("/static", "static")
 
+	e.Get("/B:edit", edit)
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
