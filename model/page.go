@@ -41,7 +41,7 @@ func (p Page) SavePage(t Text, r Revision) error {
 	lastID, _ = result.LastInsertId()
 	r.ID = lastID
 	p.RevisionID = r.ID
-	tx.MustExec(`INSERT INTO page (title, namespace, nicetitle, redirect, revisionid, len)
+	tx.MustExec(`INSERT OR REPLACE INTO page (title, namespace, nicetitle, redirect, revisionid, len)
 						VALUES ($1, $2, $3, $4, $5, $6)`, p.Title, p.Namespace, p.NiceTitle, p.Redirect, p.RevisionID, p.Len)
 	err = tx.Commit()
 	if err != nil {
