@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func edit(c *echo.Context) error {
+func action(c *echo.Context) error {
 	n, t := parseTitle(c.Query("title"))
 	if c.Query("action") == "edit" {
 		pv := m.GetPageView(n, t)

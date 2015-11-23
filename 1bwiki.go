@@ -42,7 +42,7 @@ func wikiPage(c *echo.Context) error {
 	if pv.NiceTitle != "" {
 		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, pv.Text))
 	}
-	return c.Redirect(http.StatusTemporaryRedirect, "/Special/edit?title="+n+t+"&action=edit")
+	return c.Redirect(http.StatusTemporaryRedirect, "/Special/action?title="+n+t+"&action=edit")
 }
 
 func savePage(c *echo.Context) error {
@@ -106,7 +106,7 @@ func main() {
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
 
-	e.Get("/Special/edit", edit)
+	e.Get("/Special/action", action)
 	e.Get("/Special/recentchanges", recentChanges)
 
 	e.Run(":8000")
