@@ -11,10 +11,11 @@ type Revision struct {
 	Deleted   bool
 	Len       int
 	ParentID  int
+	TimeStamp int64
 }
 
 func (r Revision) Verify() error {
-	if r.PageTitle == "" || r.UserText == "" || r.Len < 1 {
+	if r.PageTitle == "" || r.UserText == "" || r.Len < 1 || r.TimeStamp < 1 {
 		return logger.Error("Invalid revision")
 	}
 	return nil

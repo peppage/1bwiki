@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	m "1bwiki/model"
 	"1bwiki/tmpl"
@@ -54,6 +55,7 @@ func savePage(c *echo.Context) error {
 		Deleted:   false,
 		Len:       len(c.Form("text")),
 		ParentID:  0,
+		TimeStamp: time.Now().Unix(),
 	}
 	if t.Verify() == nil && r.Verify() == nil {
 		p := m.Page{
@@ -80,7 +82,7 @@ func init() {
 	db.Exec(`create table if not exists revision (id integer primary key,
 			pagetitle text, textid integer, comment text, userid int,
 			usertext text, minor integer, deleted integer, len integer,
-			parentid integer)`)
+			parentid integer, timestamp integer)`)
 	db.Exec(`create table if not exists page (title text primary key,
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer)`)

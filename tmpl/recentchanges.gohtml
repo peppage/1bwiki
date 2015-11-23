@@ -1,0 +1,16 @@
+@{
+	import (
+		m "1bwiki/model"
+
+		"1bwiki/tmpl/layout/base"
+	)
+	var revs []*m.Revision
+}
+
+<h1>Recent Changes</h1>
+
+@for _, v := range revs {
+	<span>
+		<a href="#">@v.PageTitle</a> (diff | hist)..(+178)..<a href="User:@v.UserText">@v.UserText</a> (<a href="User_Talk:@v.UserText">talk</a>|contribs) (@v.Comment)<br>
+	</span>
+}
