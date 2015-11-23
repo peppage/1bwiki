@@ -14,11 +14,13 @@ type PageView struct {
 	Title     string
 	NiceTitle string
 	Text      string
+	LenDiff   int
 }
 
 func GetPageView(namespace string, title string) *PageView {
 	var p PageView
-	db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text FROM page JOIN revision ON
+	db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text, revision.lendiff
+				FROM page JOIN revision ON
 				page.revisionid = revision.id JOIN text
 				ON revision.textid = text.id WHERE title = $1
 				AND namespace  = $2`, title, namespace).StructScan(&p)
