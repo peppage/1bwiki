@@ -43,20 +43,6 @@ func wikiPage(c *echo.Context) error {
 	return c.Redirect(http.StatusTemporaryRedirect, "/B:edit?title="+n+t+"&action=edit")
 }
 
-func edit(c *echo.Context) error {
-	n, t := parseTitle(c.Query("title"))
-	if c.Query("action") == "edit" {
-		pv := m.GetPageView(n, t)
-		if pv.NiceTitle == "" {
-			pv.NameSpace = n
-			pv.Title = t
-			pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
-		}
-		return c.HTML(http.StatusOK, tmpl.Editpage(pv))
-	}
-	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
-}
-
 func savePage(c *echo.Context) error {
 	t := m.Text{Text: c.Form("text")}
 	r := m.Revision{
