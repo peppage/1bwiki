@@ -1,13 +1,13 @@
 @{
-    import (
-        "1bwiki/tmpl/layout/base"
-    )
-    var title string
-    var text string
+	import (
+		"1bwiki/tmpl/layout/base"
+	)
+	var title string
+	var text string
 }
 
 <h1>@title</h1>
 <a href="/Special/action?title=@title&action=edit">Edit</a> <a href="/Special/action?title=@title&action=history">History</a>
 <br><br>
 
-@text
+@raw(text)

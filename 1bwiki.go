@@ -13,6 +13,8 @@ import (
 	"github.com/labstack/echo"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mgutz/logxi/v1"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
 )
 
 var logger log.Logger
@@ -40,7 +42,9 @@ func wikiPage(c *echo.Context) error {
 	pv := m.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
-		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, pv.Text))
+		md := blackfriday.MarkdownCommon([]byte(pv.Text))
+		html := string(bluemonday.UGCPolicy().SanitizeBytes(md))
+		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, html))
 	}
 	return c.Redirect(http.StatusTemporaryRedirect, "/Special/action?title="+n+t+"&action=edit")
 }
