@@ -41,6 +41,7 @@
 	<button type="submit">Submit</button>
 </form>
 <script>
+	setupEditorToolbar();
 	var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
 		mode: 'gfm',
 		lineNumbers: false,

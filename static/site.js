@@ -48,7 +48,7 @@ function setOutput(val){
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function setupEditorToolbar() {
   document.getElementById('function-h1').addEventListener('click', function(e) {
     e.preventDefault();
     editor.replaceRange("# ", editor.getCursor());
@@ -66,4 +66,4 @@ document.addEventListener('DOMContentLoaded', function() {
     editor.replaceRange("### ", editor.getCursor());
     editor.focus();
   }, false);
-});
+}
