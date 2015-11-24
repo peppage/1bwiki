@@ -47,3 +47,23 @@ function setOutput(val){
     }
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('function-h1').addEventListener('click', function(e) {
+    e.preventDefault();
+    editor.replaceRange("# ", editor.getCursor());
+    editor.focus();
+  }, false);
+
+  document.getElementById('function-h2').addEventListener('click', function(e) {
+    e.preventDefault();
+    editor.replaceRange("## ", editor.getCursor());
+    editor.focus();
+  }, false);
+
+  document.getElementById('function-h3').addEventListener('click', function(e) {
+    e.preventDefault();
+    editor.replaceRange("### ", editor.getCursor());
+    editor.focus();
+  }, false);
+});
