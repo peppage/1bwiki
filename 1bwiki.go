@@ -97,6 +97,7 @@ func init() {
 
 func main() {
 	e := echo.New()
+	e.HTTP2()
 	e.Use(Logger())
 	e.Use(fixURL())
 	e.StripTrailingSlash()
