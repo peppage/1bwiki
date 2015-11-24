@@ -101,7 +101,7 @@ func main() {
 	e.Use(Logger())
 	e.Use(fixURL())
 	e.StripTrailingSlash()
-	e.Static("/static", "static")
+	e.Static("/Static", "static")
 
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
