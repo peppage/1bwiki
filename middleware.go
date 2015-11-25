@@ -15,8 +15,8 @@ func setUser() echo.MiddlewareFunc {
 		return func(c *echo.Context) error {
 			session := session.Default(c)
 			val := session.Get("user")
-			if _, ok := val.(*m.User); !ok {
-				logger.Warn("Using anon user")
+			u, ok := val.(*m.User)
+			if !ok {
 				req := c.Request()
 				remoteAddr := req.RemoteAddr
 				if ip := req.Header.Get(echo.XRealIP); ip != "" {
@@ -30,6 +30,7 @@ func setUser() echo.MiddlewareFunc {
 					ID:   0,
 					Name: remoteAddr,
 				}
+				logger.Warn("Saving anon user", "user", user)
 				session.Set("user", user)
 				session.Save()
 			}

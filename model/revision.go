@@ -5,7 +5,7 @@ type Revision struct {
 	PageTitle string
 	TextID    int64
 	Comment   string
-	UserID    int
+	UserID    int64
 	UserText  string
 	Minor     bool
 	Deleted   bool
@@ -17,7 +17,7 @@ type Revision struct {
 
 func (r Revision) Verify() error {
 	if r.PageTitle == "" || r.UserText == "" || r.Len < 1 || r.TimeStamp < 1 {
-		return logger.Error("Invalid revision")
+		return logger.Error("Invalid revision", "pageTitle", r.PageTitle, "userText", r.UserText, "len", r.Len, "time", r.TimeStamp)
 	}
 	return nil
 }

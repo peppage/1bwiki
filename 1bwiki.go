@@ -84,15 +84,22 @@ func savePage(c *echo.Context) error {
 		l = 0
 		logger.Warn("save page len Atoi failed")
 	}
+	session := session.Default(c)
+	val := session.Get("user")
+	u, ok := val.(*m.User)
+	if !ok {
+		return logger.Error("User saving page is invalid", "user", u)
+	}
+	logger.Info("Saving page", "user", u)
 	r := m.Revision{
 		PageTitle: c.Form("title"),
 		Comment:   c.Form("summary"),
-		UserID:    1, // TODO :(
-		UserText:  "pepp",
-		Minor:     false,
+		UserID:    u.ID,
+		UserText:  u.Name,
+		Minor:     false, // NOT WORKING
 		Deleted:   false,
 		Len:       len(c.Form("text")),
-		ParentID:  0,
+		ParentID:  0, // NOT WORKING
 		TimeStamp: time.Now().Unix(),
 		LenDiff:   len(c.Form("text")) - l,
 	}
