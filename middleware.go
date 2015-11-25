@@ -1,8 +1,6 @@
 package main
 
 import (
-	"net/http"
-	"strings"
 	"time"
 
 	"github.com/labstack/echo"
