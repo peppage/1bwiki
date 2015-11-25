@@ -15,6 +15,9 @@ func action(c *echo.Context) error {
 	if c.Query("action") == "edit" {
 		pv := m.GetPageView(n, t)
 		if pv.NiceTitle == "" {
+			if n != "" {
+				n += ":"
+			}
 			pv.NameSpace = n
 			pv.Title = t
 			pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
