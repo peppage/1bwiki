@@ -39,6 +39,25 @@ func root(c *echo.Context) error {
 
 func wikiPage(c *echo.Context) error {
 	n, t := parseTitle(c.Request().URL.String())
+
+	badTitle := false
+	f := string(t[0])
+	if t == strings.ToLower(t) {
+		badTitle = true
+		t = strings.ToUpper(f) + string(t[1:])
+	}
+	if strings.Contains(t, "%20") {
+		badTitle = true
+		t = strings.Replace(t, "%20", "_", -1)
+	}
+
+	if badTitle {
+		if n != "" {
+			n += ":"
+		}
+		return c.Redirect(http.StatusMovedPermanently, "/"+n+t)
+	}
+
 	pv := m.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
@@ -46,7 +65,10 @@ func wikiPage(c *echo.Context) error {
 		html := string(bluemonday.UGCPolicy().SanitizeBytes(md))
 		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, html))
 	}
-	return c.Redirect(http.StatusTemporaryRedirect, "/Special/action?title="+n+t+"&action=edit")
+	if n != "" {
+		n += ":"
+	}
+	return c.Redirect(http.StatusTemporaryRedirect, "/special/action?title="+n+t+"&action=edit")
 }
 
 func savePage(c *echo.Context) error {
@@ -103,15 +125,14 @@ func main() {
 	e := echo.New()
 	e.HTTP2(true)
 	e.Use(Logger())
-	e.Use(fixURL())
-	e.Static("/Static", "static")
+	e.Static("/static", "static")
 
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
 
-	e.Get("/Special/action", action)
-	e.Get("/Special/recentchanges", recentChanges)
+	e.Get("/special/action", action)
+	e.Get("/special/recentchanges", recentChanges)
 
 	e.Run(":8000")
 }
