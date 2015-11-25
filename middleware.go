@@ -1,12 +1,44 @@
 package main
 
 import (
+	"net"
 	"time"
 
+	m "1bwiki/model"
+
 	"github.com/labstack/echo"
+	"github.com/syntaqx/echo-middleware/session"
 )
 
-func Logger() echo.MiddlewareFunc {
+func setUser() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			session := session.Default(c)
+			val := session.Get("user")
+			if _, ok := val.(*m.User); !ok {
+				logger.Warn("Using anon user")
+				req := c.Request()
+				remoteAddr := req.RemoteAddr
+				if ip := req.Header.Get(echo.XRealIP); ip != "" {
+					remoteAddr = ip
+				} else if ip = req.Header.Get(echo.XForwardedFor); ip != "" {
+					remoteAddr = ip
+				} else {
+					remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
+				}
+				user := m.User{
+					ID:   0,
+					Name: remoteAddr,
+				}
+				session.Set("user", user)
+				session.Save()
+			}
+			return next(c)
+		}
+	}
+}
+
+func serverLogger() echo.MiddlewareFunc {
 	return func(h echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
 			req := c.Request()

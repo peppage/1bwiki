@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,15 +10,20 @@ import (
 	m "1bwiki/model"
 	"1bwiki/tmpl"
 
+	"github.com/gorilla/context"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mgutz/logxi/v1"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
+	"github.com/syntaqx/echo-middleware/session"
 )
 
+const secret = "Thisisatemporarysecret"
+
 var logger log.Logger
+var store = session.NewCookieStore([]byte(secret))
 
 func parseTitle(title string) (string, string) {
 	u := strings.Trim(title, "/")
@@ -105,6 +111,7 @@ func savePage(c *echo.Context) error {
 }
 
 func init() {
+	gob.Register(&m.User{})
 	logger = log.New("1bwiki")
 	db, err := sqlx.Connect("sqlite3", "./1bwiki.db")
 	if err != nil {
@@ -123,16 +130,19 @@ func init() {
 
 func main() {
 	e := echo.New()
-	e.HTTP2(true)
-	e.Use(Logger())
+	e.Use(session.Sessions("session", store))
 	e.Static("/static", "static")
+	e.HTTP2(true)
+	e.Use(setUser())
+	e.Use(serverLogger())
 
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
 
-	e.Get("/special/action", action)
-	e.Get("/special/recentchanges", recentChanges)
+	s := e.Group("/special")
+	s.Get("/action", action)
+	s.Get("/recentchanges", recentChanges)
 
-	e.Run(":8000")
+	http.ListenAndServe(":8000", context.ClearHandler(e))
 }
