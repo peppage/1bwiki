@@ -101,10 +101,9 @@ func init() {
 
 func main() {
 	e := echo.New()
-	e.HTTP2()
+	e.HTTP2(true)
 	e.Use(Logger())
 	e.Use(fixURL())
-	e.StripTrailingSlash()
 	e.Static("/Static", "static")
 
 	e.Get("/", root)
