@@ -4,7 +4,7 @@ var languageOverrides = {
   html: 'xml'
 };
 
-emojify.setConfig({ img_dir: '/Static/emoji' });
+emojify.setConfig({ img_dir: '/static/emoji' });
 
 var md = markdownit({
   html: true,
