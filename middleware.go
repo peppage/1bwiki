@@ -15,7 +15,7 @@ func setUser() echo.MiddlewareFunc {
 		return func(c *echo.Context) error {
 			session := session.Default(c)
 			val := session.Get("user")
-			u, ok := val.(*m.User)
+			_, ok := val.(*m.User)
 			if !ok {
 				req := c.Request()
 				remoteAddr := req.RemoteAddr
