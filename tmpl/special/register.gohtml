@@ -1,0 +1,16 @@
+@{
+	import (
+		"1bwiki/tmpl/layout/base"
+	)
+}
+
+<form action="/special/register" method="post">
+	<label>Username</label><br>
+	<input type="text" name="username"><br>
+	<label>Password</label><br>
+	<input type="text" name="password"><br>
+	<label>Confirm Password</label><br>
+	<input type="text" name="passwordConfirm"><br><br>
+	<!-- include stuff here to show password when hidden -->
+	<button type="submit">Submit</button>
+</form>

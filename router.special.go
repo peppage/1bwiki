@@ -3,11 +3,14 @@ package main
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	m "1bwiki/model"
 	"1bwiki/tmpl"
+	"1bwiki/tmpl/special"
 
 	"github.com/labstack/echo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func action(c *echo.Context) error {
@@ -39,4 +42,26 @@ func recentChanges(c *echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
 	return c.HTML(http.StatusOK, tmpl.Recentchanges(revs))
+}
+
+func register(c *echo.Context) error {
+	return c.HTML(http.StatusOK, special.Register())
+}
+
+func registerHandle(c *echo.Context) error {
+	if c.Form("password") == c.Form("passwordConfirm") {
+		p, err := bcrypt.GenerateFromPassword([]byte(c.Form("password")), 10)
+		if err != nil {
+			logger.Error("registering user, encrypting password", "err", err)
+		}
+		logger.Info("register", "uname", c.Form("username"), "password", p)
+		u := m.User{
+			Name:         c.Form("username"),
+			Password:     string(p),
+			Registration: time.Now().Unix(),
+		}
+		u.Create()
+	}
+
+	return c.String(http.StatusOK, "ok")
 }

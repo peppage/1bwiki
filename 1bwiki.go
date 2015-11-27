@@ -152,6 +152,8 @@ func main() {
 	s := e.Group("/special")
 	s.Get("/action", action)
 	s.Get("/recentchanges", recentChanges)
+	s.Get("/register", register)
+	s.Post("/register", registerHandle)
 
 	http.ListenAndServe(":8000", context.ClearHandler(e))
 }
