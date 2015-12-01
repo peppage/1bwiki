@@ -134,7 +134,7 @@ func init() {
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer, PRIMARY KEY(title, namespace))`)
 	db.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text, realname text,
-			password text, email text, registration int, UNIQUE(id, name))`)
+			password text, registration int, UNIQUE(id, name))`)
 }
 
 func main() {
