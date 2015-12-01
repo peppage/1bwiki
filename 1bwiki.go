@@ -154,6 +154,8 @@ func main() {
 	s.Get("/recentchanges", recentChanges)
 	s.Get("/register", register)
 	s.Post("/register", registerHandle)
+	s.Get("/login", login)
+	s.Post("/login", loginHandle)
 
 	http.ListenAndServe(":8000", context.ClearHandler(e))
 }
