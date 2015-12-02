@@ -33,6 +33,9 @@ func cleanTitle(t string) string {
 	if strings.Contains(t, "%20") {
 		t = strings.Replace(t, "%20", "_", -1)
 	}
+	if strings.Contains(t, " ") {
+		t = strings.Replace(t, " ", "_", -1)
+	}
 	return t
 }
 
