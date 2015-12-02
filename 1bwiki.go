@@ -133,8 +133,8 @@ func init() {
 	db.Exec(`create table if not exists page (title text,
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer, PRIMARY KEY(title, namespace))`)
-	db.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text, realname text,
-			password text, registration int, UNIQUE(id, name))`)
+	db.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text,
+			realname text text default "", password text, registration int, UNIQUE(id, name))`)
 }
 
 func main() {
