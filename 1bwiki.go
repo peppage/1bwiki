@@ -27,15 +27,9 @@ var store = session.NewCookieStore([]byte(secret))
 
 func cleanTitle(t string) string {
 	f := string(t[0])
-	if t == strings.ToLower(t) {
-		t = strings.ToUpper(f) + string(t[1:])
-	}
-	if strings.Contains(t, "%20") {
-		t = strings.Replace(t, "%20", "_", -1)
-	}
-	if strings.Contains(t, " ") {
-		t = strings.Replace(t, " ", "_", -1)
-	}
+	t = strings.ToUpper(f) + string(t[1:])
+	t = strings.Replace(t, "%20", "_", -1)
+	t = strings.Replace(t, " ", "_", -1)
 	return t
 }
 
