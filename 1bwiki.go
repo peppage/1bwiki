@@ -69,7 +69,7 @@ func wikiPage(c *echo.Context) error {
 	if pv.NiceTitle != "" {
 		md := blackfriday.MarkdownCommon([]byte(pv.Text))
 		html := string(bluemonday.UGCPolicy().SanitizeBytes(md))
-		return c.HTML(http.StatusOK, tmpl.Page(pv.NiceTitle, html))
+		return c.HTML(http.StatusOK, tmpl.Page(pv.Title, pv.NiceTitle, html))
 	}
 	if n != "" {
 		n += ":"
