@@ -86,3 +86,10 @@ func loginHandle(c *echo.Context) error {
 	session.Save()
 	return c.Redirect(http.StatusSeeOther, "/admin")
 }
+
+func logout(c *echo.Context) error {
+	session := session.Default(c)
+	session.Set("user", nil)
+	session.Save()
+	return c.Redirect(http.StatusTemporaryRedirect, "/")
+}
