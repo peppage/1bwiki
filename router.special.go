@@ -16,6 +16,14 @@ import (
 
 func action(c *echo.Context) error {
 	n, t := parseTitle(c.Query("title"))
+	ct := cleanTitle(t)
+	if ct != t {
+		if n != "" {
+			n += ":"
+		}
+		return c.Redirect(http.StatusTemporaryRedirect, "/special/action?title="+n+ct+"&action="+c.Query("action"))
+	}
+
 	if c.Query("action") == "edit" {
 		pv := m.GetPageView(n, t)
 		if pv.NiceTitle == "" {
