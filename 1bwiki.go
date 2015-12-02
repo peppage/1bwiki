@@ -25,6 +25,17 @@ const secret = "Thisisatemporarysecret"
 var logger log.Logger
 var store = session.NewCookieStore([]byte(secret))
 
+func cleanTitle(t string) string {
+	f := string(t[0])
+	if t == strings.ToLower(t) {
+		t = strings.ToUpper(f) + string(t[1:])
+	}
+	if strings.Contains(t, "%20") {
+		t = strings.Replace(t, "%20", "_", -1)
+	}
+	return t
+}
+
 func parseTitle(title string) (string, string) {
 	u := strings.Trim(title, "/")
 	n := ""
@@ -46,22 +57,13 @@ func root(c *echo.Context) error {
 func wikiPage(c *echo.Context) error {
 	n, t := parseTitle(c.Request().URL.String())
 
-	badTitle := false
-	f := string(t[0])
-	if t == strings.ToLower(t) {
-		badTitle = true
-		t = strings.ToUpper(f) + string(t[1:])
-	}
-	if strings.Contains(t, "%20") {
-		badTitle = true
-		t = strings.Replace(t, "%20", "_", -1)
-	}
+	ct := cleanTitle(t)
 
-	if badTitle {
+	if ct != t {
 		if n != "" {
 			n += ":"
 		}
-		return c.Redirect(http.StatusMovedPermanently, "/"+n+t)
+		return c.Redirect(http.StatusMovedPermanently, "/"+n+ct)
 	}
 
 	pv := m.GetPageView(n, t)
