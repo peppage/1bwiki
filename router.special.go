@@ -6,6 +6,7 @@ import (
 
 	m "1bwiki/model"
 	"1bwiki/tmpl"
+	"1bwiki/tmpl/special"
 
 	"github.com/labstack/echo"
 )
@@ -37,6 +38,9 @@ func action(c *echo.Context) error {
 			echo.NewHTTPError(http.StatusInternalServerError, "")
 		}
 		return c.HTML(http.StatusOK, tmpl.Pagerevs(c.Query("title"), revs))
+	} else if c.Query("oldid") != "" {
+		pv := m.GetOldPageView(c.Query("oldid"))
+		return c.HTML(http.StatusOK, special.Oldversion(pv))
 	}
 	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
 }

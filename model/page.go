@@ -16,6 +16,7 @@ type PageView struct {
 	Text      string
 }
 
+// Need error handling here
 func GetPageView(namespace string, title string) *PageView {
 	var p PageView
 	db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text
@@ -23,6 +24,16 @@ func GetPageView(namespace string, title string) *PageView {
 				page.revisionid = revision.id JOIN text
 				ON revision.textid = text.id WHERE title = $1
 				AND namespace  = $2`, title, namespace).StructScan(&p)
+	return &p
+}
+
+// Need error handling here
+func GetOldPageView(revID string) *PageView {
+	var p PageView
+	db.QueryRowx(`SELECT page.namespace, page.title, page.nicetitle, text.text
+				 FROM page JOIN revision on page.title = revision.pagetitle
+				 JOIN text on revision.textid = text.id WHERE revision.id = $1`, revID).StructScan(&p)
+	logger.Info("old page", "pv", p)
 	return &p
 }
 
