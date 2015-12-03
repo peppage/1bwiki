@@ -60,3 +60,13 @@ func logout(c *echo.Context) error {
 	session.Save()
 	return c.Redirect(http.StatusTemporaryRedirect, "/")
 }
+
+func prefs(c *echo.Context) error {
+	session := session.Default(c)
+	val := session.Get("user")
+	u, ok := val.(*m.User)
+	if ok {
+		return c.HTML(http.StatusOK, special.Prefs(u))
+	}
+	return echo.NewHTTPError(http.StatusUnauthorized)
+}

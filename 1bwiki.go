@@ -156,6 +156,7 @@ func main() {
 	s.Get("/login", login)
 	s.Post("/login", loginHandle)
 	s.Get("/logout", logout)
+	s.Get("/prefences", prefs)
 
 	http.ListenAndServe(":8000", context.ClearHandler(e))
 }
