@@ -150,6 +150,8 @@ func main() {
 
 	s := e.Group("/special")
 	s.Get("/action", action)
+	s.Get("/edit", edit)
+	s.Get("/history", history)
 	s.Get("/recentchanges", recentChanges)
 	s.Get("/register", register)
 	s.Post("/register", registerHandle)
