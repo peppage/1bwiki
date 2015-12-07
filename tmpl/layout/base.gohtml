@@ -25,9 +25,31 @@
 	<link rel="stylesheet" href="/static/base16-light.css">
 	<link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
 	<link rel="stylesheet" href="/static/default.css">
-	<link rel="stylesheet" type="text/css" href="/static/site.css" />
+	<link rel="stylesheet" type="text/css" href="/static/semantic.min.css">
+	<link rel="stylesheet" type="text/css" href="/static/site.css" >
+	<script src="/static/semantic.min.js"></script>
 </head>
 <body>
-	@body
+	<div class="ui one column grid container">
+		<div class="column">
+			<div class="ui text menu">
+				<div class="item">
+					<img src="http://placehold.it/25x25">
+				</div>
+				<div class="item">
+					<a href="/special/recentchanges">Recent Changes</a>
+				</div>
+				<div class="right menu">
+					<div class="item">
+						<a href="#">User</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="column">
+			@body
+		</div>
+	</div>
 </body>
 </html>
