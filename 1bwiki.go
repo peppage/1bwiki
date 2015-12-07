@@ -8,7 +8,7 @@ import (
 	"time"
 
 	m "1bwiki/model"
-	"1bwiki/tmpl"
+	"1bwiki/tmpl/page"
 
 	"github.com/gorilla/context"
 	"github.com/labstack/echo"
@@ -62,7 +62,7 @@ func wikiPage(c *echo.Context) error {
 	pv := m.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
-		return c.HTML(http.StatusOK, tmpl.Page(pv))
+		return c.HTML(http.StatusOK, page.Page(pv))
 	}
 	if n != "" {
 		n += ":"
