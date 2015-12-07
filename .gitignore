@@ -2,5 +2,4 @@
 *.db-journal
 *.exe
 tmpl/*.go
-tmpl/layout/*.go
-tmpl/special/*.go
+tmpl/*/*.go
