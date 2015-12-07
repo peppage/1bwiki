@@ -7,6 +7,8 @@
 	var pv *m.PageView
 }
 
+@raw(Nav(pv.NiceTitle, "edit"))
+
 @if pv.Text == "" {
 	<h1>Creating @pv.NiceTitle</h1>
 } else {
