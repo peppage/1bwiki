@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
+)
+
 type Page struct {
 	Title      string
 	Namespace  string
@@ -14,6 +19,11 @@ type PageView struct {
 	Title     string
 	NiceTitle string
 	Text      string
+}
+
+func (pv *PageView) Html() string {
+	md := blackfriday.MarkdownCommon([]byte(pv.Text))
+	return string(bluemonday.UGCPolicy().SanitizeBytes(md))
 }
 
 // Need error handling here

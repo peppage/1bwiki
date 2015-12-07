@@ -13,8 +13,6 @@ import (
 	"github.com/gorilla/context"
 	"github.com/labstack/echo"
 	"github.com/mgutz/logxi/v1"
-	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
 	"github.com/syntaqx/echo-middleware/session"
 )
 
@@ -64,9 +62,7 @@ func wikiPage(c *echo.Context) error {
 	pv := m.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
-		md := blackfriday.MarkdownCommon([]byte(pv.Text))
-		html := string(bluemonday.UGCPolicy().SanitizeBytes(md))
-		return c.HTML(http.StatusOK, tmpl.Page(pv.Title, pv.NiceTitle, html))
+		return c.HTML(http.StatusOK, tmpl.Page(pv.Title, pv.NiceTitle, pv.Html()))
 	}
 	if n != "" {
 		n += ":"
