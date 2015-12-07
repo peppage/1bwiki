@@ -6,6 +6,7 @@ import (
 
 	m "1bwiki/model"
 	"1bwiki/tmpl"
+	"1bwiki/tmpl/page"
 	"1bwiki/tmpl/special"
 
 	"github.com/labstack/echo"
@@ -46,7 +47,7 @@ func edit(c *echo.Context) error {
 		pv.Title = t
 		pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
 	}
-	return c.HTML(http.StatusOK, tmpl.Editpage(pv))
+	return c.HTML(http.StatusOK, page.Editpage(pv))
 }
 
 func history(c *echo.Context) error {
