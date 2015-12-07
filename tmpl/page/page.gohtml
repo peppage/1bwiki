@@ -6,8 +6,6 @@
 	var pv *m.PageView
 }
 
+@raw(Nav(pv.NiceTitle))
 <h1>@pv.NiceTitle</h1>
-<a href="/special/edit?title=@pv.Title">Edit</a> <a href="/special/history?title=@pv.Title">History</a>
-<br><br>
-
 @raw(pv.Html())
