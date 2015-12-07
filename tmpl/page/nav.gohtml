@@ -1,14 +1,23 @@
 @{
 	var niceTitle string
+	var active string
 }
 <div class="ui tabular menu">
-	<a class="item active" href="/@niceTitle">
+	@if active == "article" {
+		<a class="item active" href="/@niceTitle">
+	} else {
+		<a class="item" href="/@niceTitle">
+	}
 		Article
 	</a>
 	<a class="item" href="/Talk:@niceTitle">
 		Talk
 	</a>
-	<a class="item" href="/special/edit?title=@niceTitle">
+	@if active == "edit" {
+		<a class="item active" href="/special/edit?title=@niceTitle">
+	} else {
+		<a class="item" href="/special/edit?title=@niceTitle">
+	}
 		Edit
 	</a>
 	<a class="item" href="/special/history?title=@niceTitle">
