@@ -20,7 +20,11 @@
 	}
 		Edit
 	</a>
-	<a class="item" href="/special/history?title=@niceTitle">
+	@if active == "history" {
+		<a class="item active" href="/special/history?title=@niceTitle">
+	} else {
+		<a class="item" href="/special/history?title=@niceTitle">
+	}
 		History
 	</a>
 </div>
