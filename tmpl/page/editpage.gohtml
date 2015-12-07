@@ -15,35 +15,35 @@
 	<h1>Editing @pv.NiceTitle</h1>
 }
 
+<h2>Preview</h2>
+<div class="ui message orange">
+	<div class="header">This is only a preview</div>
+	<p>
+		Your changes have not yet been saved!
+		<a href="#in">→ Go to editing area</a>
+	</p>
+</div>
 
-<form action="/save" method="post">
+<div id="out"></div>
+<div class="ui icon buttons editBar">
+	<button class="ui icon button" id="function-h1"><b>h1</b></button>
+	<button class="ui icon button" id="function-h2"><b>h2</b></button>
+	<button class="ui icon button" id="function-h3"><b>h3</b></button>
+</div>
+
+<form class="ui form" action="/save" method="post">
 	<input type="hidden" name="namespace" value="@pv.NameSpace">
 	<input type="hidden" name="title" value="@pv.Title">
 	<input type="hidden" name="len" value="@len(pv.Text)">
-	<h2>Preview</h2>
-	<div class="ui message orange">
-		<div class="header">This is only a preview</div>
-		<p>
-			Your changes have not yet been saved!
-			<a href="#in">→ Go to editing area</a>
-		</p>
-	</div>
-	<div id="out"></div>
-	<div>
-		<a href="#" id="function-h1" role="button"><b>h1</b></a>
-		<a href="#" id="function-h2" role="button"><b>h2</b></a>
-		<a href="#" id="function-h3" role="button"><b>h3</b></a>
-	</div>
-	<div id="in">
+
+	<div id="in" class="field">
 		<textarea id="code" name="text">@pv.Text</textarea>
 	</div>
-	<br>
-	<br>
-	<label>Edit Summary</label>
-	<br>
-	<input type="text" name="summary">
-	<br>
-	<button type="submit">Submit</button>
+	<div class="field">
+		<label>Edit Summary</label>
+		<input type="text" name="summary">
+	</div>
+	<button class="ui primary button" type="submit">Submit</button>
 </form>
 <script>
 	setupEditorToolbar();
@@ -55,6 +55,7 @@
 		theme: 'base16-light',
 		extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
 	});
+	editor.setSize(null, 600)
 	update(editor);
 	editor.on('change', update);
 </script>

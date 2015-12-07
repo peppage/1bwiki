@@ -25,3 +25,7 @@ pre, code{
 .plus {
   color: #006400;
 }
+
+.editBar {
+  padding-bottom: 15px;
+}
