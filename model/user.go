@@ -7,6 +7,7 @@ type User struct {
 	Name         string
 	RealName     string
 	Password     string
+	Email        string
 	Registration int64
 }
 
