@@ -21,10 +21,13 @@
 	<input type="hidden" name="title" value="@pv.Title">
 	<input type="hidden" name="len" value="@len(pv.Text)">
 	<h2>Preview</h2>
-	<p>
-		<strong>This is only a preview; your changes have not yet been saved!</strong>
-		<a href="#in">→ Go to editing area</a>
-	</p>
+	<div class="ui message">
+		<div class="header">This is only a preview</div>
+		<p>
+			Your changes have not yet been saved!
+			<a href="#in">→ Go to editing area</a>
+		</p>
+	</div>
 	<div id="out"></div>
 	<div>
 		<a href="#" id="function-h1" role="button"><b>h1</b></a>
