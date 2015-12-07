@@ -11,9 +11,7 @@ import (
 	"1bwiki/tmpl"
 
 	"github.com/gorilla/context"
-	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/mgutz/logxi/v1"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
@@ -119,10 +117,6 @@ func savePage(c *echo.Context) error {
 func init() {
 	gob.Register(&m.User{})
 	logger = log.New("1bwiki")
-	db, err := sqlx.Connect("sqlite3", "./1bwiki.db")
-	if err != nil {
-		panic(err)
-	}
 }
 
 func main() {
