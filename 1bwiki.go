@@ -67,7 +67,7 @@ func wikiPage(c *echo.Context) error {
 	if n != "" {
 		n += ":"
 	}
-	return c.Redirect(http.StatusTemporaryRedirect, "/special/action?title="+n+t+"&action=edit")
+	return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+t)
 }
 
 func savePage(c *echo.Context) error {
