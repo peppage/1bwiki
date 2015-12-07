@@ -1,14 +1,13 @@
 @{
 	import (
 		"1bwiki/tmpl/layout/base"
+		m "1bwiki/model"
 	)
-	var title string
-	var niceTitle string
-	var text string
+	var pv *m.PageView
 }
 
-<h1>@niceTitle</h1>
-<a href="/special/edit?title=@title">Edit</a> <a href="/special/history?title=@title">History</a>
+<h1>@pv.NiceTitle</h1>
+<a href="/special/edit?title=@pv.Title">Edit</a> <a href="/special/history?title=@pv.Title">History</a>
 <br><br>
 
-@raw(text)
+@raw(pv.Html())
