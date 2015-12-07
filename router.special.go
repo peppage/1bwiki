@@ -63,7 +63,7 @@ func history(c *echo.Context) error {
 	if err != nil {
 		echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
-	return c.HTML(http.StatusOK, tmpl.Pagerevs(c.Query("title"), revs))
+	return c.HTML(http.StatusOK, page.History(c.Query("title"), revs))
 }
 
 func recentChanges(c *echo.Context) error {
