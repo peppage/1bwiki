@@ -4,12 +4,18 @@
 	)
 }
 
-<form method="post">
-	<label>Username</label><br>
-	<input type="text" id="username" name="username" /><br>
+@raw(Nav("/special/login"))
 
-	<label>Password</label><br>
-	<input type="password" id="password" name="password" /><br>
+<form class="ui form" method="post">
+	<div class="field">
+		<label>Username</label>
+		<input type="text" id="username" name="username" />
+	</div>
 
-	<button type="submit">Submit</button>
+	<div class="field">
+		<label>Password</label>
+		<input type="password" id="password" name="password" />
+	</div>
+
+	<button class="ui primary button" type="submit">Log in</button>
 </form>

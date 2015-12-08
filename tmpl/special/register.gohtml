@@ -4,13 +4,21 @@
 	)
 }
 
-<form action="/special/register" method="post">
-	<label>Username</label><br>
-	<input type="text" name="username"><br>
-	<label>Password</label><br>
-	<input type="text" name="password"><br>
-	<label>Confirm Password</label><br>
-	<input type="text" name="passwordConfirm"><br><br>
+@raw(Nav("/special/register"))
+
+<form class="ui form" action="/special/register" method="post">
+	<div class="field">
+		<label>Username</label>
+		<input type="text" name="username">
+	</div>
+	<div class="field">
+		<label>Password</label>
+		<input type="text" name="password">
+	</div>
+	<div class="field">
+		<label>Confirm Password</label>
+		<input type="text" name="passwordConfirm">
+	</div>
 	<!-- include stuff here to show password when hidden -->
-	<button type="submit">Submit</button>
+	<button class="ui primary button" type="submit">Submit</button>
 </form>
