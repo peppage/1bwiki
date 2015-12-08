@@ -66,4 +66,19 @@ function setupEditorToolbar() {
     editor.replaceRange("### ", editor.getCursor());
     editor.focus();
   }, false);
+
+  document.getElementById('function-b').addEventListener('click', function(e) {
+    e.preventDefault();
+    editor.replaceRange("****", editor.getCursor());
+    editor.focus();
+    editor.execCommand("goCharLeft");
+    editor.execCommand("goCharLeft");
+  }, false);
+
+  document.getElementById('function-i').addEventListener('click', function(e) {
+    e.preventDefault();
+    editor.replaceRange("__", editor.getCursor());
+    editor.focus();
+    editor.execCommand("goCharLeft");
+  }, false);
 }
