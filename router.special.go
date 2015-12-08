@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	m "1bwiki/model"
-	"1bwiki/tmpl"
 	"1bwiki/tmpl/page"
 	"1bwiki/tmpl/special"
 
@@ -71,5 +70,5 @@ func recentChanges(c *echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
-	return c.HTML(http.StatusOK, tmpl.Recentchanges(revs))
+	return c.HTML(http.StatusOK, special.Recentchanges(revs))
 }

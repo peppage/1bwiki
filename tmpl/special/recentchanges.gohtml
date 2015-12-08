@@ -9,6 +9,8 @@
 	var revs []*m.Revision
 }
 
+@raw(Nav("/special/recentchanges"))
+
 <h1>Recent Changes</h1>
 
 @for _, v := range revs {
