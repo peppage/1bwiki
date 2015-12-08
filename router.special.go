@@ -23,7 +23,7 @@ func action(c *echo.Context) error {
 
 	if c.Query("oldid") != "" {
 		pv := m.GetOldPageView(c.Query("oldid"))
-		return c.HTML(http.StatusOK, special.Oldversion(pv))
+		return c.HTML(http.StatusOK, page.Oldversion(pv))
 	}
 	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
 }
