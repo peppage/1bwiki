@@ -82,3 +82,10 @@ function setupEditorToolbar() {
     editor.execCommand("goCharLeft");
   }, false);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  $('.ui.dropdown').dropdown({
+    transition: 'scale',
+    action: 'hide',
+  });
+});
