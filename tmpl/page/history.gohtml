@@ -7,13 +7,17 @@
 
 		"1bwiki/tmpl/layout/base"
 	)
-	var title string
+	var niceTitle string
 	var revs []*m.Revision
 }
 
-@raw(Nav(title, "history"))
+@section title {
+	return niceTitle + ": Revision history"
+}
 
-<h1>@title: Revision History</h1>
+@raw(Nav(niceTitle, "history"))
+
+<h1>@niceTitle: Revision History</h1>
 
 @for _, v := range revs {
 	@{
