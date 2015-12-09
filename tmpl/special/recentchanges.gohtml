@@ -5,12 +5,18 @@
 		m "1bwiki/model"
 
 		"1bwiki/tmpl/layout/base"
+		"1bwiki/tmpl/helper"
 	)
+	var u *m.User
 	var revs []*m.Revision
 }
 
 @section title {
 	return "Recent Changes"
+}
+
+@section user {
+	@helper.User(u)
 }
 
 @raw(Nav("/special/recentchanges"))

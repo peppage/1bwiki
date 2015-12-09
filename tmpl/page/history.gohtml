@@ -6,13 +6,19 @@
 		m "1bwiki/model"
 
 		"1bwiki/tmpl/layout/base"
+		"1bwiki/tmpl/helper"
 	)
+	var u *m.User
 	var niceTitle string
 	var revs []*m.Revision
 }
 
 @section title {
 	return niceTitle + ": Revision history"
+}
+
+@section user {
+	@helper.User(u)
 }
 
 @raw(Nav(niceTitle, "history"))

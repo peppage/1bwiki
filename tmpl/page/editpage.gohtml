@@ -3,12 +3,18 @@
 		m "1bwiki/model"
 
 		"1bwiki/tmpl/layout/base"
+		"1bwiki/tmpl/helper"
 	)
+	var u *m.User
 	var pv *m.PageView
 }
 
 @section title {
 	return "Editing " + pv.NiceTitle
+}
+
+@section user {
+	@helper.User(u)
 }
 
 @raw(Nav(pv.NiceTitle, "edit"))

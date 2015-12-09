@@ -9,6 +9,7 @@ import (
 	"1bwiki/tmpl/special"
 
 	"github.com/labstack/echo"
+	"github.com/syntaqx/echo-middleware/session"
 )
 
 func action(c *echo.Context) error {
@@ -23,7 +24,9 @@ func action(c *echo.Context) error {
 
 	if c.Query("oldid") != "" {
 		pv := m.GetOldPageView(c.Query("oldid"))
-		return c.HTML(http.StatusOK, page.Oldversion(pv))
+		session := session.Default(c)
+		val := session.Get("user")
+		return c.HTML(http.StatusOK, page.Oldversion(val.(*m.User), pv))
 	}
 	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
 }
@@ -46,7 +49,9 @@ func edit(c *echo.Context) error {
 		pv.Title = t
 		pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
 	}
-	return c.HTML(http.StatusOK, page.Editpage(pv))
+	session := session.Default(c)
+	val := session.Get("user")
+	return c.HTML(http.StatusOK, page.Editpage(val.(*m.User), pv))
 }
 
 func history(c *echo.Context) error {
@@ -62,7 +67,9 @@ func history(c *echo.Context) error {
 	if err != nil {
 		echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
-	return c.HTML(http.StatusOK, page.History(c.Query("title"), revs))
+	session := session.Default(c)
+	val := session.Get("user")
+	return c.HTML(http.StatusOK, page.History(val.(*m.User), c.Query("title"), revs))
 }
 
 func recentChanges(c *echo.Context) error {
@@ -70,5 +77,7 @@ func recentChanges(c *echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
-	return c.HTML(http.StatusOK, special.Recentchanges(revs))
+	session := session.Default(c)
+	val := session.Get("user")
+	return c.HTML(http.StatusOK, special.Recentchanges(val.(*m.User), revs))
 }

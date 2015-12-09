@@ -1,13 +1,19 @@
 @{
 	import (
 		"1bwiki/tmpl/layout/base"
+		"1bwiki/tmpl/helper"
 		m "1bwiki/model"
 	)
+	var u *m.User
 	var pv *m.PageView
 }
 
 @section title {
 	return pv.NiceTitle
+}
+
+@section user {
+	@helper.User(u)
 }
 
 @raw(Nav(pv.NiceTitle, "article"))

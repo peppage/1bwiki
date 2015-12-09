@@ -3,13 +3,18 @@
 		m "1bwiki/model"
 
 		"1bwiki/tmpl/layout/base"
+		"1bwiki/tmpl/helper"
 	)
-	var user *m.User
+	var u *m.User
 }
 
 @section title {
 	return "Preferences"
 }
 
+@section user {
+	@helper.User(u)
+}
+
 <h1>Basic Information</h1>
-Username: @user.Name
+Username: @u.Name

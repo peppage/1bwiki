@@ -62,7 +62,9 @@ func wikiPage(c *echo.Context) error {
 	pv := m.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
-		return c.HTML(http.StatusOK, page.Page(pv))
+		session := session.Default(c)
+		val := session.Get("user")
+		return c.HTML(http.StatusOK, page.Page(val.(*m.User), pv))
 	}
 	if n != "" {
 		n += ":"

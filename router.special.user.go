@@ -13,7 +13,9 @@ import (
 )
 
 func register(c *echo.Context) error {
-	return c.HTML(http.StatusOK, special.Register())
+	session := session.Default(c)
+	val := session.Get("user")
+	return c.HTML(http.StatusOK, special.Register(val.(*m.User)))
 }
 
 func registerHandle(c *echo.Context) error {
@@ -35,7 +37,9 @@ func registerHandle(c *echo.Context) error {
 }
 
 func login(c *echo.Context) error {
-	return c.HTML(http.StatusOK, special.Login())
+	session := session.Default(c)
+	val := session.Get("user")
+	return c.HTML(http.StatusOK, special.Login(val.(*m.User)))
 }
 
 func loginHandle(c *echo.Context) error {
