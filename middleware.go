@@ -29,6 +29,7 @@ func setUser() echo.MiddlewareFunc {
 				user := &m.User{
 					ID:   0,
 					Name: remoteAddr,
+					Anon: true,
 				}
 				logger.Warn("Saving anon user", "user", user)
 				session.Set("user", user)

@@ -9,6 +9,7 @@ type User struct {
 	Password     string
 	Email        string
 	Registration int64
+	Anon         bool
 }
 
 func (u *User) Create() {
