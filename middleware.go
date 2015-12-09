@@ -26,7 +26,7 @@ func setUser() echo.MiddlewareFunc {
 				} else {
 					remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
 				}
-				user := m.User{
+				user := &m.User{
 					ID:   0,
 					Name: remoteAddr,
 				}
