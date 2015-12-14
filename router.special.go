@@ -33,6 +33,11 @@ func action(c *echo.Context) error {
 
 func edit(c *echo.Context) error {
 	n, t := parseTitle(c.Query("title"))
+
+	if strings.Contains(t, disallow) {
+		return echo.NewHTTPError(http.StatusForbidden, "Editing of special pages disallowed")
+	}
+
 	ct := cleanTitle(t)
 	if ct != t {
 		if n != "" {
