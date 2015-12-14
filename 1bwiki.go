@@ -10,6 +10,7 @@ import (
 	m "1bwiki/model"
 	"1bwiki/tmpl/page"
 
+	"github.com/GeertJohan/go.rice"
 	"github.com/gorilla/context"
 	"github.com/labstack/echo"
 	"github.com/mgutz/logxi/v1"
@@ -120,7 +121,11 @@ func init() {
 func main() {
 	e := echo.New()
 	e.Use(session.Sessions("session", store))
-	e.Static("/static", "static")
+	assetHandler := http.FileServer(rice.MustFindBox("static").HTTPBox())
+	e.Get("/static/*", func(c *echo.Context) error {
+		http.StripPrefix("/static/", assetHandler).ServeHTTP(c.Response().Writer(), c.Request())
+		return nil
+	})
 	e.HTTP2(true)
 	e.Use(setUser())
 	e.Use(serverLogger())
