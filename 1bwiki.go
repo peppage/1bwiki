@@ -133,6 +133,10 @@ func main() {
 		http.StripPrefix("/static/", assetHandler).ServeHTTP(c.Response().Writer(), c.Request())
 		return nil
 	})
+	e.Get("/favicon.ico", func(c *echo.Context) error {
+		http.StripPrefix("", assetHandler).ServeHTTP(c.Response().Writer(), c.Request())
+		return nil
+	})
 	e.HTTP2(true)
 	e.Use(setUser())
 	e.Use(serverLogger())
