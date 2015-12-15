@@ -22,7 +22,7 @@ const secret = "Thisisatemporarysecret"
 var logger log.Logger
 var store = session.NewCookieStore([]byte(secret))
 
-const disallow = "special/"
+const noEditArea = "special"
 
 func cleanTitle(t string) string {
 	f := string(t[0])
@@ -53,7 +53,8 @@ func root(c *echo.Context) error {
 func wikiPage(c *echo.Context) error {
 	n, t := parseTitle(c.Request().URL.String())
 
-	if strings.Contains(t, disallow) {
+	ul := strings.ToLower(c.Request().URL.String())
+	if strings.HasPrefix(ul, "/"+noEditArea) {
 		return echo.NewHTTPError(http.StatusForbidden, "Editing of special pages disallowed")
 	}
 
