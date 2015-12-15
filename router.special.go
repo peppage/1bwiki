@@ -12,25 +12,6 @@ import (
 	"github.com/syntaqx/echo-middleware/session"
 )
 
-func action(c *echo.Context) error {
-	n, t := parseTitle(c.Query("title"))
-	ct := cleanTitle(t)
-	if ct != t {
-		if n != "" {
-			n += ":"
-		}
-		return c.Redirect(http.StatusTemporaryRedirect, "/special/action?title="+n+ct+"&action="+c.Query("action"))
-	}
-
-	if c.Query("oldid") != "" {
-		pv := m.GetOldPageView(c.Query("oldid"))
-		session := session.Default(c)
-		val := session.Get("user")
-		return c.HTML(http.StatusOK, page.Oldversion(val.(*m.User), pv))
-	}
-	return echo.NewHTTPError(http.StatusBadRequest, "Not an acceptable action")
-}
-
 func edit(c *echo.Context) error {
 	n, t := parseTitle(c.Query("title"))
 

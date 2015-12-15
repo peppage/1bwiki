@@ -67,6 +67,13 @@ func wikiPage(c *echo.Context) error {
 		return c.Redirect(http.StatusMovedPermanently, "/"+n+ct)
 	}
 
+	if c.Query("oldid") != "" {
+		pv := m.GetOldPageView(c.Query("oldid"))
+		session := session.Default(c)
+		val := session.Get("user")
+		return c.HTML(http.StatusOK, page.Oldversion(val.(*m.User), pv))
+	}
+
 	pv := m.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
@@ -146,7 +153,6 @@ func main() {
 	e.Post("/save", savePage)
 
 	s := e.Group("/special")
-	s.Get("/action", action)
 	s.Get("/edit", edit)
 	s.Get("/history", history)
 	s.Get("/recentchanges", recentChanges)
