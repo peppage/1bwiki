@@ -43,7 +43,6 @@ func GetOldPageView(revID string) *PageView {
 	db.QueryRowx(`SELECT page.namespace, page.title, page.nicetitle, text.text
 				 FROM page JOIN revision on page.title = revision.pagetitle
 				 JOIN text on revision.textid = text.id WHERE revision.id = $1`, revID).StructScan(&p)
-	logger.Info("old page", "pv", p)
 	return &p
 }
 
