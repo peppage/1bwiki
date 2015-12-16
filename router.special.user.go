@@ -43,11 +43,12 @@ func login(c *echo.Context) error {
 }
 
 func loginHandle(c *echo.Context) error {
-	u := m.User{
-		Name:     c.Form("username"),
-		Password: c.Form("password"),
+	u, err := m.GetUserByName(c.Form("username"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
 	}
-	err := u.Verify()
+
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(c.Form("password")))
 	if err != nil {
 		c.Response().Header().Set("Method", "GET")
 		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
@@ -55,7 +56,7 @@ func loginHandle(c *echo.Context) error {
 	session := session.Default(c)
 	session.Set("user", u)
 	session.Save()
-	return c.Redirect(http.StatusSeeOther, "/admin")
+	return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func logout(c *echo.Context) error {

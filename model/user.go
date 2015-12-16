@@ -1,7 +1,5 @@
 package model
 
-import "golang.org/x/crypto/bcrypt"
-
 type User struct {
 	ID           int64
 	Name         string
@@ -13,24 +11,24 @@ type User struct {
 	Admin        bool
 }
 
+// CreateUser creates record of a new user
 func CreateUser(u *User) (err error) {
 	db.NamedExec(`INSERT INTO user (name, password, registration, realname)
 				VALUES (:name, :password, :registration, '')`, u)
 	return nil
 }
 
-func (u *User) Verify() error {
-	var dbUser User
-	err := db.QueryRowx(`SELECT * FROM user WHERE name = $1`, u.Name).StructScan(&dbUser)
-	if err != nil {
-		return logger.Error("verify user db error", "err", err)
+func GetUserByName(name string) (*User, error) {
+	if len(name) == 0 {
+		return nil, logger.Error("User doesn't exist")
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(u.Password))
+
+	u := &User{}
+	err := db.QueryRowx(`SELECT * FROM user WHERE name = $1`, name).StructScan(u)
 	if err != nil {
-		return logger.Error("password doesn't match", "err", err)
+		return nil, logger.Error("User doesn't exist", "err", err)
 	}
-	u = &dbUser
-	return nil
+	return u, nil
 }
 
 func (u *User) IsAdmin() bool {
