@@ -30,7 +30,7 @@ func registerHandle(c *echo.Context) error {
 			Password:     string(p),
 			Registration: time.Now().Unix(),
 		}
-		u.Create()
+		m.CreateUser(&u)
 	}
 
 	return c.String(http.StatusOK, "ok")

@@ -13,9 +13,10 @@ type User struct {
 	Admin        bool
 }
 
-func (u *User) Create() {
+func CreateUser(u *User) (err error) {
 	db.NamedExec(`INSERT INTO user (name, password, registration)
 				VALUES (:name, :password, :registration)`, u)
+	return nil
 }
 
 func (u *User) Verify() error {
@@ -33,6 +34,7 @@ func (u *User) Verify() error {
 }
 
 func (u *User) IsAdmin() bool {
+	logger.Info("user is admin", "id", u.ID, "admin", u.Admin)
 	if u.ID == 1 || u.Admin {
 		return true
 	}
