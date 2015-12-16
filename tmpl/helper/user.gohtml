@@ -6,7 +6,9 @@
 }
 
 @if u.Anon {
-	<a class="item" href="/special/register">Register</a>
+	@if m.Signups() {
+		<a class="item" href="/special/register">Register</a>
+	}
 	<a class="item" href="/special/login">Sign In</a>
 } else {
 	<div class="ui dropdown">
