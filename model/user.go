@@ -14,8 +14,8 @@ type User struct {
 }
 
 func CreateUser(u *User) (err error) {
-	db.NamedExec(`INSERT INTO user (name, password, registration)
-				VALUES (:name, :password, :registration)`, u)
+	db.NamedExec(`INSERT INTO user (name, password, registration, realname)
+				VALUES (:name, :password, :registration, '')`, u)
 	return nil
 }
 
