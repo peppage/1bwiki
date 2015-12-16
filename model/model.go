@@ -27,6 +27,8 @@ func init() {
 	db.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text,
 			realname text text default "", password text, registration int, email text,
 			admin bool, UNIQUE(id, name))`)
-
+	db.Exec(`CREATE TABLE IF NOT EXISTS settings (name text, value text)`)
+	db.Exec(`INSERT INTO settings (name, value) values ("anonediting", "true")`)
+	db.Exec(`INSERT INTO settings (name, value) values ("allowsignups", "true")`)
 	logger = log.New("model")
 }
