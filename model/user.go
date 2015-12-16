@@ -32,7 +32,6 @@ func GetUserByName(name string) (*User, error) {
 }
 
 func (u *User) IsAdmin() bool {
-	logger.Info("user is admin", "id", u.ID, "admin", u.Admin)
 	if u.ID == 1 || u.Admin {
 		return true
 	}
