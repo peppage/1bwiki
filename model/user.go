@@ -10,6 +10,7 @@ type User struct {
 	Email        string
 	Registration int64
 	Anon         bool
+	Admin        bool
 }
 
 func (u *User) Create() {
@@ -29,4 +30,11 @@ func (u *User) Verify() error {
 	}
 	u = &dbUser
 	return nil
+}
+
+func (u *User) IsAdmin() bool {
+	if u.ID == 1 || u.Admin {
+		return true
+	}
+	return false
 }

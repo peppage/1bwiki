@@ -26,7 +26,7 @@ func init() {
 			len integer, PRIMARY KEY(title, namespace))`)
 	db.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text,
 			realname text text default "", password text, registration int, email text,
-			UNIQUE(id, name))`)
+			admin bool, UNIQUE(id, name))`)
 
 	logger = log.New("model")
 }
