@@ -18,8 +18,10 @@
 			<div class="ui header">Signed in as @u.Name</div>
 			<div class="divider"></div>
 			<a class="item" href="/special/preferences">Preferences</a>
-			<div class="divider"></div>
-			<a class="item" href="/special/admin">Admin</a>
+			@if u.IsAdmin() {
+				<div class="divider"></div>
+				<a class="item" href="/special/admin">Admin</a>
+			}
 			<div class="divider"></div>
 			<a class="item" href="/special/logout">Sign Out</a>
 		</div>
