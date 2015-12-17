@@ -25,6 +25,7 @@ func CreateText(text string) (*Text, error) {
 	t := createText(tx, text)
 	err := tx.Commit()
 	if err != nil {
+		tx.Rollback()
 		return nil, logger.Error("Unable to commit text")
 	}
 	return t, nil
