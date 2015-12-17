@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/gob"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -88,11 +87,6 @@ func wikiPage(c *echo.Context) error {
 }
 
 func savePage(c *echo.Context) error {
-	l, err := strconv.Atoi(c.Form("len"))
-	if err != nil {
-		l = 0
-		logger.Warn("save page len Atoi failed")
-	}
 	session := session.Default(c)
 	val := session.Get("user")
 	u, ok := val.(*m.User)
@@ -110,20 +104,19 @@ func savePage(c *echo.Context) error {
 		Len:       len(c.Form("text")),
 		ParentID:  0, // NOT WORKING
 		TimeStamp: time.Now().Unix(),
-		LenDiff:   len(c.Form("text")) - l,
 	}
-	if r.Verify() == nil {
-		p := m.Page{
-			Title:     c.Form("title"),
-			Namespace: c.Form("namespace"),
-			NiceTitle: strings.Replace(c.Form("title"), "_", " ", -1),
-			Redirect:  false,
-			Len:       len(c.Form("text")),
-		}
-		p.SavePage(c.Form("text"), r)
-		return c.Redirect(http.StatusSeeOther, p.Title)
+	p := m.Page{
+		Title:     c.Form("title"),
+		Namespace: c.Form("namespace"),
+		NiceTitle: strings.Replace(c.Form("title"), "_", " ", -1),
+		Redirect:  false,
+		Len:       len(c.Form("text")),
 	}
-	return echo.NewHTTPError(http.StatusBadRequest, "Save page not valid")
+	err := p.SavePage(c.Form("text"), u, r)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Save page not valid")
+	}
+	return c.Redirect(http.StatusSeeOther, p.Title)
 }
 
 func init() {
