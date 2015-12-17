@@ -33,8 +33,12 @@
 		if v.LenDiff > 0 {
 			lenDisplay = `<span class="plus">(+` + strconv.Itoa(v.LenDiff) + `)</span>`
 		}
+		minor := ""
+		if v.Minor {
+			minor = `<span class="minoredit">m</span>`
+		}
 	}
 	<span>
-		<a href="/@v.PageTitle?oldid=@v.ID">@tOut</a> <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a> | contribs) .. (@v.Len bytes) @raw(lenDisplay) .. (<i>@v.Comment</i>)<br>
+		<a href="/@v.PageTitle?oldid=@v.ID">@tOut</a> <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a> | contribs) @raw(minor).. (@v.Len bytes) @raw(lenDisplay) .. (<i>@v.Comment</i>)<br>
 	</span>
 }

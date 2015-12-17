@@ -27,8 +27,12 @@
 	@{
 		t := time.Unix(v.TimeStamp, 0).UTC()
 		tOut := t.Format("15:04")
+		minor := ""
+		if v.Minor {
+			minor = `<span class="minoredit">m</span>`
+		}
 	}
 	<span>
-		@tOut <a href="/@v.PageTitle">@v.PageTitle</a> (diff | <a href="/Special/action?title=@v.PageTitle&action=history">hist</a>)..(@v.LenDiff)..<a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a>|contribs) (@v.Comment)<br>
+		@tOut <a href="/@v.PageTitle">@v.PageTitle</a> (diff | <a href="/Special/action?title=@v.PageTitle&action=history">hist</a>)..(@v.LenDiff) @raw(minor) ..<a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a>|contribs) (@v.Comment)<br>
 	</span>
 }

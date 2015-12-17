@@ -26,6 +26,10 @@ pre, code{
   color: #006400;
 }
 
+.minoredit {
+  font-weight: bold;
+}
+
 .editBar {
   padding-bottom: 15px;
 }
