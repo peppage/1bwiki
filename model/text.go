@@ -9,13 +9,6 @@ type Text struct {
 	Text string
 }
 
-func (t Text) Verify() error {
-	if t.Text == "" {
-		return logger.Error("Empty text")
-	}
-	return nil
-}
-
 func createText(tx *sqlx.Tx, text string) *Text {
 	result := tx.MustExec(`INSERT INTO text (text) VALUES ($1)`, text)
 	lastID, _ := result.LastInsertId()
