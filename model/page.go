@@ -56,8 +56,8 @@ type CreatePageOptions struct {
 	IsMinor   bool
 }
 
-// UpdatePage updates or creates a new page in the wiki
-func UpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
+// CreateOrUpdatePage updates or creates a new page in the wiki
+func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 	var err error
 
 	tx := db.MustBegin()

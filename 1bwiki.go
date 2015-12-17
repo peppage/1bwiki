@@ -92,7 +92,7 @@ func savePage(c *echo.Context) error {
 	if !ok {
 		return logger.Error("User saving page is invalid", "user", u)
 	}
-	p, err := m.UpdatePage(u, m.CreatePageOptions{
+	p, err := m.CreateOrUpdatePage(u, m.CreatePageOptions{
 		Title:     c.Form("title"),
 		Namespace: c.Form("namespace"),
 		Text:      c.Form("text"),
@@ -140,6 +140,7 @@ func main() {
 	s.Post("/login", loginHandle)
 	s.Get("/logout", logout)
 	s.Get("/preferences", prefs)
+	s.Get("/admin", admin)
 
 	http.ListenAndServe(":8000", context.ClearHandler(e))
 }
