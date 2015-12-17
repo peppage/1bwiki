@@ -46,20 +46,19 @@ func GetOldPageView(revID string) *PageView {
 	return &p
 }
 
-func (p Page) SavePage(t Text, r Revision) error {
+func (p Page) SavePage(text string, r Revision) error {
 	var err error
 	tx := db.MustBegin()
-	result := tx.MustExec(`INSERT INTO text (text) VALUES ($1)`, t.Text)
-	lastID, _ := result.LastInsertId()
-	r.TextID = lastID
-	result, err = tx.Exec(`INSERT INTO revision (pagetitle, textid, comment, userid, usertext, minor,
+	t := createText(tx, text)
+	r.TextID = t.ID
+	result, err := tx.Exec(`INSERT INTO revision (pagetitle, textid, comment, userid, usertext, minor,
 						deleted, len, parentid, timestamp, lendiff) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
 		r.PageTitle, r.TextID, r.Comment, r.UserID, r.UserText, r.Minor, r.Deleted, r.Len, r.ParentID, r.TimeStamp, r.LenDiff)
 	if err != nil {
 		tx.Rollback()
 		return logger.Error("Insert revision failed", "err", err)
 	}
-	lastID, _ = result.LastInsertId()
+	lastID, _ := result.LastInsertId()
 	r.ID = lastID
 	p.RevisionID = r.ID
 	tx.MustExec(`INSERT OR REPLACE INTO page (title, namespace, nicetitle, redirect, revisionid, len)

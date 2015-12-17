@@ -88,7 +88,6 @@ func wikiPage(c *echo.Context) error {
 }
 
 func savePage(c *echo.Context) error {
-	t := m.Text{Text: c.Form("text")}
 	l, err := strconv.Atoi(c.Form("len"))
 	if err != nil {
 		l = 0
@@ -113,7 +112,7 @@ func savePage(c *echo.Context) error {
 		TimeStamp: time.Now().Unix(),
 		LenDiff:   len(c.Form("text")) - l,
 	}
-	if t.Verify() == nil && r.Verify() == nil {
+	if r.Verify() == nil {
 		p := m.Page{
 			Title:     c.Form("title"),
 			Namespace: c.Form("namespace"),
@@ -121,7 +120,7 @@ func savePage(c *echo.Context) error {
 			Redirect:  false,
 			Len:       len(c.Form("text")),
 		}
-		p.SavePage(t, r)
+		p.SavePage(c.Form("text"), r)
 		return c.Redirect(http.StatusSeeOther, p.Title)
 	}
 	return echo.NewHTTPError(http.StatusBadRequest, "Save page not valid")
