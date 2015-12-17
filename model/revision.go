@@ -22,12 +22,11 @@ type Revision struct {
 }
 
 type CreateRevOptions struct {
-	Title       string
-	Comment     string
-	IsMinor     bool
-	PreviousLen int
-	Txt         *Text
-	Usr         *User
+	Title   string
+	Comment string
+	IsMinor bool
+	Txt     *Text
+	Usr     *User
 }
 
 func createRevision(tx *sqlx.Tx, opts CreateRevOptions) (*Revision, error) {
