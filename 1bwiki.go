@@ -30,18 +30,18 @@ func cleanTitle(t string) string {
 	return t
 }
 
-func parseTitle(title string) (string, string) {
-	u := strings.Trim(title, "/")
-	n := ""
-	t := ""
-	if strings.Contains(u, ":") {
-		split := strings.Split(u, ":")
-		n = split[0]
-		t = split[1]
+func parseTitle(t string) (string, string) {
+	URL := strings.Trim(t, "/")
+	namespace := ""
+	title := ""
+	if strings.Contains(URL, ":") {
+		split := strings.Split(URL, ":")
+		namespace = split[0]
+		title = split[1]
 	} else {
-		t = u
+		title = URL
 	}
-	return n, t
+	return namespace, title
 }
 
 func root(c *echo.Context) error {
