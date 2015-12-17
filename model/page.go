@@ -1,6 +1,8 @@
 package model
 
 import (
+	"strings"
+
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 )
@@ -46,28 +48,48 @@ func GetOldPageView(revID string) *PageView {
 	return &p
 }
 
-func (p Page) SavePage(text string, u *User, r Revision) error {
+type CreatePageOptions struct {
+	Title     string
+	Namespace string
+	Text      string
+	Comment   string
+	IsMinor   bool
+}
+
+// UpdatePage updates or creates a new page in the wiki
+func UpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 	var err error
+
 	tx := db.MustBegin()
-	t := createText(tx, text)
+	t := createText(tx, opts.Text)
+
 	rev, err := createRevision(tx, CreateRevOptions{
-		Title:   r.PageTitle,
-		Comment: r.Comment,
-		IsMinor: r.Minor,
+		Title:   opts.Title,
+		Comment: opts.Comment,
+		IsMinor: opts.IsMinor,
 		Usr:     u,
 		Txt:     t,
 	})
+
 	if err != nil {
 		tx.Rollback()
-		return logger.Error("Insert revision failed", "err", err)
+		return nil, logger.Error("Insert revision failed", "err", err)
 	}
-	p.RevisionID = rev.ID
-	tx.MustExec(`INSERT OR REPLACE INTO page (title, namespace, nicetitle, redirect, revisionid, len)
+
+	p := &Page{
+		Title:      opts.Title,
+		Namespace:  opts.Namespace,
+		NiceTitle:  strings.Replace(opts.Title, "_", " ", -1),
+		Len:        len(opts.Text),
+		RevisionID: rev.ID,
+	}
+	tx.Exec(`INSERT OR REPLACE INTO page (title, namespace, nicetitle, redirect, revisionid, len)
 						VALUES ($1, $2, $3, $4, $5, $6)`, p.Title, p.Namespace, p.NiceTitle, p.Redirect, p.RevisionID, p.Len)
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return logger.Error("Transaction failed", "err", err)
+		return nil, logger.Error("Transaction failed", "err", err)
 	}
-	return nil
+
+	return p, nil
 }

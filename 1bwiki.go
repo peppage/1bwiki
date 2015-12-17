@@ -4,7 +4,6 @@ import (
 	"encoding/gob"
 	"net/http"
 	"strings"
-	"time"
 
 	m "1bwiki/model"
 	"1bwiki/tmpl/page"
@@ -93,28 +92,15 @@ func savePage(c *echo.Context) error {
 	if !ok {
 		return logger.Error("User saving page is invalid", "user", u)
 	}
-	logger.Info("Saving page", "user", u)
-	r := m.Revision{
-		PageTitle: c.Form("title"),
-		Comment:   c.Form("summary"),
-		UserID:    u.ID,
-		UserText:  u.Name,
-		Minor:     false, // NOT WORKING
-		Deleted:   false,
-		Len:       len(c.Form("text")),
-		ParentID:  0, // NOT WORKING
-		TimeStamp: time.Now().Unix(),
-	}
-	p := m.Page{
+	p, err := m.UpdatePage(u, m.CreatePageOptions{
 		Title:     c.Form("title"),
 		Namespace: c.Form("namespace"),
-		NiceTitle: strings.Replace(c.Form("title"), "_", " ", -1),
-		Redirect:  false,
-		Len:       len(c.Form("text")),
-	}
-	err := p.SavePage(c.Form("text"), u, r)
+		Text:      c.Form("text"),
+		Comment:   c.Form("summary"),
+		IsMinor:   false,
+	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Save page not valid")
+		return echo.NewHTTPError(http.StatusBadRequest, "Save page  failed")
 	}
 	return c.Redirect(http.StatusSeeOther, p.Title)
 }
