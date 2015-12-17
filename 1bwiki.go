@@ -92,12 +92,14 @@ func savePage(c *echo.Context) error {
 	if !ok {
 		return logger.Error("User saving page is invalid", "user", u)
 	}
+
+	minor := c.Form("minor") == "on"
 	p, err := m.CreateOrUpdatePage(u, m.CreatePageOptions{
 		Title:     c.Form("title"),
 		Namespace: c.Form("namespace"),
 		Text:      c.Form("text"),
 		Comment:   c.Form("summary"),
-		IsMinor:   false,
+		IsMinor:   minor,
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Save page  failed")
