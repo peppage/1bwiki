@@ -19,54 +19,56 @@
 
 @raw(Nav(pv.NiceTitle, "edit"))
 
-@if pv.Text == "" {
-	<h1>Creating @pv.NiceTitle</h1>
-} else {
-	<h1>Editing @pv.NiceTitle</h1>
-}
+<div class="ui text container">
+	@if pv.Text == "" {
+		<h1>Creating @pv.NiceTitle</h1>
+	} else {
+		<h1>Editing @pv.NiceTitle</h1>
+	}
 
-<h2>Preview</h2>
-<div class="ui message orange">
-	<div class="header">This is only a preview</div>
-	<p>
-		Your changes have not yet been saved!
-		<a href="#in">→ Go to editing area</a>
-	</p>
-</div>
+	<h2>Preview</h2>
+	<div class="ui message orange">
+		<div class="header">This is only a preview</div>
+		<p>
+			Your changes have not yet been saved!
+			<a href="#in">→ Go to editing area</a>
+		</p>
+	</div>
 
-<div id="out"></div>
-<div class="editBar">
-	<div class="ui icon buttons">
-		<button class="ui icon button" id="function-h1"><b>h1</b></button>
-		<button class="ui icon button" id="function-h2"><b>h2</b></button>
-		<button class="ui icon button" id="function-h3"><b>h3</b></button>
-	</div>
-	<div class="ui icon buttons">
-		<button class="ui icon button" id="function-b"><b>B</b></button>
-		<button class="ui icon button" id="function-i"><b>I</b></button>
-		<!--<button class="ui icon button" id="js-function-code"><b>C</b></button>-->
-	</div>
-</div>
-
-<form class="ui form" action="/save" method="post">
-	<input type="hidden" name="namespace" value="@pv.NameSpace">
-	<input type="hidden" name="title" value="@pv.Title">
-
-	<div id="in" class="field">
-		<textarea id="code" name="text">@pv.Text</textarea>
-	</div>
-	<div class="field">
-		<label>Edit Summary</label>
-		<input type="text" name="summary">
-	</div>
-	<div class="field">
-		<div class="ui checkbox">
-			<input type="checkbox" name="minor">
-			<label>This is a minor edit</label>
+	<div id="out"></div>
+	<div class="editBar">
+		<div class="ui icon buttons">
+			<button class="ui icon button" id="function-h1"><b>h1</b></button>
+			<button class="ui icon button" id="function-h2"><b>h2</b></button>
+			<button class="ui icon button" id="function-h3"><b>h3</b></button>
+		</div>
+		<div class="ui icon buttons">
+			<button class="ui icon button" id="function-b"><b>B</b></button>
+			<button class="ui icon button" id="function-i"><b>I</b></button>
+			<!--<button class="ui icon button" id="js-function-code"><b>C</b></button>-->
 		</div>
 	</div>
-	<button class="ui primary button" type="submit">Submit</button>
-</form>
+
+	<form class="ui form" action="/save" method="post">
+		<input type="hidden" name="namespace" value="@pv.NameSpace">
+		<input type="hidden" name="title" value="@pv.Title">
+
+		<div id="in" class="field">
+			<textarea id="code" name="text">@pv.Text</textarea>
+		</div>
+		<div class="field">
+			<label>Edit Summary</label>
+			<input type="text" name="summary">
+		</div>
+		<div class="field">
+			<div class="ui checkbox">
+				<input type="checkbox" name="minor">
+				<label>This is a minor edit</label>
+			</div>
+		</div>
+		<button class="ui primary button" type="submit">Submit</button>
+	</form>
+</div>
 <script>
 	setupEditorToolbar();
 	var editor = CodeMirror.fromTextArea(document.getElementById('code'), {

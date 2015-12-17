@@ -30,6 +30,19 @@ pre, code{
   font-weight: bold;
 }
 
+.ui.tabs.container {
+  margin-top: 15px;
+}
+
+.ui.tabs.container .ui.menu {
+  border-bottom: none;
+}
+
+.ui.tabs.divider {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
 .editBar {
   padding-bottom: 15px;
 }

@@ -23,22 +23,24 @@
 
 @raw(Nav(niceTitle, "history"))
 
-<h1>@niceTitle: Revision History</h1>
+<div class="ui text container">
+	<h1>@niceTitle: Revision History</h1>
 
-@for _, v := range revs {
-	@{
-		t := time.Unix(v.TimeStamp, 0).UTC()
-		tOut := t.Format("15:04, 2 Jan 2006")
-		lenDisplay := `<span class="minus">(` + strconv.Itoa(v.LenDiff) + `)</span>`
-		if v.LenDiff > 0 {
-			lenDisplay = `<span class="plus">(+` + strconv.Itoa(v.LenDiff) + `)</span>`
+	@for _, v := range revs {
+		@{
+			t := time.Unix(v.TimeStamp, 0).UTC()
+			tOut := t.Format("15:04, 2 Jan 2006")
+			lenDisplay := `<span class="minus">(` + strconv.Itoa(v.LenDiff) + `)</span>`
+			if v.LenDiff > 0 {
+				lenDisplay = `<span class="plus">(+` + strconv.Itoa(v.LenDiff) + `)</span>`
+			}
+			minor := ""
+			if v.Minor {
+				minor = `<span class="minoredit">m</span>`
+			}
 		}
-		minor := ""
-		if v.Minor {
-			minor = `<span class="minoredit">m</span>`
-		}
+		<span>
+			<a href="/@v.PageTitle?oldid=@v.ID">@tOut</a> <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a> | contribs) @raw(minor).. (@v.Len bytes) @raw(lenDisplay) .. (<i>@v.Comment</i>)<br>
+		</span>
 	}
-	<span>
-		<a href="/@v.PageTitle?oldid=@v.ID">@tOut</a> <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a> | contribs) @raw(minor).. (@v.Len bytes) @raw(lenDisplay) .. (<i>@v.Comment</i>)<br>
-	</span>
-}
+</div>
