@@ -1,0 +1,47 @@
+@{
+	import (
+		m "1bwiki/model"
+
+		"1bwiki/tmpl/layout/base"
+		"1bwiki/tmpl/helper"
+	)
+	var u *m.User
+	var anonAllowed bool
+	var signupAllowed bool
+}
+
+@section title {
+	return "Admin"
+}
+
+@section user {
+	@helper.User(u)
+}
+
+@raw(Nav("/special/admin"))
+
+<div class="ui text container">
+	<form class="ui form" method="post">
+		<div class="field">
+			<div class="ui checkbox">
+				@if anonAllowed {
+					<input type="checkbox" name="anon" checked="">
+				} else {
+					<input type="checkbox" name="anon">
+				}
+				<label>Allow anonymous editing</label>
+			</div>
+		</div>
+		<div class="field">
+			<div class="ui checkbox">
+				@if signupAllowed {
+					<input type="checkbox" name="signup" checked="">
+				} else {
+					<input type="checkbox" name="signup">
+				}
+				<label>Allow signup</label>
+			</div>
+		</div>
+		<button class="ui primary button" type="submit">Log in</button>
+	</form>
+</div>

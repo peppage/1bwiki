@@ -143,6 +143,7 @@ func main() {
 	s.Get("/logout", logout)
 	s.Get("/preferences", prefs)
 	s.Get("/admin", admin)
+	s.Post("/admin", adminHandle)
 
 	http.ListenAndServe(":8000", context.ClearHandler(e))
 }

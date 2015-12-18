@@ -1,5 +1,9 @@
 package model
 
+import (
+	"strconv"
+)
+
 type setting struct {
 	Name  string
 	Value string
@@ -22,9 +26,21 @@ func AnonEditing() bool {
 	return false
 }
 
+func SetAnonEditing(setting bool) error {
+	_, err := db.Exec(`UPDATE settings SET value = $1 WHERE name=$2`,
+		strconv.FormatBool(setting), "anonediting")
+	return err
+}
+
 func Signups() bool {
 	if getSettingValue("allowsignups") == "true" {
 		return true
 	}
 	return false
+}
+
+func SetSignups(setting bool) error {
+	_, err := db.Exec(`UPDATE settings SET value = $1 WHERE name=$2`,
+		strconv.FormatBool(setting), "allowsignups")
+	return err
 }
