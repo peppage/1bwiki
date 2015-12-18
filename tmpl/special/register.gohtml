@@ -18,19 +18,21 @@
 
 @raw(Nav("/special/register"))
 
-<form class="ui form" action="/special/register" method="post">
-	<div class="field">
-		<label>Username</label>
-		<input type="text" name="username">
-	</div>
-	<div class="field">
-		<label>Password</label>
-		<input type="text" name="password">
-	</div>
-	<div class="field">
-		<label>Confirm Password</label>
-		<input type="text" name="passwordConfirm">
-	</div>
-	<!-- include stuff here to show password when hidden -->
-	<button class="ui primary button" type="submit">Submit</button>
-</form>
+<div class="ui text container">
+	<form class="ui form" action="/special/register" method="post">
+		<div class="field">
+			<label>Username</label>
+			<input type="text" name="username">
+		</div>
+		<div class="field">
+			<label>Password</label>
+			<input type="text" name="password">
+		</div>
+		<div class="field">
+			<label>Confirm Password</label>
+			<input type="text" name="passwordConfirm">
+		</div>
+		<!-- include stuff here to show password when hidden -->
+		<button class="ui primary button" type="submit">Submit</button>
+	</form>
+</div>
