@@ -56,7 +56,8 @@ func history(c *echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, page.History(val.(*m.User), c.Query("title"), revs))
+	niceTitle := m.NiceTitle(c.Query("title"))
+	return c.HTML(http.StatusOK, page.History(val.(*m.User), niceTitle, revs))
 }
 
 func recentChanges(c *echo.Context) error {

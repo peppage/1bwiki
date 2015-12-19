@@ -79,7 +79,7 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 	p := &Page{
 		Title:      opts.Title,
 		Namespace:  opts.Namespace,
-		NiceTitle:  strings.Replace(opts.Title, "_", " ", -1),
+		NiceTitle:  NiceTitle(opts.Title),
 		Len:        len(opts.Text),
 		RevisionID: rev.ID,
 	}
@@ -92,4 +92,9 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 	}
 
 	return p, nil
+}
+
+// NiceTitle converts a title into a nice title
+func NiceTitle(title string) string {
+	return strings.Replace(title, "_", " ", -1)
 }
