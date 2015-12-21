@@ -98,3 +98,12 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 func NiceTitle(title string) string {
 	return strings.Replace(title, "_", " ", -1)
 }
+
+func GetPages() ([]*Page, error) {
+	var pages []*Page
+	err := db.Select(&pages, `SELECT * FROM page ORDER BY title DESC`)
+	if err != nil {
+		return pages, logger.Error("Unable to get pages", "err", err)
+	}
+	return pages, nil
+}

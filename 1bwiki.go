@@ -140,6 +140,7 @@ func main() {
 	s.Get("/edit", edit)
 	s.Get("/history", history)
 	s.Get("/recentchanges", recentChanges)
+	s.Get("/pages", pages)
 	s.Get("/register", register)
 	s.Post("/register", registerHandle)
 	s.Get("/login", login)

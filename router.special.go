@@ -69,3 +69,13 @@ func recentChanges(c *echo.Context) error {
 	val := session.Get("user")
 	return c.HTML(http.StatusOK, special.Recentchanges(val.(*m.User), revs))
 }
+
+func pages(c *echo.Context) error {
+	p, err := m.GetPages()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "")
+	}
+	session := session.Default(c)
+	val := session.Get("user")
+	return c.HTML(http.StatusOK, special.Pages(val.(*m.User), p))
+}
