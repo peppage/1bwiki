@@ -113,6 +113,8 @@ func init() {
 }
 
 func main() {
+	m.SetupDb()
+
 	e := echo.New()
 	e.Use(session.Sessions("session", store))
 	assetHandler := http.FileServer(rice.MustFindBox("static").HTTPBox())

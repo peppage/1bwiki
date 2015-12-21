@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/GeertJohan/go.rice"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mgutz/logxi/v1"
@@ -10,25 +11,58 @@ var db *sqlx.DB
 var logger log.Logger
 
 func init() {
+	logger = log.New("model")
 	var err error
 	db, err = sqlx.Connect("sqlite3", "./1bwiki.db")
 	if err != nil {
-		panic(err)
+		logger.Error("connecting to db", "err", err)
 	}
-	// Convert to transaction
-	db.Exec(`create table if not exists text (id integer primary KEY, text blob)`)
-	db.Exec(`create table if not exists revision (id integer primary key,
+}
+
+func SetupDb() {
+	tx := db.MustBegin()
+	tx.Exec(`create table if not exists text (id integer primary KEY, text blob)`)
+	tx.Exec(`create table if not exists revision (id integer primary key,
 			pagetitle text, textid integer, comment text, userid int,
 			usertext text, minor integer, deleted integer, len integer,
 			parentid integer, timestamp integer, lendiff integer)`)
-	db.Exec(`create table if not exists page (title text,
+	tx.Exec(`create table if not exists page (title text,
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer, PRIMARY KEY(title, namespace))`)
-	db.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text,
+	tx.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text,
 			realname text text default "", password text, registration int, email text default "",
 			admin bool default false, UNIQUE(id, name))`)
-	db.Exec(`CREATE TABLE IF NOT EXISTS settings (name text PRIMARY KEY, value text)`)
-	db.Exec(`INSERT INTO settings (name, value) values ("anonediting", "true")`)
-	db.Exec(`INSERT INTO settings (name, value) values ("allowsignups", "true")`)
-	logger = log.New("model")
+	tx.Exec(`CREATE TABLE IF NOT EXISTS settings (name text PRIMARY KEY, value text)`)
+	tx.Exec(`INSERT INTO settings (name, value) values ("anonediting", "true")`)
+	tx.Exec(`INSERT INTO settings (name, value) values ("allowsignups", "true")`)
+
+	err := tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		logger.Error("db setup", "err", err)
+	}
+
+	var texts int
+	db.Get(&texts, `SELECT COUNT(*) as texts FROM text`)
+	if texts == 0 {
+		box, err := rice.FindBox("setup")
+		if err != nil {
+			logger.Error("can't find setup rice box", "err", err)
+		}
+		d, err := box.String("default.md")
+		if err != nil {
+			logger.Error("default.md file error", "err", err)
+		}
+		u := &User{
+			ID:   0,
+			Name: "Admin",
+		}
+		CreateOrUpdatePage(u, CreatePageOptions{
+			Title:     "Main_Page",
+			Namespace: "",
+			Text:      d,
+			Comment:   "",
+			IsMinor:   false,
+		})
+	}
 }
