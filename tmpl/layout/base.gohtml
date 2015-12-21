@@ -1,4 +1,6 @@
 @{
+	import "1bwiki/setting"
+
     var body string
     var title string
     var user string
@@ -35,7 +37,8 @@
 	<script src="/static/semantic.min.js"></script>
 </head>
 <body>
-	<div class="ui container">
+	<div class="site-content">
+		<div class="ui container">
 			<div class="ui text menu">
 				<div class="item">
 					<a href="/">
@@ -52,8 +55,17 @@
 					@user
 				</div>
 			</div>
+		</div>
+		@body
 	</div>
-
-	@body
+	<footer>
+		<div class="ui inverted vertical segment ">
+			<div class="ui container">
+				<div class="ui left">
+					1bwiki Version: @setting.APP_VER
+				</div>
+			</div>
+		</div>
+	</footer>
 </body>
 </html>
