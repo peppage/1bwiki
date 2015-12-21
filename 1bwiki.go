@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	m "1bwiki/model"
+	"1bwiki/setting"
 	"1bwiki/tmpl/page"
 
 	"github.com/GeertJohan/go.rice"
@@ -110,6 +111,7 @@ func savePage(c *echo.Context) error {
 func init() {
 	gob.Register(&m.User{})
 	logger = log.New("1bwiki")
+	setting.Initialize()
 }
 
 func main() {
@@ -147,5 +149,5 @@ func main() {
 	s.Get("/admin", admin)
 	s.Post("/admin", adminHandle)
 
-	http.ListenAndServe(":8000", context.ClearHandler(e))
+	http.ListenAndServe(":"+setting.HttpPort, context.ClearHandler(e))
 }
