@@ -13,9 +13,9 @@ type User struct {
 
 // CreateUser creates record of a new user
 func CreateUser(u *User) (err error) {
-	db.NamedExec(`INSERT INTO user (name, password, registration, realname)
-				VALUES (:name, :password, :registration, '')`, u)
-	return nil
+	_, err = db.NamedExec(`INSERT INTO user (name, password, registration, realname)
+							VALUES (:name, :password, :registration, '')`, u)
+	return err
 }
 
 func GetUserByName(name string) (*User, error) {

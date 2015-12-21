@@ -30,7 +30,13 @@ func registerHandle(c *echo.Context) error {
 			Password:     string(p),
 			Registration: time.Now().Unix(),
 		}
-		m.CreateUser(&u)
+		err = m.CreateUser(&u)
+		if err != nil {
+			return logger.Error("failed to create user", "err", err)
+		}
+		session := session.Default(c)
+		session.Set("user", u)
+		session.Save()
 	}
 
 	return c.Redirect(http.StatusSeeOther, "/")
