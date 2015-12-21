@@ -33,7 +33,7 @@ func registerHandle(c *echo.Context) error {
 		m.CreateUser(&u)
 	}
 
-	return c.String(http.StatusOK, "ok")
+	return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func login(c *echo.Context) error {
