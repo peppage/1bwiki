@@ -71,6 +71,11 @@ func wikiPage(c *echo.Context) error {
 		pv := mdl.GetPageVeiwByID(c.Query("oldid"))
 		session := session.Default(c)
 		val := session.Get("user")
+		if c.Query("diff") != "" {
+			pv2 := mdl.GetPageVeiwByID(c.Query("diff"))
+			pv.Text = pv.Diff(pv2)
+			return c.HTML(http.StatusOK, page.Diff(val.(*mdl.User), pv))
+		}
 		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
 	}
 

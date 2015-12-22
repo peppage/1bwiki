@@ -1,0 +1,30 @@
+@{
+	import (
+		m "1bwiki/model"
+
+		"1bwiki/tmpl/layout/base"
+		"1bwiki/tmpl/helper"
+	)
+	var u *m.User
+	var pv *m.PageView
+}
+
+@section title {
+	return pv.NiceTitle + " Difference between revisions"
+}
+
+@section user {
+	@helper.User(u)
+}
+
+@raw(Nav(pv.NiceTitle, "article"))
+
+<div class="ui text container">
+	<div class="ui orange message">
+	    <p>This is a diff between 2 version. This paragraph could use more information</p>
+	</div>
+</div>
+
+<div class="ui text container">
+	@raw(pv.Text)
+</div>

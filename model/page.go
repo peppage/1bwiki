@@ -1,10 +1,13 @@
 package model
 
 import (
+	"bytes"
+	"html"
 	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 type Page struct {
@@ -26,6 +29,34 @@ type PageView struct {
 func (pv *PageView) Html() string {
 	md := blackfriday.MarkdownCommon([]byte(pv.Text))
 	return string(bluemonday.UGCPolicy().SanitizeBytes(md))
+}
+
+func (pv *PageView) Diff(pv2 *PageView) string {
+	dmp := diffmatchpatch.New()
+	diffs := dmp.DiffMain(pv.Text, pv2.Text, false)
+	dmp.DiffEditCost = 8
+	diffs = dmp.DiffCleanupSemantic(diffs)
+	return diffPretty(diffs)
+}
+
+func diffPretty(diffs []diffmatchpatch.Diff) string {
+	var buff bytes.Buffer
+	for _, diff := range diffs {
+		text := strings.Replace(html.EscapeString(diff.Text), "\n", "<br>", -1)
+		switch diff.Type {
+		case diffmatchpatch.DiffInsert:
+			buff.WriteString("<ins>")
+			buff.WriteString(text)
+			buff.WriteString("</ins>")
+		case diffmatchpatch.DiffDelete:
+			buff.WriteString("<del>")
+			buff.WriteString(text)
+			buff.WriteString("</del>")
+		case diffmatchpatch.DiffEqual:
+			buff.WriteString(text)
+		}
+	}
+	return buff.String()
 }
 
 // Need error handling here
