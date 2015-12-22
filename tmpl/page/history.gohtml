@@ -26,7 +26,7 @@
 <div class="ui text container">
 	<h1>@niceTitle: Revision History</h1>
 
-	@for _, v := range revs {
+	@for i, v := range revs {
 		@{
 			t := time.Unix(v.TimeStamp, 0).UTC()
 			tOut := t.Format("15:04, 2 Jan 2006")
@@ -38,9 +38,20 @@
 			if v.Minor {
 				minor = `<span class="minoredit">m</span>`
 			}
+			cur := "cur"
+			if i != 0 {
+				cur = `<a href="/`+ v.PageTitle + `?oldid=` + strconv.FormatInt(v.ID, 10) + `&diff=` +
+					strconv.FormatInt(revs[0].ID, 10) + `">cur</a>`
+			}
+			prev := "prev"
+			nextRev := i + 1
+			if nextRev < len(revs) {
+				prev = `<a href="/`+ v.PageTitle + `?oldid=` + strconv.FormatInt(revs[nextRev].ID, 10) + `&diff=` +
+					strconv.FormatInt(v.ID, 10) + `">prev</a>`
+			}
 		}
 		<span>
-			<a href="/@v.PageTitle?oldid=@v.ID">@tOut</a> <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a> | contribs) @raw(minor).. (@v.Len bytes) @raw(lenDisplay) .. (<i>@v.Comment</i>)<br>
+			(@raw(cur) | @raw(prev)) <a href="/@v.PageTitle?oldid=@v.ID">@tOut</a> <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a> | contribs) @raw(minor).. (@v.Len bytes) @raw(lenDisplay) .. (<i>@v.Comment</i>)<br>
 		</span>
 	}
 </div>
