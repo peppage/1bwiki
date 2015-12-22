@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	m "1bwiki/model"
+	mdl "1bwiki/model"
 	"1bwiki/setting"
 	"1bwiki/tmpl/page"
 
@@ -67,18 +67,18 @@ func wikiPage(c *echo.Context) error {
 	}
 
 	if c.Query("oldid") != "" {
-		pv := m.GetOldPageView(c.Query("oldid"))
+		pv := mdl.GetOldPageView(c.Query("oldid"))
 		session := session.Default(c)
 		val := session.Get("user")
-		return c.HTML(http.StatusOK, page.Oldversion(val.(*m.User), pv))
+		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
 	}
 
-	pv := m.GetPageView(n, t)
+	pv := mdl.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
 		session := session.Default(c)
 		val := session.Get("user")
-		return c.HTML(http.StatusOK, page.Page(val.(*m.User), pv))
+		return c.HTML(http.StatusOK, page.Page(val.(*mdl.User), pv))
 	}
 	if n != "" {
 		n += ":"
@@ -89,13 +89,13 @@ func wikiPage(c *echo.Context) error {
 func savePage(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	u, ok := val.(*m.User)
+	u, ok := val.(*mdl.User)
 	if !ok {
 		return logger.Error("User saving page is invalid", "user", u)
 	}
 
 	minor := c.Form("minor") == "on"
-	p, err := m.CreateOrUpdatePage(u, m.CreatePageOptions{
+	p, err := mdl.CreateOrUpdatePage(u, mdl.CreatePageOptions{
 		Title:     c.Form("title"),
 		Namespace: c.Form("namespace"),
 		Text:      c.Form("text"),
@@ -109,13 +109,13 @@ func savePage(c *echo.Context) error {
 }
 
 func init() {
-	gob.Register(&m.User{})
+	gob.Register(&mdl.User{})
 	logger = log.New("1bwiki")
 	setting.Initialize()
 }
 
 func main() {
-	m.SetupDb()
+	mdl.SetupDb()
 
 	e := echo.New()
 	e.Use(session.Sessions("session", store))

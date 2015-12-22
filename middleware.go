@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	m "1bwiki/model"
+	mdl "1bwiki/model"
 
 	"github.com/labstack/echo"
 	"github.com/syntaqx/echo-middleware/session"
@@ -15,7 +15,7 @@ func setUser() echo.MiddlewareFunc {
 		return func(c *echo.Context) error {
 			session := session.Default(c)
 			val := session.Get("user")
-			_, ok := val.(*m.User)
+			_, ok := val.(*mdl.User)
 			if !ok {
 				req := c.Request()
 				remoteAddr := req.RemoteAddr
@@ -26,7 +26,7 @@ func setUser() echo.MiddlewareFunc {
 				} else {
 					remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
 				}
-				user := &m.User{
+				user := &mdl.User{
 					ID:   0,
 					Name: remoteAddr,
 					Anon: true,

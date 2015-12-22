@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	m "1bwiki/model"
+	mdl "1bwiki/model"
 	"1bwiki/tmpl/special"
 
 	"github.com/labstack/echo"
@@ -15,7 +15,7 @@ import (
 func register(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Register(val.(*m.User)))
+	return c.HTML(http.StatusOK, special.Register(val.(*mdl.User)))
 }
 
 func registerHandle(c *echo.Context) error {
@@ -25,12 +25,12 @@ func registerHandle(c *echo.Context) error {
 			logger.Error("registering user, encrypting password", "err", err)
 		}
 		logger.Info("register", "uname", c.Form("username"), "password", p)
-		u := m.User{
+		u := mdl.User{
 			Name:         c.Form("username"),
 			Password:     string(p),
 			Registration: time.Now().Unix(),
 		}
-		err = m.CreateUser(&u)
+		err = mdl.CreateUser(&u)
 		if err != nil {
 			return logger.Error("failed to create user", "err", err)
 		}
@@ -45,11 +45,11 @@ func registerHandle(c *echo.Context) error {
 func login(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Login(val.(*m.User)))
+	return c.HTML(http.StatusOK, special.Login(val.(*mdl.User)))
 }
 
 func loginHandle(c *echo.Context) error {
-	u, err := m.GetUserByName(c.Form("username"))
+	u, err := mdl.GetUserByName(c.Form("username"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
 	}
@@ -75,7 +75,7 @@ func logout(c *echo.Context) error {
 func prefs(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	u, ok := val.(*m.User)
+	u, ok := val.(*mdl.User)
 	if ok {
 		return c.HTML(http.StatusOK, special.Prefs(u))
 	}

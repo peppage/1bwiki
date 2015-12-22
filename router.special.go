@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	m "1bwiki/model"
+	mdl "1bwiki/model"
 	"1bwiki/tmpl/page"
 	"1bwiki/tmpl/special"
 
@@ -27,7 +27,7 @@ func edit(c *echo.Context) error {
 		}
 		return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+ct)
 	}
-	pv := m.GetPageView(n, t)
+	pv := mdl.GetPageView(n, t)
 	if pv.NiceTitle == "" {
 		if n != "" {
 			n += ":"
@@ -38,7 +38,7 @@ func edit(c *echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, page.Editpage(val.(*m.User), pv))
+	return c.HTML(http.StatusOK, page.Editpage(val.(*mdl.User), pv))
 }
 
 func history(c *echo.Context) error {
@@ -50,32 +50,32 @@ func history(c *echo.Context) error {
 		}
 		return c.Redirect(http.StatusTemporaryRedirect, "/special/history?title="+n+ct)
 	}
-	revs, err := m.GetPageRevisions(c.Query("title"))
+	revs, err := mdl.GetPageRevisions(c.Query("title"))
 	if err != nil {
 		echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	niceTitle := m.NiceTitle(c.Query("title"))
-	return c.HTML(http.StatusOK, page.History(val.(*m.User), niceTitle, revs))
+	niceTitle := mdl.NiceTitle(c.Query("title"))
+	return c.HTML(http.StatusOK, page.History(val.(*mdl.User), niceTitle, revs))
 }
 
 func recentChanges(c *echo.Context) error {
-	revs, err := m.GetRevisions()
+	revs, err := mdl.GetRevisions()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Recentchanges(val.(*m.User), revs))
+	return c.HTML(http.StatusOK, special.Recentchanges(val.(*mdl.User), revs))
 }
 
 func pages(c *echo.Context) error {
-	p, err := m.GetPages()
+	p, err := mdl.GetPages()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Pages(val.(*m.User), p))
+	return c.HTML(http.StatusOK, special.Pages(val.(*mdl.User), p))
 }
