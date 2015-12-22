@@ -40,7 +40,7 @@ func GetPageView(namespace string, title string) *PageView {
 }
 
 // Need error handling here
-func GetOldPageView(revID string) *PageView {
+func GetPageVeiwByID(revID string) *PageView {
 	var p PageView
 	db.QueryRowx(`SELECT page.namespace, page.title, page.nicetitle, text.text
 				 FROM page JOIN revision on page.title = revision.pagetitle

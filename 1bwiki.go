@@ -68,7 +68,7 @@ func wikiPage(c *echo.Context) error {
 	}
 
 	if c.Query("oldid") != "" {
-		pv := mdl.GetOldPageView(c.Query("oldid"))
+		pv := mdl.GetPageVeiwByID(c.Query("oldid"))
 		session := session.Default(c)
 		val := session.Get("user")
 		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
