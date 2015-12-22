@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -150,5 +151,6 @@ func main() {
 	s.Get("/admin", admin)
 	s.Post("/admin", adminHandle)
 
+	fmt.Println("Server started on port " + setting.HttpPort)
 	http.ListenAndServe(":"+setting.HttpPort, context.ClearHandler(e))
 }
