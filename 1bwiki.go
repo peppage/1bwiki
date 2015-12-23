@@ -24,18 +24,16 @@ var store = session.NewCookieStore([]byte(secret))
 
 const noEditArea = "special"
 
-func cleanTitle(t string) string {
-	f := string(t[0])
-	t = strings.ToUpper(f) + string(t[1:])
+func convertTitleToUrl(t string) string {
+	firstChar := string(t[0])
+	t = strings.ToUpper(firstChar) + string(t[1:])
 	t = strings.Replace(t, "%20", "_", -1)
 	t = strings.Replace(t, " ", "_", -1)
 	return t
 }
 
-func parseTitle(t string) (string, string) {
+func seperateNamespaceAndTitle(t string) (namespace string, title string) {
 	URL := strings.Trim(t, "/")
-	namespace := ""
-	title := ""
 	if strings.Contains(URL, ":") {
 		split := strings.Split(URL, ":")
 		namespace = split[0]
@@ -51,20 +49,20 @@ func root(c *echo.Context) error {
 }
 
 func wikiPage(c *echo.Context) error {
-	n, t := parseTitle(c.Request().URL.String())
+	n, t := seperateNamespaceAndTitle(c.Request().URL.String())
 
 	ul := strings.ToLower(c.Request().URL.String())
 	if strings.HasPrefix(ul, "/"+noEditArea) {
 		return echo.NewHTTPError(http.StatusForbidden, "Editing of special pages disallowed")
 	}
 
-	ct := cleanTitle(t)
+	urlTitle := convertTitleToUrl(t)
 
-	if ct != t {
+	if urlTitle != t {
 		if n != "" {
 			n += ":"
 		}
-		return c.Redirect(http.StatusMovedPermanently, "/"+n+ct)
+		return c.Redirect(http.StatusMovedPermanently, "/"+n+urlTitle)
 	}
 
 	if c.Query("oldid") != "" {

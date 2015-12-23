@@ -13,19 +13,19 @@ import (
 )
 
 func edit(c *echo.Context) error {
-	n, t := parseTitle(c.Query("title"))
+	n, t := seperateNamespaceAndTitle(c.Query("title"))
 
 	ut := strings.ToLower(t)
 	if strings.HasPrefix(ut, noEditArea) {
 		return echo.NewHTTPError(http.StatusForbidden, "Editing of special pages disallowed")
 	}
 
-	ct := cleanTitle(t)
-	if ct != t {
+	urlTitle := convertTitleToUrl(t)
+	if urlTitle != t {
 		if n != "" {
 			n += ":"
 		}
-		return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+ct)
+		return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+urlTitle)
 	}
 	pv := mdl.GetPageView(n, t)
 	if pv.NiceTitle == "" {
@@ -42,13 +42,13 @@ func edit(c *echo.Context) error {
 }
 
 func history(c *echo.Context) error {
-	n, t := parseTitle(c.Query("title"))
-	ct := cleanTitle(t)
-	if ct != t {
+	n, t := seperateNamespaceAndTitle(c.Query("title"))
+	urlTitle := convertTitleToUrl(t)
+	if urlTitle != t {
 		if n != "" {
 			n += ":"
 		}
-		return c.Redirect(http.StatusTemporaryRedirect, "/special/history?title="+n+ct)
+		return c.Redirect(http.StatusTemporaryRedirect, "/special/history?title="+n+urlTitle)
 	}
 	revs, err := mdl.GetPageRevisions(c.Query("title"))
 	if err != nil {
