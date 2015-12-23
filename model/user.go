@@ -52,3 +52,8 @@ func (u *User) EncodePassword() error {
 	u.Password = string(p)
 	return err
 }
+
+func (u *User) ValidatePassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
+}

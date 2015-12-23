@@ -10,7 +10,6 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/syntaqx/echo-middleware/session"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func register(c *echo.Context) error {
@@ -47,18 +46,18 @@ func login(c *echo.Context) error {
 func loginHandle(c *echo.Context) error {
 	u, err := mdl.GetUserByName(c.Form("username"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
+		return echo.NewHTTPError(http.StatusUnauthorized) // The user is doesn't exist
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(c.Form("password")))
-	if err != nil {
-		c.Response().Header().Set("Method", "GET")
-		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
+	if u.ValidatePassword(c.Form("password")) {
+		session := session.Default(c)
+		session.Set("user", u)
+		session.Save()
+		return c.Redirect(http.StatusSeeOther, "/")
 	}
-	session := session.Default(c)
-	session.Set("user", u)
-	session.Save()
-	return c.Redirect(http.StatusSeeOther, "/")
+
+	c.Response().Header().Set("Method", "GET")
+	return echo.NewHTTPError(http.StatusUnauthorized)
 }
 
 func logout(c *echo.Context) error {
@@ -96,19 +95,20 @@ func handlePrefsPassword(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	u, _ := val.(*mdl.User)
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(c.Form("oldpassword")))
-	if err != nil {
-		c.Response().Header().Set("Method", "GET")
-		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
+
+	if u.ValidatePassword(c.Form("oldpassword")) {
+		u.Password = c.Form("newpassword1")
+		err := u.EncodePassword()
+		if err != nil {
+			logger.Error("registering user, encrypting password", "err", err)
+		}
+		err = mdl.UpdateUser(u)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
+		return c.Redirect(http.StatusSeeOther, "/special/preferences")
 	}
-	u.Password = c.Form("newpassword")
-	err = u.EncodePassword()
-	if err != nil {
-		logger.Error("registering user, encrypting password", "err", err)
-	}
-	err = mdl.UpdateUser(u)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError)
-	}
-	return c.Redirect(http.StatusSeeOther, "/special/preferences")
+
+	c.Response().Header().Set("Method", "GET")
+	return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
 }
