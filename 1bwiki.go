@@ -66,18 +66,28 @@ func wikiPage(c *echo.Context) error {
 	}
 
 	if c.Query("oldid") != "" {
-		pv := mdl.GetPageVeiwByID(c.Query("oldid"))
+		pv, err := mdl.GetPageVeiwByID(c.Query("oldid"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
+
 		session := session.Default(c)
 		val := session.Get("user")
 		if c.Query("diff") != "" {
-			pv2 := mdl.GetPageVeiwByID(c.Query("diff"))
+			pv2, err := mdl.GetPageVeiwByID(c.Query("diff"))
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError)
+			}
 			pv.Text = pv.Diff(pv2)
 			return c.HTML(http.StatusOK, page.Diff(val.(*mdl.User), pv))
 		}
 		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
 	}
 
-	pv := mdl.GetPageView(n, t)
+	pv, err := mdl.GetPageView(n, t)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
 
 	if pv.NiceTitle != "" {
 		session := session.Default(c)
