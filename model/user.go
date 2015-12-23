@@ -38,8 +38,5 @@ func GetUserByName(name string) (*User, error) {
 }
 
 func (u *User) IsAdmin() bool {
-	if u.ID == 1 || u.Admin {
-		return true
-	}
-	return false
+	return u.ID == 1 || u.Admin
 }
