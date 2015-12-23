@@ -3,3 +3,4 @@
 *.exe
 tmpl/*.go
 tmpl/*/*.go
+tmpl/*/*/*.go

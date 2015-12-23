@@ -4,6 +4,7 @@
 
 		"1bwiki/tmpl/layout/base"
 		"1bwiki/tmpl/helper"
+		"1bwiki/tmpl/special"
 	)
 	var u *m.User
 }
@@ -16,18 +17,14 @@
 	@helper.User(u)
 }
 
-@raw(Nav("/special/preferences"))
+@raw(special.Nav("/special/preferences"))
 
 
 
 <div class="ui container">
 	<div class="ui grid">
 		<div class="four wide column">
-			<div class="ui vertical menu">
-				<a class="active teal item" href="/special/preferences">
-					User Profile
-				</a>
-			</div>
+			@raw(Nav())
 		</div>
 		<div class="twelve wide column">
 			<h2>Basic Information</h2>

@@ -6,6 +6,7 @@ import (
 
 	mdl "1bwiki/model"
 	"1bwiki/tmpl/special"
+	"1bwiki/tmpl/special/user"
 
 	"github.com/labstack/echo"
 	"github.com/syntaqx/echo-middleware/session"
@@ -77,7 +78,7 @@ func prefs(c *echo.Context) error {
 	val := session.Get("user")
 	u, ok := val.(*mdl.User)
 	if ok {
-		return c.HTML(http.StatusOK, special.Prefs(u))
+		return c.HTML(http.StatusOK, user.Prefs(u))
 	}
 	return echo.NewHTTPError(http.StatusUnauthorized)
 }
