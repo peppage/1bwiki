@@ -1,5 +1,7 @@
 package model
 
+import "golang.org/x/crypto/bcrypt"
+
 type User struct {
 	ID           int64
 	Name         string
@@ -13,6 +15,10 @@ type User struct {
 
 // CreateUser creates record of a new user
 func CreateUser(u *User) (err error) {
+	err = u.EncodePassword()
+	if err != nil {
+		return logger.Error("Failed to encode password", "err", err)
+	}
 	_, err = db.NamedExec(`INSERT INTO user (name, password, registration, realname)
 							VALUES (:name, :password, :registration, '')`, u)
 	return err
@@ -39,4 +45,10 @@ func GetUserByName(name string) (*User, error) {
 
 func (u *User) IsAdmin() bool {
 	return u.ID == 1 || u.Admin
+}
+
+func (u *User) EncodePassword() error {
+	p, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
+	u.Password = string(p)
+	return err
 }

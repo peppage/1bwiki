@@ -21,17 +21,12 @@ func register(c *echo.Context) error {
 
 func registerHandle(c *echo.Context) error {
 	if c.Form("password") == c.Form("passwordConfirm") {
-		p, err := bcrypt.GenerateFromPassword([]byte(c.Form("password")), 10)
-		if err != nil {
-			logger.Error("registering user, encrypting password", "err", err)
-		}
-		logger.Info("register", "uname", c.Form("username"), "password", p)
 		u := mdl.User{
 			Name:         c.Form("username"),
-			Password:     string(p),
+			Password:     c.Form("password"),
 			Registration: time.Now().Unix(),
 		}
-		err = mdl.CreateUser(&u)
+		err := mdl.CreateUser(&u)
 		if err != nil {
 			return logger.Error("failed to create user", "err", err)
 		}
@@ -106,11 +101,11 @@ func handlePrefsPassword(c *echo.Context) error {
 		c.Response().Header().Set("Method", "GET")
 		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
 	}
-	p, err := bcrypt.GenerateFromPassword([]byte(c.Form("newpassword1")), 10)
+	u.Password = c.Form("newpassword")
+	err = u.EncodePassword()
 	if err != nil {
 		logger.Error("registering user, encrypting password", "err", err)
 	}
-	u.Password = string(p)
 	err = mdl.UpdateUser(u)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
