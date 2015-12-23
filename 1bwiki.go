@@ -161,6 +161,8 @@ func main() {
 	s.Post("/login", loginHandle)
 	s.Get("/logout", logout)
 	s.Get("/preferences", prefs)
+	s.Get("/preferences/password", prefsPasword)
+	s.Post("/preferences/password", handlePrefsPassword)
 	s.Get("/admin", admin)
 	s.Post("/admin", adminHandle)
 

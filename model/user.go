@@ -18,6 +18,12 @@ func CreateUser(u *User) (err error) {
 	return err
 }
 
+func UpdateUser(u *User) error {
+	_, err := db.NamedExec(`UPDATE user SET name=:name, password=:password,
+							realname=:realname WHERE id=:id`, u)
+	return err
+}
+
 func GetUserByName(name string) (*User, error) {
 	if len(name) == 0 {
 		return nil, logger.Error("User doesn't exist")

@@ -82,3 +82,38 @@ func prefs(c *echo.Context) error {
 	}
 	return echo.NewHTTPError(http.StatusUnauthorized)
 }
+
+func prefsPasword(c *echo.Context) error {
+	session := session.Default(c)
+	val := session.Get("user")
+	u, ok := val.(*mdl.User)
+	if ok {
+		return c.HTML(http.StatusOK, user.Password(u))
+	}
+	return echo.NewHTTPError(http.StatusUnauthorized)
+}
+
+func handlePrefsPassword(c *echo.Context) error {
+	if c.Form("newpassword1") != c.Form("newpassword2") {
+		// need to implement better
+		return echo.NewHTTPError(http.StatusBadRequest, "password do not match")
+	}
+	session := session.Default(c)
+	val := session.Get("user")
+	u, _ := val.(*mdl.User)
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(c.Form("oldpassword")))
+	if err != nil {
+		c.Response().Header().Set("Method", "GET")
+		return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
+	}
+	p, err := bcrypt.GenerateFromPassword([]byte(c.Form("newpassword1")), 10)
+	if err != nil {
+		logger.Error("registering user, encrypting password", "err", err)
+	}
+	u.Password = string(p)
+	err = mdl.UpdateUser(u)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.Redirect(http.StatusSeeOther, "/special/preferences")
+}
