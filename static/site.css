@@ -62,3 +62,12 @@ body {
 .site-content {
   flex: 1 0 auto;
 }
+
+td.label {
+  padding-right: 1em;
+  text-align: right;
+}
+
+tr {
+  line-height: 1.6;
+}

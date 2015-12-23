@@ -16,5 +16,34 @@
 	@helper.User(u)
 }
 
-<h1>Basic Information</h1>
-Username: @u.Name
+@raw(Nav("/special/preferences"))
+
+
+
+<div class="ui container">
+	<div class="ui grid">
+		<div class="four wide column">
+			<div class="ui vertical menu">
+				<a class="active teal item" href="/special/preferences">
+					User Profile
+				</a>
+			</div>
+		</div>
+		<div class="twelve wide column">
+			<h2>Basic Information</h2>
+			<table>
+				<tr>
+					<td class="label">Username:</td>
+					<td>@u.Name</td>
+				</tr>
+				<tr>
+					<td class="label">Password:</td>
+					<td><a href="/special/preferences/password">Change Password</a></td>
+				</tr>
+				<tr>
+					<td class="label">Registration time:</td>
+					<td>@u.Registration</td>
+			</table>
+		</div>
+	</div>
+</div>
