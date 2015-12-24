@@ -13,7 +13,7 @@ func getSettingValue(name string) string {
 	var s setting
 	err := db.QueryRowx(`SELECT * FROM settings WHERE name = $1`, name).StructScan(&s)
 	if err != nil {
-		logger.Error("verify user db error", "err", err)
+		logger.Error("get settings value", "err", err)
 		return ""
 	}
 	return s.Value
@@ -43,4 +43,8 @@ func SetSignups(setting bool) error {
 	_, err := db.Exec(`UPDATE settings SET value = $1 WHERE name=$2`,
 		strconv.FormatBool(setting), "allowsignups")
 	return err
+}
+
+func SessionSecret() string {
+	return getSettingValue("sessionsecret")
 }

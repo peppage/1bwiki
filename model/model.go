@@ -1,6 +1,8 @@
 package model
 
 import (
+	"crypto/rand"
+
 	"github.com/GeertJohan/go.rice"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -35,6 +37,7 @@ func SetupDb() {
 	tx.Exec(`CREATE TABLE IF NOT EXISTS settings (name text PRIMARY KEY, value text)`)
 	tx.Exec(`INSERT INTO settings (name, value) values ("anonediting", "true")`)
 	tx.Exec(`INSERT INTO settings (name, value) values ("allowsignups", "true")`)
+	tx.Exec(`INSERT INTO settings (name, value) values ("sessionsecret", $1)`, randString(20))
 
 	err := tx.Commit()
 	if err != nil {
@@ -65,4 +68,14 @@ func SetupDb() {
 			IsMinor:   false,
 		})
 	}
+}
+
+func randString(size int) string {
+	const alpha = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var bytes = make([]byte, size)
+	rand.Read(bytes)
+	for k, v := range bytes {
+		bytes[k] = alpha[v%byte(len(alpha))]
+	}
+	return string(bytes)
 }

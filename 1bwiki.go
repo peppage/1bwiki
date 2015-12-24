@@ -17,10 +17,8 @@ import (
 	"github.com/syntaqx/echo-middleware/session"
 )
 
-const secret = "Thisisatemporarysecret"
-
 var logger log.Logger
-var store = session.NewCookieStore([]byte(secret))
+var store session.CookieStore
 
 const noEditArea = "special"
 
@@ -130,6 +128,8 @@ func init() {
 
 func main() {
 	mdl.SetupDb()
+
+	store = session.NewCookieStore([]byte(mdl.SessionSecret()))
 
 	e := echo.New()
 	e.Use(session.Sessions("session", store))
