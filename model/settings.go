@@ -30,7 +30,7 @@ func SetAnonEditing(setting bool) error {
 }
 
 func Signups() bool {
-	return getSettingValue("allowsignups") == "true" {
+	return getSettingValue("allowsignups") == "true"
 }
 
 func SetSignups(setting bool) error {
