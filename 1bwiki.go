@@ -76,8 +76,7 @@ func wikiPage(c *echo.Context) error {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError)
 			}
-			pv.Text = pv.Diff(pv2)
-			return c.HTML(http.StatusOK, page.Diff(val.(*mdl.User), pv))
+			return c.HTML(http.StatusOK, page.Diff(val.(*mdl.User), pv, pv2))
 		}
 		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
 	}
