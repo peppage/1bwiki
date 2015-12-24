@@ -161,6 +161,7 @@ func main() {
 	s.Post("/login", loginHandle)
 	s.Get("/logout", logout)
 	p := s.Group("/preferences")
+	p.Use(checkLoggedIn())
 	p.Get("", prefs)
 	p.Get("/password", prefsPasword)
 	p.Post("/password", handlePrefsPassword)

@@ -57,3 +57,7 @@ func (u *User) ValidatePassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
 }
+
+func (u *User) IsLoggedIn() bool {
+	return u.Registration != 0
+}
