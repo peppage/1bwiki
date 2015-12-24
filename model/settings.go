@@ -20,10 +20,7 @@ func getSettingValue(name string) string {
 }
 
 func AnonEditing() bool {
-	if getSettingValue("anonediting") == "true" {
-		return true
-	}
-	return false
+	return getSettingValue("anonediting") == "true"
 }
 
 func SetAnonEditing(setting bool) error {
@@ -33,10 +30,7 @@ func SetAnonEditing(setting bool) error {
 }
 
 func Signups() bool {
-	if getSettingValue("allowsignups") == "true" {
-		return true
-	}
-	return false
+	return getSettingValue("allowsignups") == "true" {
 }
 
 func SetSignups(setting bool) error {
