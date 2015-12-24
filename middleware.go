@@ -77,3 +77,17 @@ func checkLoggedIn() echo.MiddlewareFunc {
 		}
 	}
 }
+
+func checkAdmin() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			session := session.Default(c)
+			val := session.Get("user")
+			u, ok := val.(*mdl.User)
+			if ok && u.IsAdmin() {
+				return next(c)
+			}
+			return echo.NewHTTPError(http.StatusUnauthorized)
+		}
+	}
+}

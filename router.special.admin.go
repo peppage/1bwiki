@@ -14,10 +14,7 @@ func admin(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	u := val.(*mdl.User)
-	if u.IsAdmin() {
-		return c.HTML(http.StatusOK, special.Admin(u, mdl.AnonEditing(), mdl.Signups()))
-	}
-	return echo.NewHTTPError(http.StatusUnauthorized, "Admin only")
+	return c.HTML(http.StatusOK, special.Admin(u, mdl.AnonEditing(), mdl.Signups()))
 }
 
 func adminHandle(c *echo.Context) error {

@@ -166,6 +166,7 @@ func main() {
 	p.Get("/password", prefsPasword)
 	p.Post("/password", handlePrefsPassword)
 	a := s.Group("/admin")
+	a.Use(checkAdmin())
 	a.Get("", admin)
 	a.Post("", adminHandle)
 
