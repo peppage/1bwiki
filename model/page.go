@@ -24,6 +24,7 @@ type PageView struct {
 	Title     string
 	NiceTitle string
 	Text      string
+	TimeStamp int64
 }
 
 func (pv *PageView) Html() string {
@@ -62,8 +63,8 @@ func diffPretty(diffs []diffmatchpatch.Diff) string {
 // GetPageView gets all information to show a page to a user
 func GetPageView(namespace string, title string) (*PageView, error) {
 	var p PageView
-	err := db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text
-					FROM page JOIN revision ON
+	err := db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text,
+					revision.timestamp FROM page JOIN revision ON
 					page.revisionid = revision.id JOIN text
 					ON revision.textid = text.id WHERE title = $1
 					AND namespace  = $2`, title, namespace).StructScan(&p)
@@ -75,9 +76,10 @@ func GetPageView(namespace string, title string) (*PageView, error) {
 
 func GetPageVeiwByID(revID string) (*PageView, error) {
 	var p PageView
-	err := db.QueryRowx(`SELECT page.namespace, page.title, page.nicetitle, text.text
-				 FROM page JOIN revision on page.title = revision.pagetitle
-				 JOIN text on revision.textid = text.id WHERE revision.id = $1`, revID).StructScan(&p)
+	err := db.QueryRowx(`SELECT page.namespace, page.title, page.nicetitle, text.text,
+				revision.timestamp
+				FROM page JOIN revision on page.title = revision.pagetitle
+				JOIN text on revision.textid = text.id WHERE revision.id = $1`, revID).StructScan(&p)
 	if err != nil {
 		return nil, logger.Error("unable to get page view by ID", "err", err)
 	}
