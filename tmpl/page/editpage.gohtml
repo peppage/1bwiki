@@ -35,9 +35,18 @@
 		</p>
 	</div>
 	@if pv.Deleted {
+		@{
+			rev, _ := m.GetLatestRevision(pv.Title)
+		}
 		<div class="ui message red">
+			<span class="header">A page with this title has been previously deleted</span>
 			<p>
-				This page has been deleted
+				If you are creating a new page with different content, please continue. If you are recreating a page similar to the previously deleted page, or are unsure, please first contact the deleting user using the information provided below.
+				<ul>
+					<li>
+						@rev.PrettyTime() @rev.UserText deleted page
+					</li>
+				</ul>
 			</p>
 		</div>
 	}

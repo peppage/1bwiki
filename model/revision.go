@@ -86,6 +86,14 @@ func GetRevisions() ([]*Revision, error) {
 	return revs, nil
 }
 
+func GetLatestRevision(title string) (*Revision, error) {
+	rev := Revision{}
+	err := db.Get(&rev, `SELECT * FROM revision WHERE pagetitle = $1 ORDER BY id DESC`, title)
+	if err != nil {
+		return nil, logger.Error("Cannot get latest revision by title", "err", err)
+	}
+	return &rev, nil
+}
 func GetPageRevisions(title string) ([]*Revision, error) {
 	var revs []*Revision
 	err := db.Select(&revs, `SELECT * FROM revision WHERE pagetitle=$1 ORDER BY id DESC`, title)
