@@ -75,3 +75,7 @@ tr {
 .new {
   color: red;
 }
+
+.new:hover {
+  color: darkred;
+}
