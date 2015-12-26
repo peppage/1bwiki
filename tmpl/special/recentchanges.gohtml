@@ -33,8 +33,15 @@
 				minor = `<span class="minoredit">m</span>`
 			}
 		}
-		<span>
-			@tOut <a href="/@v.PageTitle">@v.PageTitle</a> (diff | <a href="/Special/action?title=@v.PageTitle&action=history">hist</a>)..(@v.LenDiff) @raw(minor) ..<a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a>|contribs) (@v.Comment)<br>
-		</span>
+		@if v.Deleted {
+			<span>
+				@v.UserText deleted page <span class="new">@v.PageTitle</span><br>
+			</span>
+		} else {
+			<span>
+				@tOut <a href="/@v.PageTitle">@v.PageTitle</a> (diff | <a href="/Special/action?title=@v.PageTitle&action=history">hist</a>)..(@v.LenDiff) @raw(minor) ..<a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a>|contribs) (@v.Comment)<br>
+			</span>
+
+		}
 	}
 </div>

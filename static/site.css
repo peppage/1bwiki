@@ -71,3 +71,7 @@ td.label {
 tr {
   line-height: 1.6;
 }
+
+.new {
+  color: red;
+}
