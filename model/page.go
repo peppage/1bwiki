@@ -67,17 +67,14 @@ func diffPretty(diffs []diffmatchpatch.Diff) string {
 }
 
 // GetPageView gets all information to show a page to a user
-func GetPageView(namespace string, title string) (*PageView, error) {
+func GetPageView(namespace string, title string) *PageView {
 	var p PageView
-	err := db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text,
-					revision.timestamp FROM page JOIN revision ON
-					page.revisionid = revision.id JOIN text
-					ON revision.textid = text.id WHERE title = $1
-					AND namespace  = $2`, title, namespace).StructScan(&p)
-	if err != nil {
-		return nil, logger.Error("unable to get page view", "err", err)
-	}
-	return &p, nil
+	db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text,
+				revision.timestamp FROM page JOIN revision ON
+				page.revisionid = revision.id JOIN text
+				ON revision.textid = text.id WHERE title = $1
+				AND namespace  = $2`, title, namespace).StructScan(&p)
+	return &p
 }
 
 func GetPageVeiwByID(revID string) (*PageView, error) {

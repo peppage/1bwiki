@@ -81,10 +81,7 @@ func wikiPage(c *echo.Context) error {
 		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
 	}
 
-	pv, err := mdl.GetPageView(n, t)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError)
-	}
+	pv := mdl.GetPageView(n, t)
 
 	if pv.NiceTitle != "" {
 		session := session.Default(c)

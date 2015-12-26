@@ -28,10 +28,7 @@ func edit(c *echo.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+urlTitle)
 	}
 
-	pv, err := mdl.GetPageView(n, t)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError)
-	}
+	pv := mdl.GetPageView(n, t)
 
 	if pv.NiceTitle == "" {
 		if n != "" {
