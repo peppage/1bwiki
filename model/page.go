@@ -71,12 +71,11 @@ func diffPretty(diffs []diffmatchpatch.Diff) string {
 // GetPageView gets all information to show a page to a user
 func GetPageView(namespace string, title string) *PageView {
 	var p PageView
-	err := db.Get(&p, `SELECT page.namespace, page.title, page.nicetitle, text.text,
+	db.Get(&p, `SELECT page.namespace, page.title, page.nicetitle, text.text,
 				revision.timestamp, revision.deleted FROM page JOIN revision ON
 				page.revisionid = revision.id JOIN text
 				ON revision.textid = text.id WHERE title = $1
 				AND namespace  = $2`, title, namespace)
-	logger.Info("sf", "nsp", namespace, "title", title, "err", err)
 	return &p
 }
 
