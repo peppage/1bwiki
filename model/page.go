@@ -3,6 +3,7 @@ package model
 import (
 	"bytes"
 	"html"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -87,6 +88,12 @@ func GetPageVeiwByID(revID string) (*PageView, error) {
 		return nil, logger.Error("unable to get page view by ID", "err", err)
 	}
 	return &p, nil
+}
+
+func GetRandomPageViewTitle() string {
+	title := []string{}
+	db.Select(&title, `SELECT title FROM page WHERE namespace="" ORDER BY title`)
+	return title[rand.Intn(len(title))]
 }
 
 type CreatePageOptions struct {

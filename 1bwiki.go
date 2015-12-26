@@ -156,6 +156,7 @@ func main() {
 	s.Get("/login", login)
 	s.Post("/login", loginHandle)
 	s.Get("/logout", logout)
+	s.Get("/random", random)
 	p := s.Group("/preferences")
 	p.Use(checkLoggedIn())
 	p.Get("", prefs)

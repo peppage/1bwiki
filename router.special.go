@@ -81,3 +81,8 @@ func pages(c *echo.Context) error {
 	val := session.Get("user")
 	return c.HTML(http.StatusOK, special.Pages(val.(*mdl.User), p))
 }
+
+func random(c *echo.Context) error {
+	t := mdl.GetRandomPageViewTitle()
+	return c.Redirect(http.StatusTemporaryRedirect, "/"+t)
+}
