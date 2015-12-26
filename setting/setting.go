@@ -10,7 +10,7 @@ var (
 	HttpPort string
 )
 
-const APP_VER = "beta1"
+const APP_VER = "beta2"
 
 func init() {
 	logger = log.New("settings")
