@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"html"
 	"strings"
+	"time"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
@@ -38,6 +39,11 @@ func (pv *PageView) Diff(pv2 *PageView) string {
 	dmp.DiffEditCost = 8
 	diffs = dmp.DiffCleanupSemantic(diffs)
 	return diffPretty(diffs)
+}
+
+func (pv *PageView) PrettyTime() string {
+	t := time.Unix(pv.TimeStamp, 0).UTC()
+	return t.Format("15:04, 2 Jan 2006")
 }
 
 func diffPretty(diffs []diffmatchpatch.Diff) string {

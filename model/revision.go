@@ -92,3 +92,7 @@ func GetPageRevisions(title string) ([]*Revision, error) {
 	}
 	return revs, nil
 }
+func (r *Revision) PrettyTime() string {
+	t := time.Unix(r.TimeStamp, 0).UTC()
+	return t.Format("15:04, 2 Jan 2006")
+}
