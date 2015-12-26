@@ -35,7 +35,7 @@
 		}
 		@if v.Deleted {
 			<span>
-				@v.UserText deleted page <span class="new">@v.PageTitle</span><br>
+				@v.UserText deleted page <a class="new" href="/@v.PageTitle">@v.PageTitle</a><br>
 			</span>
 		} else {
 			<span>
