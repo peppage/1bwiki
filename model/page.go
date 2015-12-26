@@ -27,6 +27,7 @@ type PageView struct {
 	NiceTitle string
 	Text      string
 	TimeStamp int64
+	Deleted   bool
 }
 
 func (pv *PageView) Html() string {
@@ -70,20 +71,21 @@ func diffPretty(diffs []diffmatchpatch.Diff) string {
 // GetPageView gets all information to show a page to a user
 func GetPageView(namespace string, title string) *PageView {
 	var p PageView
-	db.QueryRowx(`select page.namespace, page.title, page.nicetitle, text.text,
-				revision.timestamp FROM page JOIN revision ON
+	err := db.Get(&p, `SELECT page.namespace, page.title, page.nicetitle, text.text,
+				revision.timestamp, revision.deleted FROM page JOIN revision ON
 				page.revisionid = revision.id JOIN text
 				ON revision.textid = text.id WHERE title = $1
-				AND namespace  = $2`, title, namespace).StructScan(&p)
+				AND namespace  = $2`, title, namespace)
+	logger.Info("sf", "nsp", namespace, "title", title, "err", err)
 	return &p
 }
 
 func GetPageVeiwByID(revID string) (*PageView, error) {
 	var p PageView
-	err := db.QueryRowx(`SELECT page.namespace, page.title, page.nicetitle, text.text,
-				revision.timestamp
+	err := db.Get(&p, `SELECT page.namespace, page.title, page.nicetitle, text.text,
+				revision.timestamp, revision.deleted
 				FROM page JOIN revision on page.title = revision.pagetitle
-				JOIN text on revision.textid = text.id WHERE revision.id = $1`, revID).StructScan(&p)
+				JOIN text on revision.textid = text.id WHERE revision.id = $1`, revID)
 	if err != nil {
 		return nil, logger.Error("unable to get page view by ID", "err", err)
 	}
@@ -158,13 +160,13 @@ func GetPages() ([]*Page, error) {
 
 func DeletePage(u *User, title string) error {
 	tx := db.MustBegin()
-	t := Text{}
+	t := createText(tx, "")
 	rev, err := createRevision(tx, CreateRevOptions{
 		Title:   title,
 		Comment: "Page Deleted",
 		Deleted: true,
 		Usr:     u,
-		Txt:     &t,
+		Txt:     t,
 	})
 
 	if err != nil {

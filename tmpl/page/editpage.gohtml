@@ -34,6 +34,13 @@
 			<a href="#in">→ Go to editing area</a>
 		</p>
 	</div>
+	@if pv.Deleted {
+		<div class="ui message red">
+			<p>
+				This page has been deleted
+			</p>
+		</div>
+	}
 
 	<div id="out"></div>
 	<div class="editBar">

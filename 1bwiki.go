@@ -83,7 +83,7 @@ func wikiPage(c *echo.Context) error {
 
 	pv := mdl.GetPageView(n, t)
 
-	if pv.NiceTitle != "" {
+	if pv.NiceTitle != "" && !pv.Deleted {
 		session := session.Default(c)
 		val := session.Get("user")
 		return c.HTML(http.StatusOK, page.Page(val.(*mdl.User), pv))
