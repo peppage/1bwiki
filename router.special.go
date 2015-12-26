@@ -86,3 +86,13 @@ func random(c *echo.Context) error {
 	t := mdl.GetRandomPageViewTitle()
 	return c.Redirect(http.StatusTemporaryRedirect, "/"+t)
 }
+
+func delete(c *echo.Context) error {
+	session := session.Default(c)
+	val := session.Get("user")
+	err := mdl.DeletePage(val.(*mdl.User), c.Query("title"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.Redirect(http.StatusTemporaryRedirect, "/")
+}

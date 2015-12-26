@@ -27,6 +27,7 @@ type CreateRevOptions struct {
 	IsMinor bool
 	Txt     *Text
 	Usr     *User
+	Deleted bool
 }
 
 func createRevision(tx *sqlx.Tx, opts CreateRevOptions) (*Revision, error) {
@@ -68,6 +69,7 @@ func convertOptions(opts CreateRevOptions) *Revision {
 		TextID:    opts.Txt.ID,
 		UserID:    opts.Usr.ID,
 		UserText:  opts.Usr.Name,
+		Deleted:   opts.Deleted,
 		Minor:     opts.IsMinor,
 		Len:       len(opts.Txt.Text),
 		TimeStamp: time.Now().Unix(),

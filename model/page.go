@@ -155,3 +155,29 @@ func GetPages() ([]*Page, error) {
 	}
 	return pages, nil
 }
+
+func DeletePage(u *User, title string) error {
+	tx := db.MustBegin()
+	t := Text{}
+	rev, err := createRevision(tx, CreateRevOptions{
+		Title:   title,
+		Comment: "Page Deleted",
+		Deleted: true,
+		Usr:     u,
+		Txt:     &t,
+	})
+
+	if err != nil {
+		tx.Rollback()
+		return logger.Error("Insert revision failed", "err", err)
+	}
+
+	tx.Exec(`UPDATE page SET revisionid=$1 WHERE title=$2`, rev.ID, title)
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return logger.Error("Transaction failed", "err", err)
+	}
+	return nil
+}
