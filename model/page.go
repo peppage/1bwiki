@@ -94,7 +94,8 @@ func GetPageVeiwByID(revID string) (*PageView, error) {
 
 func GetRandomPageViewTitle() string {
 	title := []string{}
-	db.Select(&title, `SELECT title FROM page WHERE namespace="" ORDER BY title`)
+	db.Select(&title, `SELECT title FROM page JOIN revision on page.revisionid = revision.id
+		WHERE namespace="" AND revision.deleted=0 ORDER BY title`)
 	return title[rand.Intn(len(title))]
 }
 
