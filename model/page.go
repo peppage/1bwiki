@@ -161,25 +161,32 @@ func GetPages() ([]*Page, error) {
 func DeletePage(u *User, title string) error {
 	tx := db.MustBegin()
 	t := createText(tx, "")
-	rev, err := createRevision(tx, CreateRevOptions{
-		Title:   title,
-		Comment: "Page Deleted",
-		Deleted: true,
-		Usr:     u,
-		Txt:     t,
-	})
+	var count int
+	tx.Get(&count, `SELECT COUNT(*) FROM page WHERE title=$1`, title)
+	if count == 1 {
+		rev, err := createRevision(tx, CreateRevOptions{
+			Title:   title,
+			Comment: "Page Deleted",
+			Deleted: true,
+			Usr:     u,
+			Txt:     t,
+		})
 
-	if err != nil {
-		tx.Rollback()
-		return logger.Error("Insert revision failed", "err", err)
+		if err != nil {
+			tx.Rollback()
+			return logger.Error("Insert revision failed", "err", err)
+		}
+
+		tx.Exec(`UPDATE page SET revisionid=$1 WHERE title=$2`, rev.ID, title)
+
+		err = tx.Commit()
+		if err != nil {
+			tx.Rollback()
+			return logger.Error("Transaction failed", "err", err)
+		}
+		return nil
 	}
 
-	tx.Exec(`UPDATE page SET revisionid=$1 WHERE title=$2`, rev.ID, title)
-
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return logger.Error("Transaction failed", "err", err)
-	}
-	return nil
+	tx.Rollback()
+	return logger.Error("Page doesn't exist!")
 }
