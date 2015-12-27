@@ -1,6 +1,8 @@
 package model
 
 import (
+	servSetting "1bwiki/setting"
+
 	"github.com/GeertJohan/go.rice"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -20,6 +22,8 @@ func init() {
 }
 
 func SetupDb() {
+	logger.SetLevel(servSetting.LogLevel)
+
 	tx := db.MustBegin()
 	tx.Exec(`create table if not exists text (id integer primary KEY, text blob)`)
 	tx.Exec(`create table if not exists revision (id integer primary key,

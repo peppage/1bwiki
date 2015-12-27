@@ -13,6 +13,8 @@ var (
 	logger        log.Logger
 	HttpPort      string
 	SessionSecret string
+	LogLevel      int
+	ServerLogging bool
 	config        *toml.TomlTree
 )
 
@@ -43,11 +45,20 @@ func init() {
 func Initialize() {
 	HttpPort = "8000"
 	SessionSecret = randString(20)
+	LogLevel = 3
+	ServerLogging = false
 	if config.Has("server.http_port") {
 		HttpPort = config.Get("server.http_port").(string)
 	}
 	if config.Has("session.secret") {
 		SessionSecret = config.Get("session.secret").(string)
+	}
+	if config.Has("server.log_level") {
+		LogLevel = int(config.Get("server.log_level").(int64))
+		logger.SetLevel(LogLevel)
+	}
+	if config.Has("server.server_logging") {
+		ServerLogging = config.Get("server.server_logging").(bool)
 	}
 }
 

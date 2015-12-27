@@ -140,7 +140,11 @@ func main() {
 	})
 	e.HTTP2(true)
 	e.Use(setUser())
-	e.Use(serverLogger())
+	if setting.ServerLogging {
+		e.Use(serverLogger())
+	}
+
+	logger.SetLevel(setting.LogLevel)
 
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
