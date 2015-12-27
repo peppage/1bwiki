@@ -2,7 +2,9 @@ package setting
 
 import (
 	"crypto/rand"
+	"os"
 
+	"github.com/GeertJohan/go.rice"
 	"github.com/mgutz/logxi/v1"
 	"github.com/pelletier/go-toml"
 )
@@ -11,27 +13,41 @@ var (
 	logger        log.Logger
 	HttpPort      string
 	SessionSecret string
+	config        *toml.TomlTree
 )
 
 const APP_VER = "beta2"
 
 func init() {
 	logger = log.New("settings")
+	var err error
+
+	config, err = toml.LoadFile("conf.toml")
+	if err != nil {
+		logger.Error("local config file error", "err", err)
+		box, err := rice.FindBox("")
+		if err != nil {
+			logger.Error("can't find setup rice box", "err", err)
+		}
+		conf, err := box.String("conf.toml")
+		if err != nil {
+			logger.Error("conf.toml file error", "err", err)
+		}
+		config, err = toml.Load(conf)
+		f, err := os.Create("conf.toml")
+		defer f.Close()
+		f.Write([]byte(conf))
+	}
 }
 
 func Initialize() {
 	HttpPort = "8000"
 	SessionSecret = randString(20)
-	c, err := toml.LoadFile("conf.toml")
-	if err != nil {
-		logger.Error("Error loading config", "err", err)
-	} else {
-		if c.Has("server.http_port") {
-			HttpPort = c.Get("server.http_port").(string)
-		}
-		if c.Has("session.secret") {
-			SessionSecret = c.Get("sedssion.secret").(string)
-		}
+	if config.Has("server.http_port") {
+		HttpPort = config.Get("server.http_port").(string)
+	}
+	if config.Has("session.secret") {
+		SessionSecret = config.Get("session.secret").(string)
 	}
 }
 
