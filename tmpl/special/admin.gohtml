@@ -6,8 +6,11 @@
 		"1bwiki/tmpl/helper"
 	)
 	var u *m.User
-	var anonAllowed bool
-	var signupAllowed bool
+}
+
+@{
+	anonAllowed := m.AnonEditing()
+	signupAllowed := m.Signups()
 }
 
 @section title {

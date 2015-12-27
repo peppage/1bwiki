@@ -14,7 +14,7 @@ func admin(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	u := val.(*mdl.User)
-	return c.HTML(http.StatusOK, special.Admin(u, mdl.AnonEditing(), mdl.Signups()))
+	return c.HTML(http.StatusOK, special.Admin(u))
 }
 
 func adminHandle(c *echo.Context) error {
