@@ -145,6 +145,7 @@ func main() {
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
 	e.Post("/save", savePage)
+	e.Get("/s*", wikiPage)
 
 	s := e.Group("/special")
 	s.Get("/edit", edit)
