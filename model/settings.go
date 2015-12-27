@@ -19,14 +19,17 @@ func getSettingValue(name string) string {
 	return s.Value
 }
 
+func saveSetting(name string, value string) error {
+	_, err := db.Exec(`UPDATE settings SET value = $1 WHERE name=$2`, value, name)
+	return err
+}
+
 func AnonEditing() bool {
 	return getSettingValue("anonediting") == "true"
 }
 
 func SetAnonEditing(setting bool) error {
-	_, err := db.Exec(`UPDATE settings SET value = $1 WHERE name=$2`,
-		strconv.FormatBool(setting), "anonediting")
-	return err
+	return saveSetting("anonediting", strconv.FormatBool(setting))
 }
 
 func Signups() bool {
@@ -34,9 +37,7 @@ func Signups() bool {
 }
 
 func SetSignups(setting bool) error {
-	_, err := db.Exec(`UPDATE settings SET value = $1 WHERE name=$2`,
-		strconv.FormatBool(setting), "allowsignups")
-	return err
+	return saveSetting("allowsignups", strconv.FormatBool(setting))
 }
 
 func SessionSecret() string {
