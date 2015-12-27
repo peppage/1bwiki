@@ -125,7 +125,7 @@ func init() {
 func main() {
 	mdl.SetupDb()
 
-	store = session.NewCookieStore([]byte(mdl.SessionSecret()))
+	store = session.NewCookieStore([]byte(setting.SessionSecret))
 
 	e := echo.New()
 	e.Use(session.Sessions("session", store))
