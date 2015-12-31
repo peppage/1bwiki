@@ -106,3 +106,13 @@ func deleteHandle(c *echo.Context) error {
 	}
 	return c.Redirect(http.StatusSeeOther, "/")
 }
+
+func users(c *echo.Context) error {
+	u, err := mdl.GetUsers()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "")
+	}
+	session := session.Default(c)
+	val := session.Get("user")
+	return c.HTML(http.StatusOK, special.Users(val.(*mdl.User), u))
+}

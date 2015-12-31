@@ -61,3 +61,13 @@ func (u *User) ValidatePassword(password string) bool {
 func (u *User) IsLoggedIn() bool {
 	return u.Registration != 0
 }
+
+func GetUsers() ([]*User, error) {
+	var users []*User
+	err := db.Select(&users, `SELECT name FROM user ORDER BY name DESC`)
+	if err != nil {
+		return users, logger.Error("Unable to get users", "err", err)
+	}
+	return users, nil
+
+}
