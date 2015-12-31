@@ -6,6 +6,7 @@
 		"1bwiki/tmpl/helper"
 	)
 	var u *m.User
+	var messages []interface{}
 }
 
 @section title {
@@ -19,6 +20,12 @@
 @raw(Nav("/special/register"))
 
 <div class="ui text container">
+	@if len(messages) > 0 {
+		<div class="ui negative message">
+			<div class="header">@messages[0]</div>
+		</div>
+	}
+
 	<form class="ui form" action="/special/register" method="post">
 		<div class="field">
 			<label>Username</label>

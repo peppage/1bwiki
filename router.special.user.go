@@ -15,7 +15,9 @@ import (
 func register(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Register(val.(*mdl.User)))
+	flashes := session.Flashes()
+	session.Save()
+	return c.HTML(http.StatusOK, special.Register(val.(*mdl.User), flashes))
 }
 
 func registerHandle(c *echo.Context) error {
@@ -32,6 +34,11 @@ func registerHandle(c *echo.Context) error {
 		session := session.Default(c)
 		session.Set("user", u)
 		session.Save()
+	} else {
+		session := session.Default(c)
+		session.AddFlash("Passwords don't match")
+		session.Save()
+		return c.Redirect(http.StatusSeeOther, "/special/register")
 	}
 
 	return c.Redirect(http.StatusSeeOther, "/")
