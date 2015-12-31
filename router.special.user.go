@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	mdl "1bwiki/model"
@@ -21,6 +22,7 @@ func register(c *echo.Context) error {
 }
 
 func registerHandle(c *echo.Context) error {
+	session := session.Default(c)
 	if c.Form("password") == c.Form("passwordConfirm") {
 		u := mdl.User{
 			Name:         c.Form("username"),
@@ -29,13 +31,16 @@ func registerHandle(c *echo.Context) error {
 		}
 		err := mdl.CreateUser(&u)
 		if err != nil {
+			if strings.Contains(err.Error(), "UNIQUE") {
+				session.AddFlash("Username already exists")
+				session.Save()
+				return c.Redirect(http.StatusSeeOther, "/special/register")
+			}
 			return logger.Error("failed to create user", "err", err)
 		}
-		session := session.Default(c)
 		session.Set("user", u)
 		session.Save()
 	} else {
-		session := session.Default(c)
 		session.AddFlash("Passwords don't match")
 		session.Save()
 		return c.Redirect(http.StatusSeeOther, "/special/register")
