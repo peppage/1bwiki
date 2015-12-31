@@ -148,11 +148,11 @@ func main() {
 
 	e.Get("/", root)
 	e.Get("/*", wikiPage)
-	e.Post("/save", savePage)
 	e.Get("/s*", wikiPage)
 
 	s := e.Group("/special")
 	s.Get("/edit", edit)
+	s.Post("/edit", savePage)
 	s.Get("/history", history)
 	s.Get("/recentchanges", recentChanges)
 	s.Get("/pages", pages)
