@@ -100,7 +100,6 @@ func delete(c *echo.Context) error {
 func deleteHandle(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	logger.Info("sdf", c.Form("title"))
 	err := mdl.DeletePage(val.(*mdl.User), convertTitleToUrl(c.Form("title")))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
