@@ -77,7 +77,7 @@ func recentChanges(c *echo.Context) error {
 }
 
 func pages(c *echo.Context) error {
-	p, err := mdl.GetPages()
+	p, err := mdl.GetPageViews()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}

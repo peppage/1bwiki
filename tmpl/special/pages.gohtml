@@ -6,7 +6,7 @@
 		"1bwiki/tmpl/helper"
 	)
 	var u *m.User
-	var pgs []*m.Page
+	var pgs []*m.PageView
 }
 
 @section title {
@@ -23,8 +23,10 @@
 	<h1>Pages</h1>
 
 	@for _, v := range pgs {
-		<span>
-			<a href="/@v.Title">@v.NiceTitle</a><br>
-		</span>
+		@if !v.Deleted {
+			<span>
+				<a href="/@v.Title">@v.NiceTitle</a><br>
+			</span>
+		}
 	}
 </div>

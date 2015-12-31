@@ -158,6 +158,18 @@ func GetPages() ([]*Page, error) {
 	return pages, nil
 }
 
+func GetPageViews() ([]*PageView, error) {
+	var pages []*PageView
+	err := db.Select(&pages, `SELECT page.namespace, page.title, page.nicetitle, text.text,
+				revision.timestamp, revision.deleted FROM page JOIN revision ON
+				page.revisionid = revision.id JOIN text
+				ON revision.textid = text.id`)
+	if err != nil {
+		return pages, logger.Error("Unable to get all page views", "err", err)
+	}
+	return pages, nil
+}
+
 func DeletePage(u *User, title string) error {
 	tx := db.MustBegin()
 	t := createText(tx, "")
