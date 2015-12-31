@@ -113,7 +113,7 @@ func savePage(c *echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Save page  failed")
 	}
-	return c.Redirect(http.StatusSeeOther, p.Title)
+	return c.Redirect(http.StatusSeeOther, "/"+p.Title)
 }
 
 func init() {
