@@ -39,12 +39,12 @@
 		}
 		@if v.Deleted {
 			<span>
-				@v.UserText deleted page <a class="new" href="/@v.PageTitle">@v.PageTitle</a><br>
+				@v.UserText deleted page <a class="new" href="/@v.PageTitle">@m.NiceTitle(v.PageTitle)</a><br>
 			</span>
 		} else {
 			<span>
 				@raw(minor) @raw(newEdit)
-				@tOut <a href="/@v.PageTitle">@v.PageTitle</a> (
+				@tOut <a href="/@v.PageTitle">@m.NiceTitle(v.PageTitle)</a> (
 					@if v.ParentID != 0 {
 						<a href="/@v.PageTitle?oldid=@v.ParentID&amp;diff=@v.ID">diff</a>
 					} else {
