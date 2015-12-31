@@ -33,7 +33,7 @@ func SetupDb() {
 	tx.Exec(`create table if not exists page (title text,
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer, PRIMARY KEY(title, namespace))`)
-	tx.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text,
+	tx.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text UNIQUE,
 			realname text text default "", password text, registration int, email text default "",
 			admin bool default false, UNIQUE(id, name))`)
 	tx.Exec(`CREATE TABLE IF NOT EXISTS settings (name text PRIMARY KEY, value text)`)
