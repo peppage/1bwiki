@@ -10,6 +10,8 @@
 	var u *m.User
 	var niceTitle string
 	var revs []*m.Revision
+	var page int
+	var totalPages int
 }
 
 @section title {
@@ -49,6 +51,8 @@
 			</p>
 		</div>
 	} else {
+		@raw(Pagination(revs[0].PageTitle, page, totalPages))
+		<br><br>
 		@for i, v := range revs {
 			@{
 				lenDisplay := `<span class="minus">(` + strconv.Itoa(v.LenDiff) + `)</span>`
@@ -75,5 +79,7 @@
 				(@raw(cur) | @raw(prev)) <a href="/@v.PageTitle?oldid=@v.ID">@v.PrettyTime()</a> <a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a> | contribs) @raw(minor).. (@v.Len bytes) @raw(lenDisplay) .. (<i>@v.Comment</i>)<br>
 			</span>
 		}
+		<br>
+		@raw(Pagination(revs[0].PageTitle, page, totalPages))
 	}
 </div>

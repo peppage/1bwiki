@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	mdl "1bwiki/model"
@@ -52,14 +53,17 @@ func history(c *echo.Context) error {
 		}
 		return c.Redirect(http.StatusTemporaryRedirect, "/special/history?title="+n+urlTitle)
 	}
-	revs, err := mdl.GetPageRevisions(c.Query("title"))
+	p, _ := strconv.Atoi(c.Query("page"))
+	revs, err := mdl.GetPageRevisions(c.Query("title"), p, 50)
 	if err != nil {
 		echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
 	session := session.Default(c)
 	val := session.Get("user")
 	niceTitle := mdl.NiceTitle(c.Query("title"))
-	return c.HTML(http.StatusOK, page.History(val.(*mdl.User), niceTitle, revs))
+	totalPages := int(mdl.GetAmountOfRevisionsForPage(c.Query("title")) / 50)
+	return c.HTML(http.StatusOK, page.History(val.(*mdl.User),
+		niceTitle, revs, p, totalPages))
 }
 
 func recentChanges(c *echo.Context) error {

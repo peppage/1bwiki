@@ -94,14 +94,31 @@ func GetLatestRevision(title string) (*Revision, error) {
 	}
 	return &rev, nil
 }
-func GetPageRevisions(title string) ([]*Revision, error) {
+
+func GetPageRevisions(title string, page int, limit int) ([]*Revision, error) {
+	if limit == 0 {
+		limit = 50
+	}
+
+	offset := 0
+	if page != 0 {
+		offset = page * limit
+	}
+
 	var revs []*Revision
-	err := db.Select(&revs, `SELECT * FROM revision WHERE pagetitle=$1 ORDER BY id DESC`, title)
+	err := db.Select(&revs, `SELECT * FROM revision WHERE pagetitle=$1 ORDER BY id DESC LIMIT $2 OFFSET $3`, title, limit, offset)
 	if err != nil {
 		return revs, logger.Error("Unable to get revisions for page", "page", title, "err", err)
 	}
 	return revs, nil
 }
+
+func GetAmountOfRevisionsForPage(title string) int {
+	count := 0
+	db.Get(&count, `SELECT COUNT(*) FROM revision WHERE pagetitle=$1`, title)
+	return count
+}
+
 func (r *Revision) PrettyTime() string {
 	t := time.Unix(r.TimeStamp, 0).UTC()
 	return t.Format("15:04, 2 Jan 2006")
