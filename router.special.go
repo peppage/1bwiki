@@ -94,9 +94,16 @@ func random(c *echo.Context) error {
 func delete(c *echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	err := mdl.DeletePage(val.(*mdl.User), c.Query("title"))
+	return c.HTML(http.StatusOK, special.Delete(val.(*mdl.User), c.Query("title")))
+}
+
+func deleteHandle(c *echo.Context) error {
+	session := session.Default(c)
+	val := session.Get("user")
+	logger.Info("sdf", c.Form("title"))
+	err := mdl.DeletePage(val.(*mdl.User), convertTitleToUrl(c.Form("title")))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
-	return c.Redirect(http.StatusTemporaryRedirect, "/")
+	return c.Redirect(http.StatusSeeOther, "/")
 }
