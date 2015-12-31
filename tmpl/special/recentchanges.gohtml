@@ -30,7 +30,11 @@
 			tOut := t.Format("15:04")
 			minor := ""
 			if v.Minor {
-				minor = `<span class="minoredit">m</span>`
+				minor = `<abbr class="minoredit" title="This is a minor edit">m</abbr>`
+			}
+			newEdit := ""
+			if v.ParentID == 0 {
+				newEdit = `<abbr class="newpage" title="This edit created a new page">N</abbr>`
 			}
 		}
 		@if v.Deleted {
@@ -39,13 +43,14 @@
 			</span>
 		} else {
 			<span>
+				@raw(minor) @raw(newEdit)
 				@tOut <a href="/@v.PageTitle">@v.PageTitle</a> (
 					@if v.ParentID != 0 {
 						<a href="/@v.PageTitle?oldid=@v.ID&amp;diff=@v.ParentID">diff</a>
 					} else {
 						<span>diff</span>
 					}
-					| <a href="/special/history?title=@v.PageTitle">hist</a>)..(@v.LenDiff) @raw(minor) ..<a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a>|contribs) (@v.Comment)<br>
+					| <a href="/special/history?title=@v.PageTitle">hist</a>)..(@v.LenDiff) ..<a href="/User:@v.UserText">@v.UserText</a> (<a href="/User_Talk:@v.UserText">talk</a>|contribs) (@v.Comment)<br>
 			</span>
 
 		}

@@ -28,6 +28,12 @@ pre, code{
 
 .minoredit {
   font-weight: bold;
+  cursor: help;
+}
+
+.newpage {
+  font-weight: bold;
+  cursor: help;
 }
 
 .ui.tabs.container {
