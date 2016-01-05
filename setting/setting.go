@@ -18,7 +18,7 @@ var (
 	config        *toml.TomlTree
 )
 
-const APP_VER = "beta2"
+const APP_VER = "beta3"
 
 func init() {
 	logger = log.New("settings")
