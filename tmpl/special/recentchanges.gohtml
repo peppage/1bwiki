@@ -10,6 +10,7 @@
 	)
 	var u *m.User
 	var revs []*m.Revision
+	var limit int
 }
 
 @section title {
@@ -24,6 +25,35 @@
 
 <div class="ui text container">
 	<h1>Recent Changes</h1>
+
+	<p>
+		<h2>Recent Changes Options</h2>
+		Show last
+			@if limit == 50 {
+				<a href="/special/recentchanges?limit=50" style="font-weight:bold;">50</a>
+			} else {
+				<a href="/special/recentchanges?limit=50">50</a>
+			}
+			|
+			@if limit == 100 {
+				<a href="/special/recentchanges?limit=100" style="font-weight:bold;">100</a>
+			} else {
+				<a href="/special/recentchanges?limit=100">100</a>
+			}
+			|
+			@if limit == 250 {
+				<a href="/special/recentchanges?limit=250" style="font-weight:bold;">250</a>
+			} else {
+				<a href="/special/recentchanges?limit=250">250</a>
+			}
+			|
+			@if limit == 500 {
+				<a href="/special/recentchanges?limit=500" style="font-weight:bold;">500</a>
+			} else {
+				<a href="/special/recentchanges?limit=500">500</a>
+			}
+			changes
+	</p>
 
 	@for _, v := range revs {
 		@{

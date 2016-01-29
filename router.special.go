@@ -67,13 +67,21 @@ func history(c *echo.Context) error {
 }
 
 func recentChanges(c *echo.Context) error {
-	revs, err := mdl.GetRevisions()
+	limit := 50
+	if c.Query("limit") != "" {
+		var err error
+		limit, err = strconv.Atoi(c.Query("limit"))
+		if err != nil {
+			limit = 50
+		}
+	}
+	revs, err := mdl.GetRevisions(limit)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Recentchanges(val.(*mdl.User), revs))
+	return c.HTML(http.StatusOK, special.Recentchanges(val.(*mdl.User), revs, limit))
 }
 
 func pages(c *echo.Context) error {

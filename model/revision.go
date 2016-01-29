@@ -77,9 +77,9 @@ func convertOptions(opts CreateRevOptions) *Revision {
 	return rev
 }
 
-func GetRevisions() ([]*Revision, error) {
+func GetRevisions(limit int) ([]*Revision, error) {
 	var revs []*Revision
-	err := db.Select(&revs, `SELECT * FROM revision ORDER BY id DESC`)
+	err := db.Select(&revs, `SELECT * FROM revision ORDER BY id DESC LIMIT $1`, limit)
 	if err != nil {
 		return revs, logger.Error("Unable to select all revisions", "err", err)
 	}
