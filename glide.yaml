@@ -1,0 +1,41 @@
+package: 1bwiki
+import:
+- package: github.com/GeertJohan/go.rice
+  subpackages:
+  - github.com\GeertJohan\go.rice
+- package: github.com/gorilla/context
+  subpackages:
+  - github.com\gorilla\context
+- package: github.com/jmoiron/sqlx
+  subpackages:
+  - github.com\jmoiron\sqlx
+- package: github.com/labstack/echo
+  subpackages:
+  - github.com\labstack\echo
+- package: github.com/mattn/go-sqlite3
+  subpackages:
+  - github.com\mattn\go-sqlite3
+- package: github.com/mgutz/logxi
+  subpackages:
+  - github.com\mgutz\logxi\v1
+- package: github.com/microcosm-cc/bluemonday
+  subpackages:
+  - github.com\microcosm-cc\bluemonday
+- package: github.com/pelletier/go-toml
+  subpackages:
+  - github.com\pelletier\go-toml
+- package: github.com/russross/blackfriday
+  subpackages:
+  - github.com\russross\blackfriday
+- package: github.com/sergi/go-diff
+  subpackages:
+  - github.com\sergi\go-diff\diffmatchpatch
+- package: github.com/sipin/gorazor
+  subpackages:
+  - github.com\sipin\gorazor\gorazor
+- package: golang.org/x/crypto
+  subpackages:
+  - golang.org\x\crypto\bcrypt
+- package: github.com/peppage/echo-middleware
+  subpackages:
+  - session

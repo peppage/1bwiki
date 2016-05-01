@@ -5,3 +5,4 @@ tmpl/*.go
 tmpl/*/*.go
 tmpl/*/*/*.go
 conf.toml
+/vendor/
