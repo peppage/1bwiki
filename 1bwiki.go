@@ -11,10 +11,10 @@ import (
 	"1bwiki/tmpl/page"
 
 	"github.com/GeertJohan/go.rice"
-	"github.com/gorilla/context"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
 	"github.com/mgutz/logxi/v1"
-	"github.com/syntaqx/echo-middleware/session"
+	"github.com/peppage/echo-middleware/session"
 )
 
 var logger log.Logger
@@ -42,14 +42,14 @@ func seperateNamespaceAndTitle(t string) (namespace string, title string) {
 	return namespace, title
 }
 
-func root(c *echo.Context) error {
+func root(c echo.Context) error {
 	return c.Redirect(http.StatusMovedPermanently, "/Main_Page")
 }
 
-func wikiPage(c *echo.Context) error {
-	n, t := seperateNamespaceAndTitle(c.Request().URL.String())
+func wikiPage(c echo.Context) error {
+	n, t := seperateNamespaceAndTitle(c.Request().(*standard.Request).Request.URL.String())
 
-	ul := strings.ToLower(c.Request().URL.String())
+	ul := strings.ToLower(c.Request().(*standard.Request).Request.URL.String())
 	if strings.HasPrefix(ul, "/"+noEditArea) {
 		return echo.NewHTTPError(http.StatusForbidden, "Editing of special pages disallowed")
 	}
@@ -63,16 +63,16 @@ func wikiPage(c *echo.Context) error {
 		return c.Redirect(http.StatusMovedPermanently, "/"+n+urlTitle)
 	}
 
-	if c.Query("oldid") != "" {
-		pv, err := mdl.GetPageVeiwByID(c.Query("oldid"))
+	if c.QueryParam("oldid") != "" {
+		pv, err := mdl.GetPageVeiwByID(c.QueryParam("oldid"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 
 		session := session.Default(c)
 		val := session.Get("user")
-		if c.Query("diff") != "" {
-			pv2, err := mdl.GetPageVeiwByID(c.Query("diff"))
+		if c.QueryParam("diff") != "" {
+			pv2, err := mdl.GetPageVeiwByID(c.QueryParam("diff"))
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError)
 			}
@@ -94,7 +94,7 @@ func wikiPage(c *echo.Context) error {
 	return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+t)
 }
 
-func savePage(c *echo.Context) error {
+func savePage(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	u, ok := val.(*mdl.User)
@@ -102,12 +102,12 @@ func savePage(c *echo.Context) error {
 		return logger.Error("User saving page is invalid", "user", u)
 	}
 
-	minor := c.Form("minor") == "on"
+	minor := c.FormValue("minor") == "on"
 	p, err := mdl.CreateOrUpdatePage(u, mdl.CreatePageOptions{
-		Title:     c.Form("title"),
-		Namespace: c.Form("namespace"),
-		Text:      c.Form("text"),
-		Comment:   c.Form("summary"),
+		Title:     c.FormValue("title"),
+		Namespace: c.FormValue("namespace"),
+		Text:      c.FormValue("text"),
+		Comment:   c.FormValue("summary"),
 		IsMinor:   minor,
 	})
 	if err != nil {
@@ -130,15 +130,14 @@ func main() {
 	e := echo.New()
 	e.Use(session.Sessions("session", store))
 	assetHandler := http.FileServer(rice.MustFindBox("static").HTTPBox())
-	e.Get("/static/*", func(c *echo.Context) error {
-		http.StripPrefix("/static/", assetHandler).ServeHTTP(c.Response().Writer(), c.Request())
+	e.Get("/static/*", func(c echo.Context) error {
+		http.StripPrefix("/static/", assetHandler).ServeHTTP(c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
 		return nil
 	})
-	e.Get("/favicon.ico", func(c *echo.Context) error {
-		http.StripPrefix("", assetHandler).ServeHTTP(c.Response().Writer(), c.Request())
+	e.Get("/favicon.ico", func(c echo.Context) error {
+		http.StripPrefix("", assetHandler).ServeHTTP(c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
 		return nil
 	})
-	e.HTTP2(true)
 	e.Use(setUser())
 	if setting.ServerLogging {
 		e.Use(serverLogger())
@@ -176,5 +175,6 @@ func main() {
 	a.Post("", adminHandle)
 
 	fmt.Println("Server started on port " + setting.HttpPort)
-	http.ListenAndServe(":"+setting.HttpPort, context.ClearHandler(e))
+	e.Run(standard.New(":" + setting.HttpPort))
+	//http.ListenAndServe(":"+setting.HttpPort, context.ClearHandler(e))
 }

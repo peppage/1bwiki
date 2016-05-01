@@ -8,21 +8,22 @@ import (
 	mdl "1bwiki/model"
 
 	"github.com/labstack/echo"
-	"github.com/syntaqx/echo-middleware/session"
+	"github.com/labstack/echo/engine/standard"
+	"github.com/peppage/echo-middleware/session"
 )
 
 func setUser() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
+		return func(c echo.Context) error {
 			session := session.Default(c)
 			val := session.Get("user")
 			_, ok := val.(*mdl.User)
 			if !ok {
-				req := c.Request()
+				req := c.Request().(*standard.Request).Request
 				remoteAddr := req.RemoteAddr
-				if ip := req.Header.Get(echo.XRealIP); ip != "" {
+				if ip := req.Header.Get(echo.HeaderXRealIP); ip != "" {
 					remoteAddr = ip
-				} else if ip = req.Header.Get(echo.XForwardedFor); ip != "" {
+				} else if ip = req.Header.Get(echo.HeaderXForwardedFor); ip != "" {
 					remoteAddr = ip
 				} else {
 					remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
@@ -43,9 +44,9 @@ func setUser() echo.MiddlewareFunc {
 
 func serverLogger() echo.MiddlewareFunc {
 	return func(h echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
-			req := c.Request()
-			res := c.Response()
+		return func(c echo.Context) error {
+			req := c.Request().(*standard.Request).Request
+			res := c.Response().(*standard.Response)
 
 			start := time.Now()
 			if err := h(c); err != nil {
@@ -66,7 +67,7 @@ func serverLogger() echo.MiddlewareFunc {
 
 func checkLoggedIn() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
+		return func(c echo.Context) error {
 			session := session.Default(c)
 			val := session.Get("user")
 			u, ok := val.(*mdl.User)
@@ -80,7 +81,7 @@ func checkLoggedIn() echo.MiddlewareFunc {
 
 func checkAdmin() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
+		return func(c echo.Context) error {
 			session := session.Default(c)
 			val := session.Get("user")
 			u, ok := val.(*mdl.User)

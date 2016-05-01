@@ -10,10 +10,10 @@ import (
 	"1bwiki/tmpl/special/user"
 
 	"github.com/labstack/echo"
-	"github.com/syntaqx/echo-middleware/session"
+	"github.com/peppage/echo-middleware/session"
 )
 
-func register(c *echo.Context) error {
+func register(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	flashes := session.Flashes()
@@ -21,12 +21,12 @@ func register(c *echo.Context) error {
 	return c.HTML(http.StatusOK, special.Register(val.(*mdl.User), flashes))
 }
 
-func registerHandle(c *echo.Context) error {
+func registerHandle(c echo.Context) error {
 	session := session.Default(c)
-	if c.Form("password") == c.Form("passwordConfirm") {
+	if c.FormValue("password") == c.FormValue("passwordConfirm") {
 		u := mdl.User{
-			Name:         c.Form("username"),
-			Password:     c.Form("password"),
+			Name:         c.FormValue("username"),
+			Password:     c.FormValue("password"),
 			Registration: time.Now().Unix(),
 		}
 		err := mdl.CreateUser(&u)
@@ -49,19 +49,19 @@ func registerHandle(c *echo.Context) error {
 	return c.Redirect(http.StatusSeeOther, "/")
 }
 
-func login(c *echo.Context) error {
+func login(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	return c.HTML(http.StatusOK, special.Login(val.(*mdl.User)))
 }
 
-func loginHandle(c *echo.Context) error {
-	u, err := mdl.GetUserByName(c.Form("username"))
+func loginHandle(c echo.Context) error {
+	u, err := mdl.GetUserByName(c.FormValue("username"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized) // The user is doesn't exist
 	}
 
-	if u.ValidatePassword(c.Form("password")) {
+	if u.ValidatePassword(c.FormValue("password")) {
 		session := session.Default(c)
 		session.Set("user", u)
 		session.Save()
@@ -72,14 +72,14 @@ func loginHandle(c *echo.Context) error {
 	return echo.NewHTTPError(http.StatusUnauthorized)
 }
 
-func logout(c *echo.Context) error {
+func logout(c echo.Context) error {
 	session := session.Default(c)
 	session.Set("user", nil)
 	session.Save()
 	return c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
-func prefs(c *echo.Context) error {
+func prefs(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	u, ok := val.(*mdl.User)
@@ -89,7 +89,7 @@ func prefs(c *echo.Context) error {
 	return echo.NewHTTPError(http.StatusUnauthorized)
 }
 
-func prefsPasword(c *echo.Context) error {
+func prefsPasword(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	u, ok := val.(*mdl.User)
@@ -99,8 +99,8 @@ func prefsPasword(c *echo.Context) error {
 	return echo.NewHTTPError(http.StatusUnauthorized)
 }
 
-func handlePrefsPassword(c *echo.Context) error {
-	if c.Form("newpassword1") != c.Form("newpassword2") {
+func handlePrefsPassword(c echo.Context) error {
+	if c.FormValue("newpassword1") != c.FormValue("newpassword2") {
 		// need to implement better
 		return echo.NewHTTPError(http.StatusBadRequest, "password do not match")
 	}
@@ -108,8 +108,8 @@ func handlePrefsPassword(c *echo.Context) error {
 	val := session.Get("user")
 	u, _ := val.(*mdl.User)
 
-	if u.ValidatePassword(c.Form("oldpassword")) {
-		u.Password = c.Form("newpassword1")
+	if u.ValidatePassword(c.FormValue("oldpassword")) {
+		u.Password = c.FormValue("newpassword1")
 		err := u.EncodePassword()
 		if err != nil {
 			logger.Error("registering user, encrypting password", "err", err)
