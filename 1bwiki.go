@@ -13,6 +13,7 @@ import (
 	"github.com/GeertJohan/go.rice"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
+	"github.com/labstack/echo/middleware"
 	"github.com/mgutz/logxi/v1"
 	"github.com/peppage/echo-middleware/session"
 )
@@ -129,6 +130,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(session.Sessions("session", store))
+
 	assetHandler := http.FileServer(rice.MustFindBox("static").HTTPBox())
 	e.Get("/static/*", func(c echo.Context) error {
 		http.StripPrefix("/static/", assetHandler).ServeHTTP(c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
@@ -174,7 +176,7 @@ func main() {
 	a.Get("", admin)
 	a.Post("", adminHandle)
 
+	e.Use(middleware.Gzip())
 	fmt.Println("Server started on port " + setting.HttpPort)
 	e.Run(standard.New(":" + setting.HttpPort))
-	//http.ListenAndServe(":"+setting.HttpPort, context.ClearHandler(e))
 }

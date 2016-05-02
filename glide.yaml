@@ -39,3 +39,4 @@ import:
 - package: github.com/peppage/echo-middleware
   subpackages:
   - session
+- package: github.com/dgrijalva/jwt-go

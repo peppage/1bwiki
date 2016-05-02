@@ -1,5 +1,5 @@
-hash: 80cc2a7929b37c91216dea4f37d3ebe2215a467d9883b00d9dd4b9e256098f83
-updated: 2016-05-01T01:54:06.448606-04:00
+hash: 73afd894132c56c83be707f6dac840d1e3998fee79275bd0b646355c5591919a
+updated: 2016-05-01T10:36:59.6905811-04:00
 imports:
 - name: github.com/boj/redistore
   version: fc113767cd6b051980f260d6dbe84b2740c46ab0
@@ -9,6 +9,10 @@ imports:
   version: a5fe2436ffcb3236e175e5149162b41cd28bd27d
   subpackages:
   - github.com\daaku\go.zipexe
+- name: github.com/dgrijalva/jwt-go
+  version: a2c85815a77d0f951e33ba4db5ae93629a1530af
+  subpackages:
+  - github.com\dgrijalva\jwt-go
 - name: github.com/garyburd/redigo
   version: 8873b2f1995f59d4bcdd2b0dc9858e2cb9bf0c13
   subpackages:
@@ -41,14 +45,17 @@ imports:
   subpackages:
   - github.com\kardianos\osext
 - name: github.com/labstack/echo
-  version: b53170ace1a7eea1b5dc4ab017ec853369ce6eb4
+  version: 041252cfc80f6ac996fadf083f13c101d38450dc
   subpackages:
   - github.com\labstack\echo
+  - github.com\labstack\echo\engine\standard
+  - github.com\labstack\echo\middleware
   - github.com\labstack\echo\engine
 - name: github.com/labstack/gommon
   version: 2e62be24dbb1ceb226554aaccfe5a89ec71043b3
   subpackages:
   - github.com\labstack\gommon\log
+  - github.com\labstack\gommon\bytes
   - github.com\labstack\gommon\color
 - name: github.com/mattn/go-colorable
   version: bc69d6cebca8dd5675346a34a1c545b67dc74d5e
@@ -86,6 +93,7 @@ imports:
   version: 78381b0fb0ae76af337cb3b5f22ab0057c269e58
   subpackages:
   - session
+  - github.com\peppage\echo-middleware\session
 - name: github.com/russross/blackfriday
   version: fc997ac2ba5819bbc83936fc6b10fb90adc5fa10
   subpackages:
