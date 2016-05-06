@@ -15,9 +15,6 @@ import:
 - package: github.com/mattn/go-sqlite3
   subpackages:
   - github.com\mattn\go-sqlite3
-- package: github.com/mgutz/logxi
-  subpackages:
-  - github.com\mgutz\logxi\v1
 - package: github.com/microcosm-cc/bluemonday
   subpackages:
   - github.com\microcosm-cc\bluemonday
@@ -40,3 +37,4 @@ import:
   subpackages:
   - session
 - package: github.com/dgrijalva/jwt-go
+- package: github.com/Sirupsen/logrus

@@ -13,7 +13,7 @@ func getSettingValue(name string) string {
 	var s setting
 	err := db.QueryRowx(`SELECT * FROM settings WHERE name = $1`, name).StructScan(&s)
 	if err != nil {
-		logger.Error("get settings value", "err", err)
+		//logger.Error("get settings value", "err", err)
 		return ""
 	}
 	return s.Value

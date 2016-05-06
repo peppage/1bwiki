@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -51,7 +52,7 @@ func createRevision(tx *sqlx.Tx, opts CreateRevOptions) (*Revision, error) {
 
 func CreateRevision(opts CreateRevOptions) (*Revision, error) {
 	if opts.Title == "" {
-		return nil, logger.Error("Invalid title")
+		return nil, errors.New("Invalid Title")
 	}
 	tx := db.MustBegin()
 	rev, err := createRevision(tx, opts)
@@ -81,7 +82,7 @@ func GetRevisions(limit int) ([]*Revision, error) {
 	var revs []*Revision
 	err := db.Select(&revs, `SELECT * FROM revision ORDER BY id DESC LIMIT $1`, limit)
 	if err != nil {
-		return revs, logger.Error("Unable to select all revisions", "err", err)
+		return revs, err
 	}
 	return revs, nil
 }
@@ -90,7 +91,7 @@ func GetLatestRevision(title string) (*Revision, error) {
 	rev := Revision{}
 	err := db.Get(&rev, `SELECT * FROM revision WHERE pagetitle = $1 ORDER BY id DESC`, title)
 	if err != nil {
-		return nil, logger.Error("Cannot get latest revision by title", "err", err)
+		return nil, err
 	}
 	return &rev, nil
 }
@@ -108,7 +109,7 @@ func GetPageRevisions(title string, page int, limit int) ([]*Revision, error) {
 	var revs []*Revision
 	err := db.Select(&revs, `SELECT * FROM revision WHERE pagetitle=$1 ORDER BY id DESC LIMIT $2 OFFSET $3`, title, limit, offset)
 	if err != nil {
-		return revs, logger.Error("Unable to get revisions for page", "page", title, "err", err)
+		return revs, err
 	}
 	return revs, nil
 }

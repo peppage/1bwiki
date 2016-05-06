@@ -6,6 +6,7 @@ import (
 	mdl "1bwiki/model"
 	"1bwiki/tmpl/special"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	"github.com/peppage/echo-middleware/session"
 )
@@ -20,12 +21,12 @@ func admin(c echo.Context) error {
 func adminHandle(c echo.Context) error {
 	err := mdl.SetAnonEditing(c.FormValue("anon") == "on")
 	if err != nil {
-		logger.Error("admin handler", "set anon db", err)
+		log.WithError(err).Error("Failed to set anon editing")
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 	err = mdl.SetSignups(c.FormValue("signup") == "on")
 	if err != nil {
-		logger.Error("admin handler", "set signup db", err)
+		log.WithError(err).Error("Failed to set signups")
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 	return c.Redirect(http.StatusSeeOther, "/special/admin")

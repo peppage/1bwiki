@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"errors"
 	"html"
 	"math/rand"
 	"strings"
@@ -86,7 +87,7 @@ func GetPageVeiwByID(revID string) (*PageView, error) {
 				FROM page JOIN revision on page.title = revision.pagetitle
 				JOIN text on revision.textid = text.id WHERE revision.id = $1`, revID)
 	if err != nil {
-		return nil, logger.Error("unable to get page view by ID", "err", err)
+		return nil, err
 	}
 	return &p, nil
 }
@@ -123,7 +124,7 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 
 	if err != nil {
 		tx.Rollback()
-		return nil, logger.Error("Insert revision failed", "err", err)
+		return nil, err
 	}
 
 	p := &Page{
@@ -138,7 +139,7 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return nil, logger.Error("Transaction failed", "err", err)
+		return nil, err
 	}
 
 	return p, nil
@@ -153,7 +154,7 @@ func GetPages() ([]*Page, error) {
 	var pages []*Page
 	err := db.Select(&pages, `SELECT * FROM page ORDER BY title DESC`)
 	if err != nil {
-		return pages, logger.Error("Unable to get pages", "err", err)
+		return pages, err
 	}
 	return pages, nil
 }
@@ -165,7 +166,7 @@ func GetPageViews() ([]*PageView, error) {
 				page.revisionid = revision.id JOIN text
 				ON revision.textid = text.id`)
 	if err != nil {
-		return pages, logger.Error("Unable to get all page views", "err", err)
+		return pages, err
 	}
 	return pages, nil
 }
@@ -186,7 +187,7 @@ func DeletePage(u *User, title string) error {
 
 		if err != nil {
 			tx.Rollback()
-			return logger.Error("Insert revision failed", "err", err)
+			return err
 		}
 
 		tx.Exec(`UPDATE page SET revisionid=$1 WHERE title=$2`, rev.ID, title)
@@ -194,11 +195,11 @@ func DeletePage(u *User, title string) error {
 		err = tx.Commit()
 		if err != nil {
 			tx.Rollback()
-			return logger.Error("Transaction failed", "err", err)
+			return err
 		}
 		return nil
 	}
 
 	tx.Rollback()
-	return logger.Error("Page doesn't exist!")
+	return errors.New("Page doesn't exist!")
 }

@@ -11,14 +11,13 @@ import (
 	"1bwiki/tmpl/page"
 
 	"github.com/GeertJohan/go.rice"
+	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
-	"github.com/mgutz/logxi/v1"
 	"github.com/peppage/echo-middleware/session"
 )
 
-var logger log.Logger
 var store session.CookieStore
 
 const noEditArea = "special"
@@ -100,7 +99,10 @@ func savePage(c echo.Context) error {
 	val := session.Get("user")
 	u, ok := val.(*mdl.User)
 	if !ok {
-		return logger.Error("User saving page is invalid", "user", u)
+		log.WithFields(log.Fields{
+			"user": u,
+		}).Error("User saving page is invalid")
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid User")
 	}
 
 	minor := c.FormValue("minor") == "on"
@@ -119,8 +121,11 @@ func savePage(c echo.Context) error {
 
 func init() {
 	gob.Register(&mdl.User{})
-	logger = log.New("1bwiki")
 	setting.Initialize()
+	ll, err := log.ParseLevel(setting.LogLevel)
+	if err == nil {
+		log.SetLevel(ll)
+	}
 }
 
 func main() {
@@ -144,8 +149,6 @@ func main() {
 	if setting.ServerLogging {
 		e.Use(serverLogger())
 	}
-
-	logger.SetLevel(setting.LogLevel)
 
 	e.Get("/", root)
 	e.Get("/*", wikiPage)

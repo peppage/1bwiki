@@ -1,6 +1,10 @@
 package model
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"errors"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	ID           int64
@@ -17,7 +21,7 @@ type User struct {
 func CreateUser(u *User) (err error) {
 	err = u.EncodePassword()
 	if err != nil {
-		return logger.Error("Failed to encode password", "err", err)
+		return err
 	}
 	_, err = db.NamedExec(`INSERT INTO user (name, password, registration, realname)
 							VALUES (:name, :password, :registration, '')`, u)
@@ -32,13 +36,13 @@ func UpdateUser(u *User) error {
 
 func GetUserByName(name string) (*User, error) {
 	if len(name) == 0 {
-		return nil, logger.Error("User doesn't exist")
+		return nil, errors.New("User doesn't exist")
 	}
 
 	u := &User{}
 	err := db.QueryRowx(`SELECT * FROM user WHERE name = $1`, name).StructScan(u)
 	if err != nil {
-		return nil, logger.Error("User doesn't exist", "err", err)
+		return nil, err
 	}
 	return u, nil
 }
@@ -66,7 +70,7 @@ func GetUsers() ([]*User, error) {
 	var users []*User
 	err := db.Select(&users, `SELECT name FROM user ORDER BY name DESC`)
 	if err != nil {
-		return users, logger.Error("Unable to get users", "err", err)
+		return users, err
 	}
 	return users, nil
 

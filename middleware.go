@@ -7,6 +7,7 @@ import (
 
 	mdl "1bwiki/model"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/peppage/echo-middleware/session"
@@ -33,7 +34,9 @@ func setUser() echo.MiddlewareFunc {
 					Name: remoteAddr,
 					Anon: true,
 				}
-				logger.Warn("Saving anon user", "user", user)
+				log.WithFields(log.Fields{
+					"user": user.Name,
+				}).Warn("Saving anon user")
 				session.Set("user", user)
 				session.Save()
 			}
@@ -59,7 +62,12 @@ func serverLogger() echo.MiddlewareFunc {
 				path = "/"
 			}
 
-			logger.Debug("", "method", method, "path", path, "code", res.Status(), "time", stop.Sub(start).String())
+			log.WithFields(log.Fields{
+				"method": method,
+				"path":   path,
+				"code":   res.Status(),
+				"time":   stop.Sub(start).String(),
+			}).Debug()
 			return nil
 		}
 	}

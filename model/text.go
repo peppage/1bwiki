@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -19,14 +21,14 @@ func createText(tx *sqlx.Tx, text string) *Text {
 // CreateText creates a new text for a page
 func CreateText(text string) (*Text, error) {
 	if len(text) == 0 {
-		return nil, logger.Error("Invalid Text")
+		return nil, errors.New("Invalid Text")
 	}
 	tx := db.MustBegin()
 	t := createText(tx, text)
 	err := tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return nil, logger.Error("Unable to commit text")
+		return nil, err
 	}
 	return t, nil
 }

@@ -1,29 +1,23 @@
 package model
 
 import (
-	servSetting "1bwiki/setting"
-
 	"github.com/GeertJohan/go.rice"
+	log "github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/mgutz/logxi/v1"
 )
 
 var db *sqlx.DB
-var logger log.Logger
 
 func init() {
-	logger = log.New("model")
 	var err error
 	db, err = sqlx.Connect("sqlite3", "./1bwiki.db")
 	if err != nil {
-		logger.Error("connecting to db", "err", err)
+		panic("failed to connect to db " + err.Error())
 	}
 }
 
 func SetupDb() {
-	logger.SetLevel(servSetting.LogLevel)
-
 	tx := db.MustBegin()
 	tx.Exec(`create table if not exists text (id integer primary KEY, text blob)`)
 	tx.Exec(`create table if not exists revision (id integer primary key,
@@ -43,7 +37,7 @@ func SetupDb() {
 	err := tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		logger.Error("db setup", "err", err)
+		log.WithError(err).Error("Failed initializing db")
 	}
 
 	var texts int
@@ -51,11 +45,11 @@ func SetupDb() {
 	if texts == 0 {
 		box, err := rice.FindBox("setup")
 		if err != nil {
-			logger.Error("can't find setup rice box", "err", err)
+			log.WithError(err).Error("can't find setup rice box")
 		}
 		d, err := box.String("default.md")
 		if err != nil {
-			logger.Error("default.md file error", "err", err)
+			log.WithError(err).Error("default.md file error")
 		}
 		u := &User{
 			ID:   0,

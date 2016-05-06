@@ -9,6 +9,7 @@ import (
 	"1bwiki/tmpl/special"
 	"1bwiki/tmpl/special/user"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 	"github.com/peppage/echo-middleware/session"
 )
@@ -36,7 +37,11 @@ func registerHandle(c echo.Context) error {
 				session.Save()
 				return c.Redirect(http.StatusSeeOther, "/special/register")
 			}
-			return logger.Error("failed to create user", "err", err)
+			log.WithFields(log.Fields{
+				"err":  err,
+				"user": c.FormValue("username"),
+			})
+			return echo.NewHTTPError(http.StatusBadRequest, "failed to create user")
 		}
 		session.Set("user", u)
 		session.Save()
@@ -112,7 +117,11 @@ func handlePrefsPassword(c echo.Context) error {
 		u.Password = c.FormValue("newpassword1")
 		err := u.EncodePassword()
 		if err != nil {
-			logger.Error("registering user, encrypting password", "err", err)
+			log.WithFields(log.Fields{
+				"err":  err,
+				"user": u.Name,
+			})
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed.")
 		}
 		err = mdl.UpdateUser(u)
 		if err != nil {
