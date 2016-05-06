@@ -55,10 +55,22 @@
 			changes
 	</p>
 
+	@{
+		prevDate := ""
+		showTime := true
+	}
 	@for _, v := range revs {
 		@{
 			t := time.Unix(v.TimeStamp, 0).UTC()
 			tOut := t.Format("15:04")
+
+			dateHeader := t.Format("_2 Jan 2006")
+			if prevDate ==  dateHeader {
+				showTime = false
+			} else {
+				showTime = true
+				prevDate = dateHeader
+			}
 
 			lenDisplay := `<span class="minus">(` + strconv.Itoa(v.LenDiff) + `)</span>`
 			if v.LenDiff > 0 {
@@ -80,6 +92,9 @@
 				@v.UserText deleted page <a class="new" href="/@v.PageTitle">@m.NiceTitle(v.PageTitle)</a><br>
 			</span>
 		} else {
+			@if showTime {
+				<h4>@prevDate</h4>
+			}
 			<span>
 				@raw(minor) @raw(newEdit)
 				@tOut <a href="/@v.PageTitle">@m.NiceTitle(v.PageTitle)</a> (
