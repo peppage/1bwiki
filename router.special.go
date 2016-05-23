@@ -9,6 +9,8 @@ import (
 	"1bwiki/tmpl/page"
 	"1bwiki/tmpl/special"
 
+	"1bwiki/view"
+
 	"github.com/labstack/echo"
 	"github.com/peppage/echo-middleware/session"
 )
@@ -120,7 +122,12 @@ func users(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
-	session := session.Default(c)
-	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Users(val.(*mdl.User), u))
+	//session := session.Default(c)
+	//val := session.Get("user")
+	//s.Users(u)
+	p := &view.UsersPage{
+		Users: u,
+		URL:   "/special/users",
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }

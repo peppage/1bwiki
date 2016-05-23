@@ -1,0 +1,31 @@
+{% import (
+		m "1bwiki/model"
+	) %}
+    
+{% code
+type UsersPage struct {
+    BasePage
+    Users []*m.User
+    URL string
+}
+%}
+
+{% func (p *UsersPage) Body() %}
+    <div class="ui text container">
+	    <h1>Users</h1>
+        {% for _, u := range p.Users %}
+            {%s u.Name %}<br>
+        {% endfor %}
+    </div>
+{% endfunc %}
+
+{% func (p *UsersPage) Title() %}
+    Users
+{% endfunc %}
+
+{% func (p *UsersPage) Nav() %}
+    {% code
+        p.BasePage.URL = p.URL 
+    %}
+    {%= p.BasePage.Nav() %}
+{% endfunc %}
