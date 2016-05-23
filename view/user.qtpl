@@ -1,0 +1,202 @@
+{% import (
+		m "1bwiki/model"
+	) %}
+
+{% code
+type RegisterPage struct {
+    BasePage
+    URL string
+    User *m.User
+    Messages []interface{}
+}
+%}
+
+{% func (p *RegisterPage) Body() %}
+    <div class="ui text container">
+        {% if len(p.Messages) > 0 %}
+            <div class="ui negative message">
+                <div class="header">{%v p.Messages[0] %}</div>
+            </div>
+        {% endif %}
+
+        <form class="ui form" action="/special/register" method="post">
+            <div class="field">
+                <label>Username</label>
+                <input type="text" name="username">
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" name="password">
+            </div>
+            <div class="field">
+                <label>Confirm Password</label>
+                <input type="password" name="passwordConfirm">
+            </div>
+            <!-- include stuff here to show password when hidden -->
+            <button class="ui primary button" type="submit">Submit</button>
+        </form>
+    </div>
+{% endfunc %}
+
+{% func (p *RegisterPage) Title() %}
+    Register
+{% endfunc %}
+
+{% func (p *RegisterPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *RegisterPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type LoginPage struct {
+    BasePage
+    URL string
+    User *m.User
+}
+%}
+
+{% func (p *LoginPage) Body() %}
+    <div class="ui text container">
+        <form class="ui form" method="post">
+            <div class="field">
+                <label>Username</label>
+                <input type="text" id="username" name="username" />
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <input type="password" id="password" name="password" />
+            </div>
+
+            <button class="ui primary button" type="submit">Log in</button>
+        </form>
+    </div>
+{% endfunc %}
+
+{% func (p *LoginPage) Title() %}
+    Login
+{% endfunc %}
+
+{% func (p *LoginPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *LoginPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type PasswordPage struct {
+    BasePage
+    URL string
+    User *m.User
+}
+%}
+
+{% func (p *PasswordPage) Body() %}
+    <div class="ui text container">
+        <h1>Change Password</h1>
+
+        <h4 class="ui top attached header">Change account password</h4>
+        <div class="ui attached segment">
+            <form class="ui form" method="post">
+                <div class="field">
+                    <label>Old Password</label>
+                    <input type="password" name="oldpassword">
+                </div>
+                <div class="field">
+                    <label>New Password</label>
+                    <input type="password" name="newpassword1">
+                </div>
+                <div class="field">
+                    <label>Retype new Password</label>
+                    <input type="password" name="newpassword2">
+                </div>
+
+                <button class="ui primary button" type="submit">Change password</button>
+                <a class="ui button" href="/special/preferences">Cancel</a>
+            </form>
+        </div>
+    </div>
+{% endfunc %}
+
+{% func (p *PasswordPage) Title() %}
+    Change Password
+{% endfunc %}
+
+{% func (p *PasswordPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *PasswordPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type PrefsPage struct {
+    BasePage
+    URL string
+    User *m.User
+}
+%}
+
+{% func (p *PrefsPage) Body() %}
+    <div class="ui container">
+        <div class="ui grid">
+            <div class="four wide column">
+                <div class="ui vertical menu">
+                    <a class="active item" href="/special/preferences">
+                        User Profile
+                    </a>
+                </div>
+            </div>
+            <div class="twelve wide column">
+                <h2>Basic Information</h2>
+                <table>
+                    <tr>
+                        <td class="label">Username:</td>
+                        <td>{%s p.User.Name %}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Password:</td>
+                        <td><a href="/special/preferences/password">Change Password</a></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Registration time:</td>
+                        <td>{%v p.User.Registration %}</td>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endfunc %}
+
+{% func (p *PrefsPage) Title() %}
+    Change Password
+{% endfunc %}
+
+{% func (p *PrefsPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *PrefsPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}

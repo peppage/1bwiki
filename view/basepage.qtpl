@@ -1,0 +1,181 @@
+This is a base page template. All the other template pages implement this interface.
+
+{% import (
+    "1bwiki/setting"
+    "1bwiki/model"
+    ) %}
+
+{% interface
+Page {
+	Title()
+	Body()
+    UserMenu()
+    Nav()
+}
+%}
+
+
+Page prints a page implementing Page interface.
+{% func PageTemplate(p Page) %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{%= p.Title() %}</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+	<script src="/static/jquery-2.1.4.min.js"></script>
+	<script src="/static/markdown-it.js"></script>
+	<script src="/static/markdown-it-footnote.js"></script>
+	<script src="/static/highlight.pack.js"></script>
+	<script src="/static/emojify.js"></script>
+	<script src="/static/codemirror/lib/codemirror.js"></script>
+	<script src="/static/codemirror/overlay.js"></script>
+	<script src="/static/codemirror/xml/xml.js"></script>
+	<script src="/static/codemirror/markdown/markdown.js"></script>
+	<script src="/static/codemirror/gfm/gfm.js"></script>
+	<script src="/static/codemirror/javascript/javascript.js"></script>
+	<script src="/static/codemirror/css/css.js"></script>
+	<script src="/static/codemirror/htmlmixed/htmlmixed.js"></script>
+	<script src="/static/codemirror/lib/util/continuelist.js"></script>
+	<script src="/static/rawinflate.js"></script>
+	<script src="/static/rawdeflate.js"></script>
+	<script src="/static/site.js"></script>
+	<link rel="stylesheet" href="/static/base16-light.css">
+	<link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+	<link rel="stylesheet" href="/static/default.css">
+	<link rel="stylesheet" type="text/css" href="/static/semantic.min.css">
+	<link rel="stylesheet" type="text/css" href="/static/site.css" >
+	<script src="/static/semantic.min.js"></script>
+</head>
+<body>
+	<div class="site-content">
+		<div class="ui container">
+			<div class="ui secondary menu">
+				<a class="item brand" href="/">
+					<img src="/static/logo.png" style="height:28px;width:28px;">
+				</a>
+				<a class="item" href="/special/recentchanges">Recent Changes</a>
+				<a class="item" href="/special/pages">Wiki Pages</a>
+				<a class="item" href="/special/random">Random Page</a>
+				<a class="item" href="/special/users">Users</a>
+				<div class="right menu">
+					{%= p.UserMenu() %}
+				</div>
+			</div>
+		</div>
+        {%= p.Nav() %}
+		{%= p.Body() %}
+	</div>
+	<footer>
+		<div class="ui inverted vertical segment ">
+			<div class="ui container">
+				<div class="ui left">
+					1bwiki Version: {%s setting.APP_VER %}
+				</div>
+			</div>
+		</div>
+	</footer>
+</body>
+</html>
+{% endfunc %}
+
+
+Base page implementation. Other pages may inherit from it if they need
+overriding only certain Page methods
+{% code 
+    type BasePage struct {}
+%}
+
+{% func (p *BasePage) Title() %}This is a base title{% endfunc %}
+
+{% func (p *BasePage) Body() %}This is a base body{% endfunc %}
+
+{% func (p *BasePage) UserMenu() %}
+	{%if model.Signups() %}
+		<a class="item" href="/special/register">Register</a>
+	{% endif %}
+	<a class="item" href="/special/login">Sign In</a>
+{% endfunc %}
+
+{% func (p *BasePage) UserMenuLoggedIn(user *model.User) %}
+	<div class="ui item dropdown">
+		<div class="text">{%s user.Name %}</div>
+		<i class="dropdown icon"></i>
+		<div class="menu">
+			<div class="ui header">Signed in as {%s user.Name %}</div>
+			<div class="divider"></div>
+			<a class="item" href="/special/preferences">Preferences</a>
+			{% if user.IsAdmin() %}
+				<div class="divider"></div>
+				<a class="item" href="/special/admin">Admin</a>
+			{% endif %}
+			<div class="divider"></div>
+			<a class="item" href="/special/logout">Sign Out</a>
+		</div>
+	</div>
+{% endfunc %}
+
+{% func (p *BasePage) Nav() %}
+    <div class="ui tabs container">
+        <div class="ui tabular menu">
+            <a class="item active" href="">
+                Special page
+            </a>
+        </div>
+    </div>
+    <div class="ui tabs divider"></div>
+{% endfunc %}
+
+{% func (p *BasePage) SpecialNav(url string) %}
+    <div class="ui tabs container">
+        <div class="ui tabular menu">
+            <a class="item active" href="{%s= url %}">
+                Special page
+            </a>
+        </div>
+    </div>
+    <div class="ui tabs divider"></div>
+{% endfunc %}
+
+{% func (p *BasePage) PageNav(title, active string) %}
+	<div class="ui tabs container">
+		<div class="ui tabular menu">
+			{%if active == "article" %}
+				<a class="item active" href="/{%s title %}">
+			{% else %}
+				<a class="item" href="/{%s title %}">
+			{% endif %}
+				Article
+			</a>
+			<!--<a class="item" href="#" style="">
+				Talk
+			</a>-->
+			{%if active == "edit" %}
+				<a class="item active" href="/special/edit?title={%s title %}">
+			{% else %}
+				<a class="item" href="/special/edit?title={%s title %}">
+			{% endif %}
+				Edit
+			</a>
+			{% if active == "history" %}
+				<a class="item active" href="/special/history?title={%s title %}">
+			{% else %}
+				<a class="item" href="/special/history?title={%s title %}">
+			{% endif %}
+				History
+			</a>
+			{% if active != "edit" %}
+				<div class="right menu">
+					<div class="ui item dropdown">
+						<div class="text">More</div>
+						<i class="dropdown icon"></i>
+						<div class="menu">
+							<a class="item" href="/special/delete?title={%s title %}">Delete</a>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+	<div class="ui tabs divider"></div>
+{% endfunc %}

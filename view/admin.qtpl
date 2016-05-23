@@ -1,0 +1,59 @@
+{% import (
+		m "1bwiki/model"
+	) %}
+
+{% code
+type AdminPage struct {
+    BasePage
+    URL string
+    User *m.User
+}
+%}
+
+{% func (p *AdminPage) Body() %}
+    {% code
+        anonAllowed := m.AnonEditing()
+        signupAllowed := m.Signups()
+    %}
+    <div class="ui text container">
+        <form class="ui form" method="post">
+            <div class="field">
+                <div class="ui checkbox">
+                    {% if anonAllowed %}
+                        <input type="checkbox" name="anon" checked="">
+                    {% else %}
+                        <input type="checkbox" name="anon">
+                    {% endif %}
+                    <label>Allow anonymous editing</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui checkbox">
+                    {% if signupAllowed %}
+                        <input type="checkbox" name="signup" checked="">
+                    {% else %}
+                        <input type="checkbox" name="signup">
+                    {% endif %}
+                    <label>Allow signup</label>
+                </div>
+            </div>
+            <button class="ui primary button" type="submit">Save</button>
+        </form>
+    </div>
+{% endfunc %}
+
+{% func (p *AdminPage) Title() %}
+    Admin
+{% endfunc %}
+
+{% func (p *AdminPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *AdminPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	mdl "1bwiki/model"
-	"1bwiki/tmpl/page"
-	"1bwiki/tmpl/special"
+
+	"1bwiki/view"
 
 	"github.com/labstack/echo"
 	"github.com/peppage/echo-middleware/session"
@@ -41,7 +41,11 @@ func edit(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, page.Editpage(val.(*mdl.User), pv))
+	p := &view.ArticleEdit{
+		User: val.(*mdl.User),
+		Page: pv,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func history(c echo.Context) error {
@@ -62,8 +66,14 @@ func history(c echo.Context) error {
 	val := session.Get("user")
 	niceTitle := mdl.NiceTitle(c.QueryParam("title"))
 	totalPages := int(mdl.GetAmountOfRevisionsForPage(c.QueryParam("title")) / 50)
-	return c.HTML(http.StatusOK, page.History(val.(*mdl.User),
-		niceTitle, revs, p, totalPages))
+	page := &view.ArticleHistory{
+		User:       val.(*mdl.User),
+		NiceTitle:  niceTitle,
+		Revs:       revs,
+		Page:       p,
+		TotalPages: totalPages,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(page))
 }
 
 func recentChanges(c echo.Context) error {
@@ -81,7 +91,13 @@ func recentChanges(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Recentchanges(val.(*mdl.User), revs, limit))
+	p := &view.RecentChangesPage{
+		URL:   "special/recentchanges",
+		User:  val.(*mdl.User),
+		Revs:  revs,
+		Limit: limit,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func pages(c echo.Context) error {
@@ -91,7 +107,12 @@ func pages(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Pages(val.(*mdl.User), p))
+	page := &view.PageListPage{
+		URL:   "special/pages",
+		User:  val.(*mdl.User),
+		Pages: p,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(page))
 }
 
 func random(c echo.Context) error {
@@ -102,7 +123,12 @@ func random(c echo.Context) error {
 func delete(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Delete(val.(*mdl.User), c.QueryParam("title")))
+	p := &view.DeletePage{
+		PageTitle: c.QueryParam("title"),
+		URL:       "/special/delete",
+		User:      val.(*mdl.User),
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func deleteHandle(c echo.Context) error {
@@ -122,5 +148,10 @@ func users(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Users(val.(*mdl.User), u))
+	p := &view.UsersListPage{
+		Users: u,
+		URL:   "/special/users",
+		User:  val.(*mdl.User),
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
