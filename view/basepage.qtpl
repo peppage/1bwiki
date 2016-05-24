@@ -136,3 +136,46 @@ overriding only certain Page methods
     </div>
     <div class="ui tabs divider"></div>
 {% endfunc %}
+
+{% func (p *BasePage) PageNav(title, active string) %}
+	<div class="ui tabs container">
+		<div class="ui tabular menu">
+			{%if active == "article" %}
+				<a class="item active" href="/{%s title %}">
+			{% else %}
+				<a class="item" href="/{%s title %}">
+			{% endif %}
+				Article
+			</a>
+			<!--<a class="item" href="#" style="">
+				Talk
+			</a>-->
+			{%if active == "edit" %}
+				<a class="item active" href="/special/edit?title={%s title %}">
+			{% else %}
+				<a class="item" href="/special/edit?title={%s title %}">
+			{% endif %}
+				Edit
+			</a>
+			{% if active == "history" %}
+				<a class="item active" href="/special/history?title={%s title %}">
+			{% else %}
+				<a class="item" href="/special/history?title={%s title %}">
+			{% endif %}
+				History
+			</a>
+			{% if active != "edit" %}
+				<div class="right menu">
+					<div class="ui item dropdown">
+						<div class="text">More</div>
+						<i class="dropdown icon"></i>
+						<div class="menu">
+							<a class="item" href="/special/delete?title={%s title %}">Delete</a>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+	<div class="ui tabs divider"></div>
+{% endfunc %}

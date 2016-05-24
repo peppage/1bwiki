@@ -1,0 +1,73 @@
+{% import (
+		m "1bwiki/model"
+	) %}
+    
+{% code
+type UsersListPage struct {
+    BasePage
+    Users []*m.User
+    URL string
+    User *m.User
+}
+%}
+
+{% func (p *UsersListPage) Body() %}
+    <div class="ui text container">
+	    <h1>Users</h1>
+        {% for _, u := range p.Users %}
+            {%s u.Name %}<br>
+        {% endfor %}
+    </div>
+{% endfunc %}
+
+{% func (p *UsersListPage) Title() %}
+    Users
+{% endfunc %}
+
+{% func (p *UsersListPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *UsersListPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type DeletePage struct {
+    BasePage
+    URL string
+    User *m.User
+    PageTitle string
+}
+%}
+
+{% func (p *DeletePage) Body() %}
+    <div class="ui text container">
+        <h1>Delete @pageTitle?</h1>
+        <form class="ui form" method="post">
+            <input type="hidden" name="title" value="@pageTitle">
+            <button class="ui primary button" type="submit">Delete</button>
+            <a class="ui button" href="/@pageTitle">Cancel</a>
+        </form>
+    </div>
+{% endfunc %}
+
+{% func (p *DeletePage) Title() %}
+    Delete {%s p.PageTitle %}
+{% endfunc %}
+
+{% func (p *DeletePage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *DeletePage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}

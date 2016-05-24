@@ -43,7 +43,11 @@ func edit(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, page.Editpage(val.(*mdl.User), pv))
+	p := &view.ArticleEdit{
+		User: val.(*mdl.User),
+		Page: pv,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func history(c echo.Context) error {
@@ -104,7 +108,12 @@ func random(c echo.Context) error {
 func delete(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Delete(val.(*mdl.User), c.QueryParam("title")))
+	p := &view.DeletePage{
+		PageTitle: c.QueryParam("title"),
+		URL:       "/special/delete",
+		User:      val.(*mdl.User),
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func deleteHandle(c echo.Context) error {
@@ -124,7 +133,7 @@ func users(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	p := &view.UsersPage{
+	p := &view.UsersListPage{
 		Users: u,
 		URL:   "/special/users",
 		User:  val.(*mdl.User),

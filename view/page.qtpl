@@ -1,0 +1,180 @@
+{% import (
+		m "1bwiki/model"
+	) %}
+    
+{% code
+type Article struct {
+    BasePage
+    User *m.User
+    Page *m.PageView
+}
+%}
+
+{% func (p *Article) Body() %}
+    <div class="ui text container">
+	    <h1>{%s p.Page.NiceTitle %}</h1>
+	    {%s= p.Page.Html() %}
+    </div>
+{% endfunc %}
+
+{% func (p *Article) Title() %}
+    {%s= p.Page.NiceTitle %}
+{% endfunc %}
+
+{% func (p *Article) Nav() %}
+    {%= p.BasePage.PageNav(p.Page.NiceTitle, "article") %}
+{% endfunc %}
+
+{% func (p *Article) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type ArticleDiff struct {
+    BasePage
+    User *m.User
+    Page *m.PageView
+    Page2 *m.PageView
+}
+%}
+
+{% func (p *ArticleDiff) Body() %}
+    <div class="ui text container">
+	<h1>{%s p.Page.NiceTitle %}: Difference between revisions</h1>
+	<div class="ui orange message">
+	    Difference between a revision on {%s p.Page.PrettyTime() %} and {%s p.Page2.PrettyTime() %}
+	</div>
+</div>
+
+<div class="ui text container">
+	{%s= p.Page.Diff(p.Page2) %}
+</div>
+{% endfunc %}
+
+{% func (p *ArticleDiff) Title() %}
+    {%s= p.Page.NiceTitle %} Difference between revisions
+{% endfunc %}
+
+{% func (p *ArticleDiff) Nav() %}
+    {%= p.BasePage.PageNav(p.Page.NiceTitle, "article") %}
+{% endfunc %}
+
+{% func (p *ArticleDiff) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type ArticleEdit struct {
+    BasePage
+    User *m.User
+    Page *m.PageView
+}
+%}
+
+{% func (p *ArticleEdit) Body() %}
+    <div class="ui text container">
+        {%if p.Page.Text == "" %}
+            <h1>Creating {%s p.Page.NiceTitle %}</h1>
+        {% else %}
+            <h1>Editing {%s p.Page.NiceTitle %}</h1>
+        {% endif %}
+
+        <h2>Preview</h2>
+        <div class="ui message orange">
+            <div class="header">This is only a preview</div>
+            <p>
+                Your changes have not yet been saved!
+                <a href="#in">→ Go to editing area</a>
+            </p>
+        </div>
+        {%if p.Page.Deleted %}
+            {% code 
+                rev, _ := m.GetLatestRevision(p.Page.Title)
+            %}
+            <div class="ui message red">
+                <span class="header">A page with this title has been previously deleted</span>
+                <p>
+                    If you are creating a new page with different content, please continue. If you are recreating a page similar to the previously deleted page, or are unsure, please first contact the deleting user using the information provided below.
+                    <ul>
+                        <li>
+                            {%s rev.PrettyTime() %} {%s rev.UserText %} deleted page
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        {% endif %}
+
+        <div id="out"></div>
+        <div class="ui divider"></div>
+        <div class="editBar">
+            <div class="ui icon buttons">
+                <button class="ui icon button" id="function-h1"><b>h1</b></button>
+                <button class="ui icon button" id="function-h2"><b>h2</b></button>
+                <button class="ui icon button" id="function-h3"><b>h3</b></button>
+            </div>
+            <div class="ui icon buttons">
+                <button class="ui icon button" id="function-b"><b>B</b></button>
+                <button class="ui icon button" id="function-i"><b>I</b></button>
+                <!--<button class="ui icon button" id="js-function-code"><b>C</b></button>-->
+            </div>
+        </div>
+
+        <form class="ui form" method="post">
+            <input type="hidden" name="namespace" value="{%s p.Page.NameSpace %}">
+            <input type="hidden" name="title" value="{%s p.Page.Title %}">
+
+            <div id="in" class="field">
+                <textarea id="code" name="text">{%s p.Page.Text %}</textarea>
+            </div>
+            <div class="field">
+                <label>Edit Summary</label>
+                <input type="text" name="summary">
+            </div>
+            <div class="field">
+                <div class="ui checkbox">
+                    <input type="checkbox" name="minor">
+                    <label>This is a minor edit</label>
+                </div>
+            </div>
+            <button class="ui primary button" type="submit">Submit</button>
+        </form>
+    </div>
+    <script>
+        setupEditorToolbar();
+        var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+            mode: 'gfm',
+            lineNumbers: false,
+            matchBrackets: true,
+            lineWrapping: true,
+            theme: 'base16-light',
+            extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
+        });
+        editor.setSize(null, 600)
+        update(editor);
+        editor.on('change', update);
+    </script>
+{% endfunc %}
+
+{% func (p *ArticleEdit) Title() %}
+    Editing {%s= p.Page.NiceTitle %}
+{% endfunc %}
+
+{% func (p *ArticleEdit) Nav() %}
+    {%= p.BasePage.PageNav(p.Page.NiceTitle, "Edit") %}
+{% endfunc %}
+
+{% func (p *ArticleEdit) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}

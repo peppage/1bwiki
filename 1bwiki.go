@@ -9,6 +9,7 @@ import (
 	mdl "1bwiki/model"
 	"1bwiki/setting"
 	"1bwiki/tmpl/page"
+	"1bwiki/view"
 
 	"github.com/GeertJohan/go.rice"
 	log "github.com/Sirupsen/logrus"
@@ -76,7 +77,12 @@ func wikiPage(c echo.Context) error {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError)
 			}
-			return c.HTML(http.StatusOK, page.Diff(val.(*mdl.User), pv, pv2))
+			p := &view.ArticleDiff{
+				User:  val.(*mdl.User),
+				Page:  pv,
+				Page2: pv2,
+			}
+			return c.HTML(http.StatusOK, view.PageTemplate(p))
 		}
 		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
 	}
@@ -86,7 +92,11 @@ func wikiPage(c echo.Context) error {
 	if pv.NiceTitle != "" && !pv.Deleted {
 		session := session.Default(c)
 		val := session.Get("user")
-		return c.HTML(http.StatusOK, page.Page(val.(*mdl.User), pv))
+		p := &view.Article{
+			User: val.(*mdl.User),
+			Page: pv,
+		}
+		return c.HTML(http.StatusOK, view.PageTemplate(p))
 	}
 	if n != "" {
 		n += ":"
