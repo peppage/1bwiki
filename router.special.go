@@ -122,12 +122,12 @@ func users(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "")
 	}
-	//session := session.Default(c)
-	//val := session.Get("user")
-	//s.Users(u)
+	session := session.Default(c)
+	val := session.Get("user")
 	p := &view.UsersPage{
 		Users: u,
 		URL:   "/special/users",
+		User:  val.(*mdl.User),
 	}
 	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }

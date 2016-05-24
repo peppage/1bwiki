@@ -7,6 +7,7 @@ type UsersPage struct {
     BasePage
     Users []*m.User
     URL string
+    User *m.User
 }
 %}
 
@@ -24,8 +25,13 @@ type UsersPage struct {
 {% endfunc %}
 
 {% func (p *UsersPage) Nav() %}
-    {% code
-        p.BasePage.URL = p.URL 
-    %}
-    {%= p.BasePage.Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *UsersPage) UserMenu() %}
+    {% if p.User != nil %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% else %}
+        {%= p.BasePage.UserMenu() %}
+    {% endif %}
 {% endfunc %}

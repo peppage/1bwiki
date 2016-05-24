@@ -9,7 +9,7 @@ This is a base page template. All the other template pages implement this interf
 Page {
 	Title()
 	Body()
-    User(user *model.User)
+    UserMenu()
     Nav()
 }
 %}
@@ -59,7 +59,7 @@ Page prints a page implementing Page interface.
 				<a class="item" href="/special/random">Random Page</a>
 				<a class="item" href="/special/users">Users</a>
 				<div class="right menu">
-					{%= p.User(nil) %}
+					{%= p.UserMenu() %}
 				</div>
 			</div>
 		</div>
@@ -83,28 +83,53 @@ Page prints a page implementing Page interface.
 Base page implementation. Other pages may inherit from it if they need
 overriding only certain Page methods
 {% code 
-    type BasePage struct {
-        URL string
-    }
+    type BasePage struct {}
 %}
 
 {% func (p *BasePage) Title() %}This is a base title{% endfunc %}
 
 {% func (p *BasePage) Body() %}This is a base body{% endfunc %}
 
-{% func (p *BasePage) User(user *model.User) %}
-    {%if user == nil %}
-        {%if model.Signups() %}
-            <a class="item" href="/special/register">Register</a>
-        {% endif %}
-        <a class="item" href="/special/login">Sign In</a>
-    {% endif %}
+{% func (p *BasePage) UserMenu() %}
+	{%if model.Signups() %}
+		<a class="item" href="/special/register">Register</a>
+	{% endif %}
+	<a class="item" href="/special/login">Sign In</a>
+{% endfunc %}
+
+{% func (p *BasePage) UserMenuLoggedIn(user *model.User) %}
+	<div class="ui item dropdown">
+		<div class="text">{%s user.Name %}</div>
+		<i class="dropdown icon"></i>
+		<div class="menu">
+			<div class="ui header">Signed in as {%s user.Name %}</div>
+			<div class="divider"></div>
+			<a class="item" href="/special/preferences">Preferences</a>
+			{% if user.IsAdmin() %}
+				<div class="divider"></div>
+				<a class="item" href="/special/admin">Admin</a>
+			{% endif %}
+			<div class="divider"></div>
+			<a class="item" href="/special/logout">Sign Out</a>
+		</div>
+	</div>
 {% endfunc %}
 
 {% func (p *BasePage) Nav() %}
     <div class="ui tabs container">
         <div class="ui tabular menu">
-            <a class="item active" href="{%s= p.URL %}">
+            <a class="item active" href="">
+                Special page
+            </a>
+        </div>
+    </div>
+    <div class="ui tabs divider"></div>
+{% endfunc %}
+
+{% func (p *BasePage) SpecialNav(url string) %}
+    <div class="ui tabs container">
+        <div class="ui tabular menu">
+            <a class="item active" href="{%s= url %}">
                 Special page
             </a>
         </div>
