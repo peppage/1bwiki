@@ -1,4 +1,6 @@
 {% import (
+        "strconv"
+
 		m "1bwiki/model"
 	) %}
     
@@ -172,6 +174,138 @@ type ArticleEdit struct {
 {% endfunc %}
 
 {% func (p *ArticleEdit) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type ArticleHistory struct {
+    BasePage
+    User *m.User
+	NiceTitle string
+	Revs []*m.Revision
+	Page int
+	TotalPages int
+}
+%}
+
+{% func (p *ArticleHistory) Body() %}
+    <div class="ui text container">
+        <h1>{%s p.NiceTitle %}: Revision History</h1>
+        {% code
+            deleted := false
+            if len(p.Revs) > 0 {
+                if p.Revs[0].Deleted {
+                    deleted = true
+                }
+            }
+        %}
+
+        {%if deleted %}
+            <div class="ui message red">
+                <p>
+                    This page has been deleted. Deletions provided below for reference.
+                    <ul>
+                        {%for _, v := range p.Revs %}
+                            {% if v.Deleted %}
+                                <li>
+                                    {%s v.PrettyTime() %} {%s v.UserText %} deleted page
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+        {% else %}
+            {%= pagination(p.Revs[0].PageTitle, p.Page, p.TotalPages) %}
+            <br><br>
+            {% for i, v := range p.Revs %}
+                {% code
+                    lenDisplay := `<span class="minus">(` + strconv.Itoa(v.LenDiff) + `)</span>`
+                    if v.LenDiff > 0 {
+                        lenDisplay = `<span class="plus">(+` + strconv.Itoa(v.LenDiff) + `)</span>`
+                    }
+                    minor := ""
+                    if v.Minor {
+                        minor = `<span class="minoredit">m</span>`
+                    }
+                    cur := "cur"
+                    if i != 0 {
+                        cur = `<a href="/`+ v.PageTitle + `?oldid=` + strconv.FormatInt(v.ID, 10) + `&diff=` +
+                            strconv.FormatInt(p.Revs[0].ID, 10) + `">cur</a>`
+                    }
+                    prev := "prev"
+                    nextRev := i + 1
+                    if nextRev < len(p.Revs) {
+                        prev = `<a href="/`+ v.PageTitle + `?oldid=` + strconv.FormatInt(p.Revs[nextRev].ID, 10) + `&diff=` +
+                            strconv.FormatInt(v.ID, 10) + `">prev</a>`
+                    }
+                %}
+                <span>
+                    ({%s= cur %} | {%s= prev %}) <a href="/{%s v.PageTitle %}?oldid={%v v.ID %}">{%s v.PrettyTime() %}</a> <a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{%s v.UserText %}">talk</a> | contribs) {%s= minor %}.. ({%d v.Len %} bytes) {%s= lenDisplay %} .. (<i>{%s v.Comment %}</i>)<br>
+                </span>
+            {% endfor %}
+            <br>
+            {%= pagination(p.Revs[0].PageTitle, p.Page, p.TotalPages) %}
+        {% endif %}
+    </div>
+{% endfunc %}
+
+{% func pagination(title string, page int, totalPages int) %}
+    {% code
+        nextPage := page + 1
+        prevPage := page - 1
+
+        if totalPages < nextPage {
+            nextPage = 0
+        }
+    %}
+
+    <span>
+        (
+        {% if page > 0 %}
+            <a href="/special/history?title={%s title %}&amp;page=0">newest</a>
+        {% else %}
+            <span>newest</span>
+        {% endif %}
+        |
+        {%if page != totalPages %}
+            <a href="/special/history?title={%s title %}&amp;page={%d totalPages %}">oldest</a>
+        {% else %}
+            <span>oldest</span>
+        {% endif %}
+        )
+
+        View (
+            {%if nextPage > 0 %}
+                <a href="/special/history?title={%s title %}&amp;page={%d nextPage %}">older 50</a>
+            {% else %}
+                <span>older 50</span>
+            {% endif %}
+
+            |
+
+            {%if prevPage >= 0 %}
+                <a href="/special/history?title={%s title %}&amp;page={%d prevPage %}">newer 50</a>
+            {% else %}
+                <span>newer 50</span>
+            {% endif %}
+        )
+    </span>
+{% endfunc %}
+
+{% func (p *ArticleHistory) Title() %}
+    {%s= p.NiceTitle %}: Revision history
+{% endfunc %}
+
+{% func (p *ArticleHistory) Nav() %}
+    {%= p.BasePage.PageNav(p.NiceTitle, "history") %}
+{% endfunc %}
+
+{% func (p *ArticleHistory) UserMenu() %}
     {% if p.User.Anon %}
         {%= p.BasePage.UserMenu() %}
     {% else %}

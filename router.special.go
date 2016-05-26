@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	mdl "1bwiki/model"
-	"1bwiki/tmpl/page"
 	"1bwiki/tmpl/special"
 
 	"1bwiki/view"
@@ -68,8 +67,14 @@ func history(c echo.Context) error {
 	val := session.Get("user")
 	niceTitle := mdl.NiceTitle(c.QueryParam("title"))
 	totalPages := int(mdl.GetAmountOfRevisionsForPage(c.QueryParam("title")) / 50)
-	return c.HTML(http.StatusOK, page.History(val.(*mdl.User),
-		niceTitle, revs, p, totalPages))
+	page := &view.ArticleHistory{
+		User:       val.(*mdl.User),
+		NiceTitle:  niceTitle,
+		Revs:       revs,
+		Page:       p,
+		TotalPages: totalPages,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(page))
 }
 
 func recentChanges(c echo.Context) error {
