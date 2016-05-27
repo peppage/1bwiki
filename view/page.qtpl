@@ -312,3 +312,41 @@ type ArticleHistory struct {
         {%= p.BasePage.UserMenuLoggedIn(p.User) %}
     {% endif %}
 {% endfunc %}
+
+{% code
+type ArticleOld struct {
+    BasePage
+    User *m.User
+    Page *m.PageView
+}
+%}
+
+{% func (p *ArticleOld) Body() %}
+    <div class="ui text container">
+        <h1>{%s p.Page.NiceTitle %}</h1>
+    </div>
+    <div class="ui text container">
+        <div class="ui orange message">
+            <p>This is an old version of the page. This paragraph could use more information</p>
+        </div>
+    </div>
+    <div class="ui text container">
+	    {%s= p.Page.Html() %}
+    </div>
+{% endfunc %}
+
+{% func (p *ArticleOld) Title() %}
+    {%s= p.Page.NiceTitle %}
+{% endfunc %}
+
+{% func (p *ArticleOld) Nav() %}
+    {%= p.BasePage.PageNav(p.Page.NiceTitle, "article") %}
+{% endfunc %}
+
+{% func (p *ArticleOld) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}

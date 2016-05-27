@@ -8,7 +8,6 @@ import (
 
 	mdl "1bwiki/model"
 	"1bwiki/setting"
-	"1bwiki/tmpl/page"
 	"1bwiki/view"
 
 	"github.com/GeertJohan/go.rice"
@@ -84,7 +83,11 @@ func wikiPage(c echo.Context) error {
 			}
 			return c.HTML(http.StatusOK, view.PageTemplate(p))
 		}
-		return c.HTML(http.StatusOK, page.Oldversion(val.(*mdl.User), pv))
+		p := &view.ArticleOld{
+			User: val.(*mdl.User),
+			Page: pv,
+		}
+		return c.HTML(http.StatusOK, view.PageTemplate(p))
 	}
 
 	pv := mdl.GetPageView(n, t)
