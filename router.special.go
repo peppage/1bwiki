@@ -92,7 +92,13 @@ func recentChanges(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Recentchanges(val.(*mdl.User), revs, limit))
+	p := &view.RecentChangesPage{
+		URL:   "special/recentchanges",
+		User:  val.(*mdl.User),
+		Revs:  revs,
+		Limit: limit,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func pages(c echo.Context) error {

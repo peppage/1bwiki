@@ -1,4 +1,6 @@
 {% import (
+        "strconv"
+        "time"
 		m "1bwiki/model"
 	) %}
     
@@ -65,6 +67,117 @@ type DeletePage struct {
 {% endfunc %}
 
 {% func (p *DeletePage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type RecentChangesPage struct {
+    BasePage
+    URL string
+    User *m.User
+    Revs []*m.Revision
+    Limit int
+}
+%}
+
+{% func (p *RecentChangesPage) Body() %}
+    <div class="ui text container">
+        <h1>Recent Changes</h1>
+
+        <p>
+            <h2>Recent Changes Options</h2>
+            Show last
+                {% if p.Limit == 50 %}
+                    <a href="/special/recentchanges?limit=50" style="font-weight:bold;">50</a>
+                {% else %}
+                    <a href="/special/recentchanges?limit=50">50</a>
+                {% endif %}
+                |
+                {% if p.Limit == 100 %}
+                    <a href="/special/recentchanges?limit=100" style="font-weight:bold;">100</a>
+                {% else %}
+                    <a href="/special/recentchanges?limit=100">100</a>
+                {% endif %}
+                |
+                {%if p.Limit == 250 %}
+                    <a href="/special/recentchanges?limit=250" style="font-weight:bold;">250</a>
+                {% else %}
+                    <a href="/special/recentchanges?limit=250">250</a>
+                {% endif %}
+                |
+                {%if p.Limit == 500 %}
+                    <a href="/special/recentchanges?limit=500" style="font-weight:bold;">500</a>
+                {% else %}
+                    <a href="/special/recentchanges?limit=500">500</a>
+                {% endif %}
+                changes
+        </p>
+
+        {% code
+            prevDate := ""
+            showTime := true
+        %}
+        {% for _, v := range p.Revs %}
+            {% code
+                t := time.Unix(v.TimeStamp, 0).UTC()
+                tOut := t.Format("15:04")
+
+                dateHeader := t.Format("_2 Jan 2006")
+                if prevDate ==  dateHeader {
+                    showTime = false
+                } else {
+                    showTime = true
+                    prevDate = dateHeader
+                }
+
+                lenDisplay := `<span class="minus">(` + strconv.Itoa(v.LenDiff) + `)</span>`
+                if v.LenDiff > 0 {
+                    lenDisplay = `<span class="plus">(+` + strconv.Itoa(v.LenDiff) + `)</span>`
+                }
+
+                minor := ""
+                if v.Minor {
+                    minor = `<abbr class="minoredit" title="This is a minor edit">m</abbr>`
+                }
+
+                newEdit := ""
+                if v.ParentID == 0 {
+                    newEdit = `<abbr class="newpage" title="This edit created a new page">N</abbr>`
+                }
+            %}
+            {%if v.Deleted %}
+                {%s v.UserText %} deleted page <a class="new" href="/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a><br>
+            {% else %}
+                {% if showTime %}
+                    <h4>{%s prevDate %}</h4>
+                {% endif %}
+                {%s= minor %} {%s= newEdit %}
+                {%s tOut %}<a href="/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a> (
+                    {%if v.ParentID != 0 %}
+                        <a href="/{%s v.PageTitle %}?oldid={%v v.ParentID %}&amp;diff={%v v.ID %}">diff</a>
+                    {% else %}
+                        <span>diff</span>
+                    {% endif %}
+                    | <a href="/special/history?title={%s v.PageTitle %}">hist</a>)..{%s= lenDisplay %} ..<a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{s v.UserText %}">talk</a>|contribs) ({%s v.Comment %})<br>
+
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endfunc %}
+
+{% func (p *RecentChangesPage) Title() %}
+    Recent Changes
+{% endfunc %}
+
+{% func (p *RecentChangesPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *RecentChangesPage) UserMenu() %}
     {% if p.User.Anon %}
         {%= p.BasePage.UserMenu() %}
     {% else %}
