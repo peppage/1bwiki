@@ -1,0 +1,55 @@
+{% import (
+		m "1bwiki/model"
+	) %}
+
+{% code
+type RegisterPage struct {
+    BasePage
+    URL string
+    User *m.User
+    Messages []interface{}
+}
+%}
+
+{% func (p *RegisterPage) Body() %}
+    <div class="ui text container">
+        {% if len(p.Messages) > 0 %}
+            <div class="ui negative message">
+                <div class="header">{%v p.Messages[0] %}</div>
+            </div>
+        {% endif %}
+
+        <form class="ui form" action="/special/register" method="post">
+            <div class="field">
+                <label>Username</label>
+                <input type="text" name="username">
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" name="password">
+            </div>
+            <div class="field">
+                <label>Confirm Password</label>
+                <input type="password" name="passwordConfirm">
+            </div>
+            <!-- include stuff here to show password when hidden -->
+            <button class="ui primary button" type="submit">Submit</button>
+        </form>
+    </div>
+{% endfunc %}
+
+{% func (p *RegisterPage) Title() %}
+    Register
+{% endfunc %}
+
+{% func (p *RegisterPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *RegisterPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}

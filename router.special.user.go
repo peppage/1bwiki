@@ -8,6 +8,7 @@ import (
 	mdl "1bwiki/model"
 	"1bwiki/tmpl/special"
 	"1bwiki/tmpl/special/user"
+	"1bwiki/view"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
@@ -19,7 +20,12 @@ func register(c echo.Context) error {
 	val := session.Get("user")
 	flashes := session.Flashes()
 	session.Save()
-	return c.HTML(http.StatusOK, special.Register(val.(*mdl.User), flashes))
+	p := &view.RegisterPage{
+		User:     val.(*mdl.User),
+		URL:      "/special/register",
+		Messages: flashes,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func registerHandle(c echo.Context) error {
