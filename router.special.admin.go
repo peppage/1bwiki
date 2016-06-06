@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	mdl "1bwiki/model"
-	"1bwiki/tmpl/special"
+	"1bwiki/view"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
@@ -15,7 +15,11 @@ func admin(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
 	u := val.(*mdl.User)
-	return c.HTML(http.StatusOK, special.Admin(u))
+	p := &view.AdminPage{
+		User: u,
+		URL:  "/special/admin",
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func adminHandle(c echo.Context) error {

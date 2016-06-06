@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	mdl "1bwiki/model"
-	"1bwiki/tmpl/special"
 
 	"1bwiki/view"
 
@@ -108,7 +107,12 @@ func pages(c echo.Context) error {
 	}
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Pages(val.(*mdl.User), p))
+	page := &view.PageListPage{
+		URL:   "special/pages",
+		User:  val.(*mdl.User),
+		Pages: p,
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(page))
 }
 
 func random(c echo.Context) error {

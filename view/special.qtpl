@@ -184,3 +184,42 @@ type RecentChangesPage struct {
         {%= p.BasePage.UserMenuLoggedIn(p.User) %}
     {% endif %}
 {% endfunc %}
+
+{% code
+type PageListPage struct {
+    BasePage
+    User *m.User
+    URL string
+    Pages []*m.PageView
+}
+%}
+
+{% func (p *PageListPage) Body() %}
+    <div class="ui text container">
+        <h1>Pages</h1>
+
+        {% for _, v := range p.Pages %}
+            {% if !v.Deleted %}
+                <span>
+                    <a href="/{%s v.Title %}">{%s v.NiceTitle %}</a><br>
+                </span>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endfunc %}
+
+{% func (p *PageListPage) Title() %}
+    Pages
+{% endfunc %}
+
+{% func (p *PageListPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *PageListPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}

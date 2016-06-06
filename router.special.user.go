@@ -6,8 +6,6 @@ import (
 	"time"
 
 	mdl "1bwiki/model"
-	"1bwiki/tmpl/special"
-	"1bwiki/tmpl/special/user"
 	"1bwiki/view"
 
 	log "github.com/Sirupsen/logrus"
@@ -63,7 +61,11 @@ func registerHandle(c echo.Context) error {
 func login(c echo.Context) error {
 	session := session.Default(c)
 	val := session.Get("user")
-	return c.HTML(http.StatusOK, special.Login(val.(*mdl.User)))
+	p := &view.LoginPage{
+		User: val.(*mdl.User),
+		URL:  "/special/login",
+	}
+	return c.HTML(http.StatusOK, view.PageTemplate(p))
 }
 
 func loginHandle(c echo.Context) error {
@@ -95,7 +97,11 @@ func prefs(c echo.Context) error {
 	val := session.Get("user")
 	u, ok := val.(*mdl.User)
 	if ok {
-		return c.HTML(http.StatusOK, user.Prefs(u))
+		p := &view.PrefsPage{
+			User: u,
+			URL:  "/special/preferences",
+		}
+		return c.HTML(http.StatusOK, view.PageTemplate(p))
 	}
 	return echo.NewHTTPError(http.StatusUnauthorized)
 }
@@ -105,7 +111,11 @@ func prefsPasword(c echo.Context) error {
 	val := session.Get("user")
 	u, ok := val.(*mdl.User)
 	if ok {
-		return c.HTML(http.StatusOK, user.Password(u))
+		p := &view.PasswordPage{
+			User: u,
+			URL:  "/special/preferences/password",
+		}
+		return c.HTML(http.StatusOK, view.PageTemplate(p))
 	}
 	return echo.NewHTTPError(http.StatusUnauthorized)
 }

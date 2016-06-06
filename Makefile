@@ -2,7 +2,6 @@
 default: build
 
 build: vet
-	gorazor ./tmpl ./tmpl
 	qtc -dir ./view
 	go build -v
 
@@ -15,7 +14,6 @@ lint:
 	golint .
 
 clean:
-	find ./tmpl/ -type f -name "*.go" -delete
 	find ./view/ -type f -name "*.go" -delete
 	go clean
 
