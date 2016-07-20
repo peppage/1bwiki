@@ -27,9 +27,6 @@ import:
 - package: github.com/sergi/go-diff
   subpackages:
   - github.com\sergi\go-diff\diffmatchpatch
-- package: github.com/sipin/gorazor
-  subpackages:
-  - github.com\sipin\gorazor\gorazor
 - package: golang.org/x/crypto
   subpackages:
   - golang.org\x\crypto\bcrypt
@@ -38,3 +35,4 @@ import:
   - session
 - package: github.com/dgrijalva/jwt-go
 - package: github.com/Sirupsen/logrus
+- package: github.com/kataras/iris

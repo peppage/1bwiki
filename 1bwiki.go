@@ -2,19 +2,17 @@ package main
 
 import (
 	"encoding/gob"
-	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	mdl "1bwiki/model"
 	"1bwiki/setting"
 	"1bwiki/view"
 
-	"github.com/GeertJohan/go.rice"
 	log "github.com/Sirupsen/logrus"
+	"github.com/kataras/iris"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
-	"github.com/labstack/echo/middleware"
 	"github.com/peppage/echo-middleware/session"
 )
 
@@ -42,16 +40,21 @@ func seperateNamespaceAndTitle(t string) (namespace string, title string) {
 	return namespace, title
 }
 
-func root(c echo.Context) error {
-	return c.Redirect(http.StatusMovedPermanently, "/Main_Page")
+func root(c *iris.Context) {
+	c.Redirect("/pages/Main_Page", http.StatusMovedPermanently)
 }
 
-func wikiPage(c echo.Context) error {
-	n, t := seperateNamespaceAndTitle(c.Request().(*standard.Request).Request.URL.String())
+func wikiPage(c *iris.Context) {
+	n, t := seperateNamespaceAndTitle(c.Param("name"))
+	log.WithFields(log.Fields{
+		"namespace": n,
+		"title":     t,
+	}).Debug("separating namespace and title")
 
-	ul := strings.ToLower(c.Request().(*standard.Request).Request.URL.String())
+	ul := strings.ToLower(c.Param("name"))
 	if strings.HasPrefix(ul, "/"+noEditArea) {
-		return echo.NewHTTPError(http.StatusForbidden, "Editing of special pages disallowed")
+		c.EmitError(http.StatusForbidden)
+		return
 	}
 
 	urlTitle := convertTitleToUrl(t)
@@ -60,51 +63,58 @@ func wikiPage(c echo.Context) error {
 		if n != "" {
 			n += ":"
 		}
-		return c.Redirect(http.StatusMovedPermanently, "/"+n+urlTitle)
+		c.Redirect("/"+n+urlTitle, http.StatusMovedPermanently)
+		return
 	}
 
-	if c.QueryParam("oldid") != "" {
-		pv, err := mdl.GetPageVeiwByID(c.QueryParam("oldid"))
+	if c.URLParam("oldid") != "" {
+		pv, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError)
+			c.EmitError(http.StatusInternalServerError)
+			return
 		}
 
-		session := session.Default(c)
-		val := session.Get("user")
-		if c.QueryParam("diff") != "" {
-			pv2, err := mdl.GetPageVeiwByID(c.QueryParam("diff"))
+		val := c.Session().Get("user")
+		if c.URLParam("diff") != "" {
+			pv2, err := mdl.GetPageVeiwByID(c.URLParam("diff"))
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError)
+				c.EmitError(http.StatusInternalServerError)
+				return
 			}
 			p := &view.ArticleDiff{
 				User:  val.(*mdl.User),
 				Page:  pv,
 				Page2: pv2,
 			}
-			return c.HTML(http.StatusOK, view.PageTemplate(p))
+			view.WritePageTemplate(c.GetRequestCtx(), p)
+			c.HTML(http.StatusOK, "")
+			return
 		}
 		p := &view.ArticleOld{
 			User: val.(*mdl.User),
 			Page: pv,
 		}
-		return c.HTML(http.StatusOK, view.PageTemplate(p))
+		view.WritePageTemplate(c.GetRequestCtx(), p)
+		c.HTML(http.StatusOK, "")
+		return
 	}
 
 	pv := mdl.GetPageView(n, t)
 
 	if pv.NiceTitle != "" && !pv.Deleted {
-		session := session.Default(c)
-		val := session.Get("user")
+		val := c.Session().Get("user")
 		p := &view.Article{
 			User: val.(*mdl.User),
 			Page: pv,
 		}
-		return c.HTML(http.StatusOK, view.PageTemplate(p))
+		view.WritePageTemplate(c.GetRequestCtx(), p)
+		c.HTML(http.StatusOK, "")
+		return
 	}
 	if n != "" {
 		n += ":"
 	}
-	return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+t)
+	c.Redirect("/special/edit?title="+n+t, http.StatusTemporaryRedirect)
 }
 
 func savePage(c echo.Context) error {
@@ -139,60 +149,19 @@ func init() {
 	if err == nil {
 		log.SetLevel(ll)
 	}
+
+	iris.Config.Sessions.Cookie = "id"
+	iris.Config.Sessions.Expires = time.Hour * 48
+	iris.Config.Sessions.GcDuration = time.Duration(2) * time.Hour
 }
 
 func main() {
 	mdl.SetupDb()
 
-	store = session.NewCookieStore([]byte(setting.SessionSecret))
+	iris.Use(&sessionMiddleware{})
+	iris.Static("/static", "./static", 1)
+	iris.Get("/", root)
+	iris.Get("/pages/*name", wikiPage)
 
-	e := echo.New()
-	e.Use(session.Sessions("session", store))
-
-	assetHandler := http.FileServer(rice.MustFindBox("static").HTTPBox())
-	e.Get("/static/*", func(c echo.Context) error {
-		http.StripPrefix("/static/", assetHandler).ServeHTTP(c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
-		return nil
-	})
-	e.Get("/favicon.ico", func(c echo.Context) error {
-		http.StripPrefix("", assetHandler).ServeHTTP(c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
-		return nil
-	})
-	e.Use(setUser())
-	if setting.ServerLogging {
-		e.Use(serverLogger())
-	}
-
-	e.Get("/", root)
-	e.Get("/*", wikiPage)
-	e.Get("/s*", wikiPage)
-
-	s := e.Group("/special")
-	s.Get("/edit", edit)
-	s.Post("/edit", savePage)
-	s.Get("/history", history)
-	s.Get("/recentchanges", recentChanges)
-	s.Get("/pages", pages)
-	s.Get("/users", users)
-	s.Get("/register", register)
-	s.Post("/register", registerHandle)
-	s.Get("/login", login)
-	s.Post("/login", loginHandle)
-	s.Get("/logout", logout)
-	s.Get("/random", random)
-	s.Get("/delete", delete)
-	s.Post("/delete", deleteHandle)
-	p := s.Group("/preferences")
-	p.Use(checkLoggedIn())
-	p.Get("", prefs)
-	p.Get("/password", prefsPasword)
-	p.Post("/password", handlePrefsPassword)
-	a := s.Group("/admin")
-	a.Use(checkAdmin())
-	a.Get("", admin)
-	a.Post("", adminHandle)
-
-	e.Use(middleware.Gzip())
-	fmt.Println("Server started on port " + setting.HttpPort)
-	e.Run(standard.New(":" + setting.HttpPort))
+	iris.Listen(":" + setting.HttpPort)
 }
