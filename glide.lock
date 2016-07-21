@@ -45,14 +45,6 @@ imports:
   subpackages:
   - github.com\kardianos\osext
 - name: github.com/kataras/iris
-  version: 0dbab32d9d6cdd317dd0bdc3b789a40ab82fa7be
-- name: github.com/labstack/echo
-  version: 041252cfc80f6ac996fadf083f13c101d38450dc
-  subpackages:
-  - github.com\labstack\echo
-  - github.com\labstack\echo\engine\standard
-  - github.com\labstack\echo\middleware
-  - github.com\labstack\echo\engine
 - name: github.com/labstack/gommon
   version: 2e62be24dbb1ceb226554aaccfe5a89ec71043b3
   subpackages:
@@ -83,8 +75,6 @@ imports:
   version: 8e6ab94eec2ae84996ed00ec774b2e15c540d7f9
   subpackages:
   - github.com\pelletier\go-toml
-- name: github.com/peppage/echo-middleware
-  version: 78381b0fb0ae76af337cb3b5f22ab0057c269e58
   subpackages:
   - session
   - github.com\peppage\echo-middleware\session

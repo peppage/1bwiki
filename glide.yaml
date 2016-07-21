@@ -9,9 +9,6 @@ import:
 - package: github.com/jmoiron/sqlx
   subpackages:
   - github.com\jmoiron\sqlx
-- package: github.com/labstack/echo
-  subpackages:
-  - github.com\labstack\echo
 - package: github.com/mattn/go-sqlite3
   subpackages:
   - github.com\mattn\go-sqlite3
