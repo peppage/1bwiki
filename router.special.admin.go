@@ -7,31 +7,31 @@ import (
 	"1bwiki/view"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/labstack/echo"
-	"github.com/peppage/echo-middleware/session"
+	"github.com/kataras/iris"
 )
 
-func admin(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
+func admin(c *iris.Context) {
+	val := c.Session().Get("user")
 	u := val.(*mdl.User)
 	p := &view.AdminPage{
 		User: u,
 		URL:  "/special/admin",
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(p))
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
 }
 
-func adminHandle(c echo.Context) error {
-	err := mdl.SetAnonEditing(c.FormValue("anon") == "on")
+func adminHandle(c *iris.Context) {
+	err := mdl.SetAnonEditing(c.FormValueString("anon") == "on")
 	if err != nil {
 		log.WithError(err).Error("Failed to set anon editing")
-		return echo.NewHTTPError(http.StatusInternalServerError)
+		c.Error("Failed to set anon editing", http.StatusInternalServerError)
+		return
 	}
-	err = mdl.SetSignups(c.FormValue("signup") == "on")
+	err = mdl.SetSignups(c.FormValueString("signup") == "on")
 	if err != nil {
 		log.WithError(err).Error("Failed to set signups")
-		return echo.NewHTTPError(http.StatusInternalServerError)
+		c.Error("Failed to change signups", http.StatusInternalServerError)
 	}
-	return c.Redirect(http.StatusSeeOther, "/special/admin")
+	c.Redirect("/special/admin", http.StatusSeeOther)
 }

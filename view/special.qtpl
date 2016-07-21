@@ -201,7 +201,7 @@ type PageListPage struct {
         {% for _, v := range p.Pages %}
             {% if !v.Deleted %}
                 <span>
-                    <a href="/{%s v.Title %}">{%s v.NiceTitle %}</a><br>
+                    <a href="/pages/{%s v.Title %}">{%s v.NiceTitle %}</a><br>
                 </span>
             {% endif %}
         {% endfor %}

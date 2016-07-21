@@ -9,143 +9,135 @@ import (
 	"1bwiki/view"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/labstack/echo"
-	"github.com/peppage/echo-middleware/session"
+	"github.com/kataras/iris"
 )
 
-func register(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
-	flashes := session.Flashes()
-	session.Save()
+func register(c *iris.Context) {
+	val := c.Session().Get("user")
+	flash, _ := c.GetFlash("error")
 	p := &view.RegisterPage{
-		User:     val.(*mdl.User),
-		URL:      "/special/register",
-		Messages: flashes,
+		User:    val.(*mdl.User),
+		URL:     "/special/register",
+		Message: flash,
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(p))
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
 }
 
-func registerHandle(c echo.Context) error {
-	session := session.Default(c)
-	if c.FormValue("password") == c.FormValue("passwordConfirm") {
+func registerHandle(c *iris.Context) {
+	if c.FormValueString("password") == c.FormValueString("passwordConfirm") {
 		u := mdl.User{
-			Name:         c.FormValue("username"),
-			Password:     c.FormValue("password"),
+			Name:         c.FormValueString("username"),
+			Password:     c.FormValueString("password"),
 			Registration: time.Now().Unix(),
 		}
 		err := mdl.CreateUser(&u)
 		if err != nil {
 			if strings.Contains(err.Error(), "UNIQUE") {
-				session.AddFlash("Username already exists")
-				session.Save()
-				return c.Redirect(http.StatusSeeOther, "/special/register")
+				c.SetFlash("error", "Username already exists")
+				c.Redirect("/special/register", http.StatusSeeOther)
+				return
 			}
 			log.WithFields(log.Fields{
 				"err":  err,
 				"user": c.FormValue("username"),
 			})
-			return echo.NewHTTPError(http.StatusBadRequest, "failed to create user")
+			c.Error("Failed to Register", http.StatusBadRequest)
+			return
 		}
-		session.Set("user", u)
-		session.Save()
+		c.Session().Set("user", u)
 	} else {
-		session.AddFlash("Passwords don't match")
-		session.Save()
-		return c.Redirect(http.StatusSeeOther, "/special/register")
+		c.SetFlash("error", "Passwords don't match")
+		c.Redirect("/special/register", http.StatusSeeOther)
+		return
 	}
 
-	return c.Redirect(http.StatusSeeOther, "/")
+	c.Redirect("/", http.StatusSeeOther)
 }
 
-func login(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
+func login(c *iris.Context) {
+	val := c.Session().Get("user")
 	p := &view.LoginPage{
 		User: val.(*mdl.User),
 		URL:  "/special/login",
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(p))
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
 }
 
-func loginHandle(c echo.Context) error {
-	u, err := mdl.GetUserByName(c.FormValue("username"))
+func loginHandle(c *iris.Context) {
+	u, err := mdl.GetUserByName(c.FormValueString("username"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized) // The user is doesn't exist
+		c.Error("User doesn't exist? Maybe.", http.StatusUnauthorized)
+		return
 	}
 
-	if u.ValidatePassword(c.FormValue("password")) {
-		session := session.Default(c)
-		session.Set("user", u)
-		session.Save()
-		return c.Redirect(http.StatusSeeOther, "/")
+	if u.ValidatePassword(c.FormValueString("password")) {
+		c.Session().Set("user", u)
+		c.Redirect("/", http.StatusSeeOther)
+		return
 	}
 
-	c.Response().Header().Set("Method", "GET")
-	return echo.NewHTTPError(http.StatusUnauthorized)
+	c.Error("Failed login", http.StatusUnauthorized)
 }
 
-func logout(c echo.Context) error {
-	session := session.Default(c)
-	session.Set("user", nil)
-	session.Save()
-	return c.Redirect(http.StatusTemporaryRedirect, "/")
+func logout(c *iris.Context) {
+	c.Session().Set("user", nil)
+	c.Redirect("/", http.StatusTemporaryRedirect)
 }
 
-func prefs(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
+func prefs(c *iris.Context) {
+	val := c.Session().Get("user")
 	u, ok := val.(*mdl.User)
 	if ok {
 		p := &view.PrefsPage{
 			User: u,
 			URL:  "/special/preferences",
 		}
-		return c.HTML(http.StatusOK, view.PageTemplate(p))
+		view.WritePageTemplate(c.GetRequestCtx(), p)
+		c.HTML(http.StatusOK, "")
+		return
 	}
-	return echo.NewHTTPError(http.StatusUnauthorized)
 }
 
-func prefsPasword(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
+func prefsPasword(c *iris.Context) {
+	val := c.Session().Get("user")
 	u, ok := val.(*mdl.User)
 	if ok {
 		p := &view.PasswordPage{
 			User: u,
 			URL:  "/special/preferences/password",
 		}
-		return c.HTML(http.StatusOK, view.PageTemplate(p))
+		view.WritePageTemplate(c.GetRequestCtx(), p)
+		c.HTML(http.StatusOK, "")
 	}
-	return echo.NewHTTPError(http.StatusUnauthorized)
 }
 
-func handlePrefsPassword(c echo.Context) error {
-	if c.FormValue("newpassword1") != c.FormValue("newpassword2") {
+func handlePrefsPassword(c *iris.Context) {
+	if c.FormValueString("newpassword1") != c.FormValueString("newpassword2") {
 		// need to implement better
-		return echo.NewHTTPError(http.StatusBadRequest, "password do not match")
+		c.Error("Passwords do not match", http.StatusBadRequest)
+		return
 	}
-	session := session.Default(c)
-	val := session.Get("user")
+	val := c.Session().Get("user")
 	u, _ := val.(*mdl.User)
 
-	if u.ValidatePassword(c.FormValue("oldpassword")) {
-		u.Password = c.FormValue("newpassword1")
+	if u.ValidatePassword(c.FormValueString("oldpassword")) {
+		u.Password = c.FormValueString("newpassword1")
 		err := u.EncodePassword()
 		if err != nil {
 			log.WithFields(log.Fields{
 				"err":  err,
 				"user": u.Name,
 			})
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed.")
+			c.Error("Failed", http.StatusInternalServerError)
+			return
 		}
 		err = mdl.UpdateUser(u)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError)
+			c.EmitError(http.StatusInternalServerError)
+			return
 		}
-		return c.Redirect(http.StatusSeeOther, "/special/preferences")
+		c.Redirect("/special/preferences", http.StatusSeeOther)
 	}
-
-	c.Response().Header().Set("Method", "GET")
-	return echo.NewHTTPError(http.StatusUnauthorized) // The user is invalid!
 }

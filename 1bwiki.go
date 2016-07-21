@@ -12,11 +12,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/kataras/iris"
-	"github.com/labstack/echo"
-	"github.com/peppage/echo-middleware/session"
 )
-
-var store session.CookieStore
 
 const noEditArea = "special"
 
@@ -59,11 +55,15 @@ func wikiPage(c *iris.Context) {
 
 	urlTitle := convertTitleToUrl(t)
 
+	log.WithFields(log.Fields{
+		"urlTitle": urlTitle,
+		"t":        t,
+	}).Debug("Should this page be redirected?")
 	if urlTitle != t {
 		if n != "" {
 			n += ":"
 		}
-		c.Redirect("/"+n+urlTitle, http.StatusMovedPermanently)
+		c.Redirect("/pages/"+n+urlTitle, http.StatusMovedPermanently)
 		return
 	}
 
@@ -117,29 +117,30 @@ func wikiPage(c *iris.Context) {
 	c.Redirect("/special/edit?title="+n+t, http.StatusTemporaryRedirect)
 }
 
-func savePage(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
+func savePage(c *iris.Context) {
+	val := c.Session().Get("user")
 	u, ok := val.(*mdl.User)
 	if !ok {
 		log.WithFields(log.Fields{
 			"user": u,
 		}).Error("User saving page is invalid")
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid User")
+		c.EmitError(http.StatusBadRequest)
+		return
 	}
 
-	minor := c.FormValue("minor") == "on"
+	minor := c.FormValueString("minor") == "on"
 	p, err := mdl.CreateOrUpdatePage(u, mdl.CreatePageOptions{
-		Title:     c.FormValue("title"),
-		Namespace: c.FormValue("namespace"),
-		Text:      c.FormValue("text"),
-		Comment:   c.FormValue("summary"),
+		Title:     c.FormValueString("title"),
+		Namespace: c.FormValueString("namespace"),
+		Text:      c.FormValueString("text"),
+		Comment:   c.FormValueString("summary"),
 		IsMinor:   minor,
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Save page  failed")
+		c.EmitError(http.StatusBadRequest)
+		return
 	}
-	return c.Redirect(http.StatusSeeOther, "/"+p.Title)
+	c.Redirect("/pages/"+p.Title, http.StatusSeeOther)
 }
 
 func init() {
@@ -153,6 +154,8 @@ func init() {
 	iris.Config.Sessions.Cookie = "id"
 	iris.Config.Sessions.Expires = time.Hour * 48
 	iris.Config.Sessions.GcDuration = time.Duration(2) * time.Hour
+	iris.Config.Gzip = true
+
 }
 
 func main() {
@@ -162,6 +165,33 @@ func main() {
 	iris.Static("/static", "./static", 1)
 	iris.Get("/", root)
 	iris.Get("/pages/*name", wikiPage)
+
+	special := iris.Party("/special")
+	special.Get("/edit", edit)
+	special.Post("/edit", savePage)
+	special.Get("/history", history)
+	special.Get("/recentchanges", recentChanges)
+	special.Get("/pages", pages)
+	special.Get("/users", users)
+	special.Get("/register", register)
+	special.Post("/register", registerHandle)
+	special.Get("/login", login)
+	special.Post("/login", loginHandle)
+	special.Get("/logout", logout)
+	special.Get("/random", random)
+	special.Get("/delete", delete)
+	special.Post("/delete", deleteHandle)
+
+	user := iris.Party("/preferences")
+	user.Use(&loggedInMiddleware{})
+	user.Get("", prefs)
+	user.Get("/password", prefsPasword)
+	user.Post("/password", handlePrefsPassword)
+
+	a := iris.Party("/admin")
+	a.Use(&adminMiddleware{})
+	a.Get("", admin)
+	a.Post("", adminHandle)
 
 	iris.Listen(":" + setting.HttpPort)
 }

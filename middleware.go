@@ -10,7 +10,6 @@ import (
 	"github.com/kataras/iris"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
-	"github.com/peppage/echo-middleware/session"
 )
 
 type sessionMiddleware struct{}
@@ -31,6 +30,30 @@ func (s *sessionMiddleware) Serve(c *iris.Context) {
 		c.Session().Set("user", user)
 	}
 	c.Next()
+}
+
+type loggedInMiddleware struct{}
+
+func (s *loggedInMiddleware) Serve(c *iris.Context) {
+	val := c.Session().Get("user")
+	u, ok := val.(*mdl.User)
+	if ok && u.IsLoggedIn() {
+		c.Next()
+	}
+	c.Error("Must be logged in ", http.StatusUnauthorized)
+	return
+}
+
+type adminMiddleware struct{}
+
+func (s *adminMiddleware) Serve(c *iris.Context) {
+	val := c.Session().Get("user")
+	u, ok := val.(*mdl.User)
+	if ok && u.IsAdmin() {
+		c.Next()
+	}
+	c.Error("Must be admin ", http.StatusUnauthorized)
+	return
 }
 
 func serverLogger() echo.MiddlewareFunc {
@@ -57,34 +80,6 @@ func serverLogger() echo.MiddlewareFunc {
 				"time":   stop.Sub(start).String(),
 			}).Debug()
 			return nil
-		}
-	}
-}
-
-func checkLoggedIn() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			session := session.Default(c)
-			val := session.Get("user")
-			u, ok := val.(*mdl.User)
-			if ok && u.IsLoggedIn() {
-				return next(c)
-			}
-			return echo.NewHTTPError(http.StatusUnauthorized)
-		}
-	}
-}
-
-func checkAdmin() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			session := session.Default(c)
-			val := session.Get("user")
-			u, ok := val.(*mdl.User)
-			if ok && u.IsAdmin() {
-				return next(c)
-			}
-			return echo.NewHTTPError(http.StatusUnauthorized)
 		}
 	}
 }

@@ -9,24 +9,30 @@ import (
 
 	"1bwiki/view"
 
-	"github.com/labstack/echo"
-	"github.com/peppage/echo-middleware/session"
+	log "github.com/Sirupsen/logrus"
+	"github.com/kataras/iris"
 )
 
-func edit(c echo.Context) error {
-	n, t := seperateNamespaceAndTitle(c.QueryParam("title"))
+func edit(c *iris.Context) {
+	n, t := seperateNamespaceAndTitle(c.URLParam("title"))
 
 	ut := strings.ToLower(t)
 	if strings.HasPrefix(ut, noEditArea) {
-		return echo.NewHTTPError(http.StatusForbidden, "Editing of special pages disallowed")
+		c.NotFound()
+		return
 	}
 
 	urlTitle := convertTitleToUrl(t)
+	log.WithFields(log.Fields{
+		"urlTitle": urlTitle,
+		"t":        t,
+	}).Debug("Should this page be redirected?")
 	if urlTitle != t {
 		if n != "" {
 			n += ":"
 		}
-		return c.Redirect(http.StatusTemporaryRedirect, "/special/edit?title="+n+urlTitle)
+		c.Redirect("/special/edit?title="+n+urlTitle, http.StatusMovedPermanently)
+		return
 	}
 
 	pv := mdl.GetPageView(n, t)
@@ -39,33 +45,33 @@ func edit(c echo.Context) error {
 		pv.Title = t
 		pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
 	}
-	session := session.Default(c)
-	val := session.Get("user")
+	val := c.Session().Get("user")
 	p := &view.ArticleEdit{
 		User: val.(*mdl.User),
 		Page: pv,
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(p))
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
 }
 
-func history(c echo.Context) error {
-	n, t := seperateNamespaceAndTitle(c.QueryParam("title"))
+func history(c *iris.Context) {
+	n, t := seperateNamespaceAndTitle(c.URLParam("title"))
 	urlTitle := convertTitleToUrl(t)
 	if urlTitle != t {
 		if n != "" {
 			n += ":"
 		}
-		return c.Redirect(http.StatusTemporaryRedirect, "/special/history?title="+n+urlTitle)
+		c.Redirect("/special/history?title="+n+urlTitle, http.StatusTemporaryRedirect)
+		return
 	}
-	p, _ := strconv.Atoi(c.QueryParam("page"))
-	revs, err := mdl.GetPageRevisions(c.QueryParam("title"), p, 50)
+	p, _ := strconv.Atoi(c.URLParam("page"))
+	revs, err := mdl.GetPageRevisions(c.URLParam("title"), p, 50)
 	if err != nil {
-		echo.NewHTTPError(http.StatusInternalServerError, "")
+		c.Error("", http.StatusInternalServerError)
 	}
-	session := session.Default(c)
-	val := session.Get("user")
-	niceTitle := mdl.NiceTitle(c.QueryParam("title"))
-	totalPages := int(mdl.GetAmountOfRevisionsForPage(c.QueryParam("title")) / 50)
+	val := c.Session().Get("user")
+	niceTitle := mdl.NiceTitle(c.URLParam("title"))
+	totalPages := int(mdl.GetAmountOfRevisionsForPage(c.URLParam("title")) / 50)
 	page := &view.ArticleHistory{
 		User:       val.(*mdl.User),
 		NiceTitle:  niceTitle,
@@ -73,85 +79,89 @@ func history(c echo.Context) error {
 		Page:       p,
 		TotalPages: totalPages,
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(page))
+	view.WritePageTemplate(c.GetRequestCtx(), page)
+	c.HTML(http.StatusOK, "")
 }
 
-func recentChanges(c echo.Context) error {
+func recentChanges(c *iris.Context) {
 	limit := 50
-	if c.QueryParam("limit") != "" {
+	if c.URLParam("limit") != "" {
 		var err error
-		limit, err = strconv.Atoi(c.QueryParam("limit"))
+		limit, err = c.URLParamInt("limit")
 		if err != nil {
 			limit = 50
 		}
 	}
 	revs, err := mdl.GetRevisions(limit)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "")
+		c.EmitError(http.StatusInternalServerError)
+		return
 	}
-	session := session.Default(c)
-	val := session.Get("user")
+	val := c.Session().Get("user")
 	p := &view.RecentChangesPage{
 		URL:   "special/recentchanges",
 		User:  val.(*mdl.User),
 		Revs:  revs,
 		Limit: limit,
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(p))
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
 }
 
-func pages(c echo.Context) error {
+func pages(c *iris.Context) {
 	p, err := mdl.GetPageViews()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "")
+		c.EmitError(http.StatusInternalServerError)
 	}
-	session := session.Default(c)
-	val := session.Get("user")
+	val := c.Session().Get("user")
 	page := &view.PageListPage{
 		URL:   "special/pages",
 		User:  val.(*mdl.User),
 		Pages: p,
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(page))
+	view.WritePageTemplate(c.GetRequestCtx(), page)
+	c.HTML(http.StatusOK, "")
 }
 
-func random(c echo.Context) error {
+func random(c *iris.Context) {
 	t := mdl.GetRandomPageViewTitle()
-	return c.Redirect(http.StatusTemporaryRedirect, "/"+t)
+	c.Redirect("/"+t, http.StatusTemporaryRedirect)
 }
 
-func delete(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
+func delete(c *iris.Context) {
+	val := c.Session().Get("user")
 	p := &view.DeletePage{
-		PageTitle: c.QueryParam("title"),
+		PageTitle: c.URLParam("title"),
 		URL:       "/special/delete",
 		User:      val.(*mdl.User),
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(p))
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
 }
 
-func deleteHandle(c echo.Context) error {
-	session := session.Default(c)
-	val := session.Get("user")
-	err := mdl.DeletePage(val.(*mdl.User), c.FormValue("title"))
+func deleteHandle(c *iris.Context) {
+	val := c.Session().Get("user")
+	err := mdl.DeletePage(val.(*mdl.User), c.FormValueString("title"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError)
+		c.Error("Failed deleting page", http.StatusInternalServerError)
+		return
 	}
-	return c.Redirect(http.StatusSeeOther, "/")
+	c.Redirect("/", http.StatusSeeOther)
 }
 
-func users(c echo.Context) error {
+func users(c *iris.Context) {
 	u, err := mdl.GetUsers()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "")
+		c.Error("Failed to get users", http.StatusInternalServerError)
+		return
 	}
-	session := session.Default(c)
-	val := session.Get("user")
+
+	val := c.Session().Get("user")
 	p := &view.UsersListPage{
 		Users: u,
 		URL:   "/special/users",
 		User:  val.(*mdl.User),
 	}
-	return c.HTML(http.StatusOK, view.PageTemplate(p))
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
 }

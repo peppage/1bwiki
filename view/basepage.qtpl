@@ -141,9 +141,9 @@ overriding only certain Page methods
 	<div class="ui tabs container">
 		<div class="ui tabular menu">
 			{%if active == "article" %}
-				<a class="item active" href="/{%s title %}">
+				<a class="item active" href="/pages/{%s title %}">
 			{% else %}
-				<a class="item" href="/{%s title %}">
+				<a class="item" href="/pages/{%s title %}">
 			{% endif %}
 				Article
 			</a>

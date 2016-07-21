@@ -7,15 +7,15 @@ type RegisterPage struct {
     BasePage
     URL string
     User *m.User
-    Messages []interface{}
+    Message string
 }
 %}
 
 {% func (p *RegisterPage) Body() %}
     <div class="ui text container">
-        {% if len(p.Messages) > 0 %}
+        {% if p.Message != "" %}
             <div class="ui negative message">
-                <div class="header">{%v p.Messages[0] %}</div>
+                <div class="header">{%s p.Message %}</div>
             </div>
         {% endif %}
 
