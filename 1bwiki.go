@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/gob"
 	"net/http"
 	"strings"
@@ -45,6 +46,7 @@ func wikiPage(c *iris.Context) {
 	log.WithFields(log.Fields{
 		"namespace": n,
 		"title":     t,
+		"name":      c.Param("name"),
 	}).Debug("separating namespace and title")
 
 	ul := strings.ToLower(c.Param("name"))
@@ -162,7 +164,18 @@ func main() {
 	mdl.SetupDb()
 
 	iris.Use(&sessionMiddleware{})
-	iris.Static("/static", "./static", 1)
+	iris.Get("/static/*filename", func(c *iris.Context) {
+		filename := "static" + c.Param("filename")
+		data, err := Asset(filename)
+		if err != nil {
+			log.Error("asset problem" + err.Error())
+			c.NotFound()
+			return
+		}
+		fi, _ := AssetInfo(filename)
+		_ = c.ServeContent(bytes.NewReader(data), c.Param("filename"), fi.ModTime(), true)
+	})
+
 	iris.Get("/", root)
 	iris.Get("/pages/*name", wikiPage)
 
