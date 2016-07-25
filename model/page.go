@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type Page struct {
+type page struct {
 	Title      string
 	Namespace  string
 	NiceTitle  string
@@ -42,7 +42,7 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) error {
 		return err
 	}
 
-	p := &Page{
+	p := &page{
 		Title:      opts.Title,
 		Namespace:  opts.Namespace,
 		NiceTitle:  NiceTitle(opts.Title),
@@ -65,8 +65,8 @@ func NiceTitle(title string) string {
 	return strings.Replace(title, "_", " ", -1)
 }
 
-func getPages() ([]*Page, error) {
-	var pages []*Page
+func getPages() ([]*page, error) {
+	var pages []*page
 	err := db.Select(&pages, `SELECT * FROM page ORDER BY title DESC`)
 	if err != nil {
 		return pages, err
