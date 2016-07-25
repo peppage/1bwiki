@@ -4,11 +4,13 @@ default: build
 build: vet templates
 	go-bindata -debug static/...
 	go-bindata -debug -pkg setting -o setting/bindata.go setting/conf.toml
+	go-bindata -debug -pkg model -o model/bindata.go model/setup/default.md
 	go build -v
 
 release: vet templates
 	go-bindata static/... 
 	go-bindata -pkg setting -o setting/bindata.go setting/conf.toml
+	go-bindata -pkg model -o model/bindata.go model/setup/default.md
 	go build -v
 
 vet:

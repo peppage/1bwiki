@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/GeertJohan/go.rice"
 	log "github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -43,11 +42,7 @@ func SetupDb() {
 	var texts int
 	db.Get(&texts, `SELECT COUNT(*) as texts FROM text`)
 	if texts == 0 {
-		box, err := rice.FindBox("setup")
-		if err != nil {
-			log.WithError(err).Error("can't find setup rice box")
-		}
-		d, err := box.String("default.md")
+		data, err := Asset("model/setup/default.md")
 		if err != nil {
 			log.WithError(err).Error("default.md file error")
 		}
@@ -58,7 +53,7 @@ func SetupDb() {
 		CreateOrUpdatePage(u, CreatePageOptions{
 			Title:     "Main_Page",
 			Namespace: "",
-			Text:      d,
+			Text:      string(data),
 			Comment:   "",
 			IsMinor:   false,
 		})
