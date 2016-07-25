@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/gob"
 	"net/http"
 	"strings"
 	"time"
@@ -152,7 +151,6 @@ func savePage(c *iris.Context) {
 }
 
 func init() {
-	gob.Register(&mdl.User{})
 	setting.Initialize()
 	ll, err := log.ParseLevel(setting.LogLevel)
 	if err == nil {
