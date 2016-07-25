@@ -37,71 +37,78 @@ func seperateNamespaceAndTitle(t string) (namespace string, title string) {
 	return namespace, title
 }
 
+// NeedsRedirect checks that the page title is properly formatted
+// returns if the page needs a redirect and the proper page name
+func needsRedirect(title string) (string, bool) {
+	firstChar := string(title[0])
+	t := strings.ToUpper(firstChar) + string(title[1:])
+	t = strings.Replace(t, "%20", "_", -1)
+	t = strings.Replace(t, " ", "_", -1)
+	return t, title != t
+}
+
 func root(c *iris.Context) {
 	c.Redirect("/pages/Main_Page", http.StatusMovedPermanently)
 }
 
-func wikiPage(c *iris.Context) {
-	n, t := seperateNamespaceAndTitle(c.Param("name"))
-	log.WithFields(log.Fields{
-		"namespace": n,
-		"title":     t,
-		"name":      c.Param("name"),
-	}).Debug("separating namespace and title")
-
-	ul := strings.ToLower(c.Param("name"))
-	if strings.HasPrefix(ul, "/"+noEditArea) {
-		c.EmitError(http.StatusForbidden)
+func showDiffPage(c *iris.Context, oldid, diff string) {
+	oldPage, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
+	if err != nil {
+		c.EmitError(http.StatusInternalServerError)
 		return
 	}
 
-	urlTitle := convertTitleToUrl(t)
+	val := c.Session().Get("user")
+	diffPage, err := mdl.GetPageVeiwByID(c.URLParam("diff"))
+	if err != nil {
+		c.EmitError(http.StatusInternalServerError)
+		return
+	}
+	p := &view.ArticleDiff{
+		User:  val.(*mdl.User),
+		Page:  oldPage,
+		Page2: diffPage,
+	}
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
+}
 
-	log.WithFields(log.Fields{
-		"urlTitle": urlTitle,
-		"t":        t,
-	}).Debug("Should this page be redirected?")
-	if urlTitle != t {
-		if n != "" {
-			n += ":"
-		}
-		c.Redirect("/pages/"+n+urlTitle, http.StatusMovedPermanently)
+func showOldPage(c *iris.Context, oldid string) {
+	pv, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
+	if err != nil {
+		c.EmitError(http.StatusInternalServerError)
+		return
+	}
+	val := c.Session().Get("user")
+	p := &view.ArticleOld{
+		User: val.(*mdl.User),
+		Page: pv,
+	}
+	view.WritePageTemplate(c.GetRequestCtx(), p)
+	c.HTML(http.StatusOK, "")
+}
+
+func wikiPage(c *iris.Context) {
+	pageTitle := strings.Trim(c.Param("name"), "/")
+
+	urlTitle, yes := needsRedirect(pageTitle)
+	if yes {
+		c.Redirect("/pages/"+urlTitle, http.StatusMovedPermanently)
+		return
+	}
+
+	if c.URLParam("oldid") != "" && c.URLParam("diff") != "" {
+		showDiffPage(c, c.URLParam("oldid"), c.URLParam("diff"))
 		return
 	}
 
 	if c.URLParam("oldid") != "" {
-		pv, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
-		if err != nil {
-			c.EmitError(http.StatusInternalServerError)
-			return
-		}
-
-		val := c.Session().Get("user")
-		if c.URLParam("diff") != "" {
-			pv2, err := mdl.GetPageVeiwByID(c.URLParam("diff"))
-			if err != nil {
-				c.EmitError(http.StatusInternalServerError)
-				return
-			}
-			p := &view.ArticleDiff{
-				User:  val.(*mdl.User),
-				Page:  pv,
-				Page2: pv2,
-			}
-			view.WritePageTemplate(c.GetRequestCtx(), p)
-			c.HTML(http.StatusOK, "")
-			return
-		}
-		p := &view.ArticleOld{
-			User: val.(*mdl.User),
-			Page: pv,
-		}
-		view.WritePageTemplate(c.GetRequestCtx(), p)
-		c.HTML(http.StatusOK, "")
+		showOldPage(c, c.URLParam("oldid"))
 		return
 	}
 
-	pv := mdl.GetPageView(n, t)
+	// Showing regular page
+	pv := mdl.GetPageView("", pageTitle)
 
 	if pv.NiceTitle != "" && !pv.Deleted {
 		val := c.Session().Get("user")
@@ -113,10 +120,9 @@ func wikiPage(c *iris.Context) {
 		c.HTML(http.StatusOK, "")
 		return
 	}
-	if n != "" {
-		n += ":"
-	}
-	c.Redirect("/special/edit?title="+n+t, http.StatusTemporaryRedirect)
+
+	// Page doesn't exist redirect to edit
+	c.Redirect("/special/edit?title="+pageTitle, http.StatusTemporaryRedirect)
 }
 
 func savePage(c *iris.Context) {
