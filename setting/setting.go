@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"os"
 
-	"github.com/GeertJohan/go.rice"
 	log "github.com/Sirupsen/logrus"
 	"github.com/pelletier/go-toml"
 )
@@ -26,18 +25,14 @@ func init() {
 	config, err = toml.LoadFile("conf.toml")
 	if err != nil {
 		log.WithError(err).Error("local config file error")
-		box, err := rice.FindBox("")
+		data, err := Asset("setting/conf.toml")
 		if err != nil {
-			log.WithError(err).Error("can't find setup rice box")
+			log.WithError(err).Error("can't find file in assets")
 		}
-		conf, err := box.String("conf.toml")
-		if err != nil {
-			log.WithError(err).Error("conf.toml file error")
-		}
-		config, err = toml.Load(conf)
+		config, err = toml.Load(string(data))
 		f, err := os.Create("conf.toml")
 		defer f.Close()
-		f.Write([]byte(conf))
+		f.Write(data)
 	}
 }
 
