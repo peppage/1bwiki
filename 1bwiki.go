@@ -14,8 +14,6 @@ import (
 	"github.com/kataras/iris"
 )
 
-const noEditArea = "special"
-
 func convertTitleToUrl(t string) string {
 	firstChar := string(t[0])
 	t = strings.ToUpper(firstChar) + string(t[1:])

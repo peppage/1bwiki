@@ -16,12 +16,6 @@ import (
 func edit(c *iris.Context) {
 	n, t := seperateNamespaceAndTitle(c.URLParam("title"))
 
-	ut := strings.ToLower(t)
-	if strings.HasPrefix(ut, noEditArea) {
-		c.NotFound()
-		return
-	}
-
 	urlTitle := convertTitleToUrl(t)
 	log.WithFields(log.Fields{
 		"urlTitle": urlTitle,
