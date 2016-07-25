@@ -8,7 +8,7 @@
 type Article struct {
     BasePage
     User *m.User
-    Page *m.PageView
+    Page *m.View
 }
 %}
 
@@ -39,8 +39,8 @@ type Article struct {
 type ArticleDiff struct {
     BasePage
     User *m.User
-    Page *m.PageView
-    Page2 *m.PageView
+    Page *m.View
+    Page2 *m.View
 }
 %}
 
@@ -77,7 +77,7 @@ type ArticleDiff struct {
 type ArticleEdit struct {
     BasePage
     User *m.User
-    Page *m.PageView
+    Page *m.View
 }
 %}
 
@@ -317,7 +317,7 @@ type ArticleHistory struct {
 type ArticleOld struct {
     BasePage
     User *m.User
-    Page *m.PageView
+    Page *m.View
 }
 %}
 

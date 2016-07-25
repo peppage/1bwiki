@@ -190,7 +190,7 @@ type PageListPage struct {
     BasePage
     User *m.User
     URL string
-    Pages []*m.PageView
+    Pages []*m.View
 }
 %}
 
