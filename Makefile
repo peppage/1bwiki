@@ -3,10 +3,12 @@ default: build
 
 build: vet templates
 	go-bindata -debug static/...
+	go-bindata -debug -pkg setting -o setting/bindata.go setting/conf.toml
 	go build -v
 
 release: vet templates
 	go-bindata static/... 
+	go-bindata -pkg setting -o setting/bindata.go setting/conf.toml
 	go build -v
 
 vet:
@@ -21,6 +23,7 @@ lint:
 	golint .
 
 clean:
+	find . -type f -name "bindata.go" -delete
 	find ./view/ -type f -name "*.go" -delete
 	go clean
 
