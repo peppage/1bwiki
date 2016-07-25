@@ -23,7 +23,7 @@ type CreatePageOptions struct {
 }
 
 // CreateOrUpdatePage updates or creates a new page in the wiki
-func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
+func CreateOrUpdatePage(u *User, opts CreatePageOptions) error {
 	var err error
 
 	tx := db.MustBegin()
@@ -39,7 +39,7 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 
 	if err != nil {
 		tx.Rollback()
-		return nil, err
+		return err
 	}
 
 	p := &Page{
@@ -54,10 +54,10 @@ func CreateOrUpdatePage(u *User, opts CreatePageOptions) (*Page, error) {
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
-		return nil, err
+		return err
 	}
 
-	return p, nil
+	return nil
 }
 
 // NiceTitle converts a title into a nice title

@@ -114,7 +114,7 @@ func savePage(c *iris.Context) {
 	}
 
 	minor := c.FormValueString("minor") == "on"
-	p, err := mdl.CreateOrUpdatePage(u, mdl.CreatePageOptions{
+	err := mdl.CreateOrUpdatePage(u, mdl.CreatePageOptions{
 		Title:     c.FormValueString("title"),
 		Namespace: c.FormValueString("namespace"),
 		Text:      c.FormValueString("text"),
@@ -125,7 +125,7 @@ func savePage(c *iris.Context) {
 		c.EmitError(http.StatusBadRequest)
 		return
 	}
-	c.Redirect("/pages/"+p.Title, http.StatusSeeOther)
+	c.Redirect("/pages/"+c.FormValueString("title"), http.StatusSeeOther)
 }
 
 func init() {
