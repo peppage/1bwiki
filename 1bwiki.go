@@ -14,26 +14,6 @@ import (
 	"github.com/kataras/iris"
 )
 
-func convertTitleToUrl(t string) string {
-	firstChar := string(t[0])
-	t = strings.ToUpper(firstChar) + string(t[1:])
-	t = strings.Replace(t, "%20", "_", -1)
-	t = strings.Replace(t, " ", "_", -1)
-	return t
-}
-
-func seperateNamespaceAndTitle(t string) (namespace string, title string) {
-	URL := strings.Trim(t, "/")
-	if strings.Contains(URL, ":") {
-		split := strings.Split(URL, ":")
-		namespace = split[0]
-		title = split[1]
-	} else {
-		title = URL
-	}
-	return namespace, title
-}
-
 // NeedsRedirect checks that the page title is properly formatted
 // returns if the page needs a redirect and the proper page name
 func needsRedirect(title string) (string, bool) {

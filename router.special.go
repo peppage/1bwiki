@@ -9,35 +9,24 @@ import (
 
 	"1bwiki/view"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/kataras/iris"
 )
 
 func edit(c *iris.Context) {
-	n, t := seperateNamespaceAndTitle(c.URLParam("title"))
+	pageTitle := c.URLParam("title")
 
-	urlTitle := convertTitleToUrl(t)
-	log.WithFields(log.Fields{
-		"urlTitle": urlTitle,
-		"t":        t,
-	}).Debug("Should this page be redirected?")
-	if urlTitle != t {
-		if n != "" {
-			n += ":"
-		}
-		c.Redirect("/special/edit?title="+n+urlTitle, http.StatusMovedPermanently)
+	urlTitle, yes := needsRedirect(pageTitle)
+	if yes {
+		c.Redirect("/special/edit?title="+urlTitle, http.StatusMovedPermanently)
 		return
 	}
 
-	pv := mdl.GetPageView(n, t)
+	pv := mdl.GetPageView("", pageTitle)
 
 	if pv.NiceTitle == "" {
-		if n != "" {
-			n += ":"
-		}
-		pv.NameSpace = n
-		pv.Title = t
-		pv.NiceTitle = strings.Replace(n+t, "_", " ", -1)
+		pv.NameSpace = ""
+		pv.Title = pageTitle
+		pv.NiceTitle = strings.Replace(pageTitle, "_", " ", -1)
 	}
 	val := c.Session().Get("user")
 	p := &view.ArticleEdit{
@@ -49,23 +38,22 @@ func edit(c *iris.Context) {
 }
 
 func history(c *iris.Context) {
-	n, t := seperateNamespaceAndTitle(c.URLParam("title"))
-	urlTitle := convertTitleToUrl(t)
-	if urlTitle != t {
-		if n != "" {
-			n += ":"
-		}
-		c.Redirect("/special/history?title="+n+urlTitle, http.StatusTemporaryRedirect)
+	pageTitle := c.URLParam("title")
+
+	urlTitle, yes := needsRedirect(pageTitle)
+	if yes {
+		c.Redirect("/special/history?title="+urlTitle, http.StatusMovedPermanently)
 		return
 	}
+	
 	p, _ := strconv.Atoi(c.URLParam("page"))
-	revs, err := mdl.GetPageRevisions(c.URLParam("title"), p, 50)
+	revs, err := mdl.GetPageRevisions(pageTitle, p, 50)
 	if err != nil {
 		c.Error("", http.StatusInternalServerError)
 	}
 	val := c.Session().Get("user")
-	niceTitle := mdl.NiceTitle(c.URLParam("title"))
-	totalPages := int(mdl.GetAmountOfRevisionsForPage(c.URLParam("title")) / 50)
+	niceTitle := mdl.NiceTitle(pageTitle)
+	totalPages := int(mdl.GetAmountOfRevisionsForPage(pageTitle) / 50)
 	page := &view.ArticleHistory{
 		User:       val.(*mdl.User),
 		NiceTitle:  niceTitle,
