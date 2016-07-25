@@ -1,8 +1,5 @@
 package: 1bwiki
 import:
-- package: github.com/GeertJohan/go.rice
-  subpackages:
-  - github.com\GeertJohan\go.rice
 - package: github.com/Sirupsen/logrus
   subpackages:
   - github.com\Sirupsen\logrus

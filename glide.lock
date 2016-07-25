@@ -31,11 +31,6 @@ imports:
   version: 259cd7b345f5aa080eff16f21d7866ef7dea9528
   subpackages:
   - github.com\gavv\monotime
-- name: github.com/GeertJohan/go.rice
-  version: 0f3f5fde32fd1f755632a3d31ba2ec6d449e387b
-  subpackages:
-  - github.com\GeertJohan\go.rice
-  - github.com\GeertJohan\go.rice\embedded
 - name: github.com/google/go-querystring
   version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
   subpackages:
