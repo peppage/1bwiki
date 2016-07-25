@@ -65,7 +65,7 @@ func NiceTitle(title string) string {
 	return strings.Replace(title, "_", " ", -1)
 }
 
-func GetPages() ([]*Page, error) {
+func getPages() ([]*Page, error) {
 	var pages []*Page
 	err := db.Select(&pages, `SELECT * FROM page ORDER BY title DESC`)
 	if err != nil {
