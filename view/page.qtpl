@@ -170,7 +170,7 @@ type ArticleEdit struct {
 {% endfunc %}
 
 {% func (p *ArticleEdit) Nav() %}
-    {%= p.BasePage.PageNav(p.Page.NiceTitle, "Edit") %}
+    {%= p.BasePage.PageNav(p.Page.NiceTitle, "edit") %}
 {% endfunc %}
 
 {% func (p *ArticleEdit) UserMenu() %}
