@@ -7,3 +7,4 @@ tmpl/*/*/*.go
 view/*.go
 conf.toml
 /vendor/
+bindata.go
