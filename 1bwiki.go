@@ -29,14 +29,14 @@ func root(c *iris.Context) {
 }
 
 func showDiffPage(c *iris.Context) {
-	oldPage, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
+	oldPage, err := mdl.GetViewByID(c.URLParam("oldid"))
 	if err != nil {
 		c.EmitError(http.StatusInternalServerError)
 		return
 	}
 
 	val := c.Session().Get("user")
-	diffPage, err := mdl.GetPageVeiwByID(c.URLParam("diff"))
+	diffPage, err := mdl.GetViewByID(c.URLParam("diff"))
 	if err != nil {
 		c.EmitError(http.StatusInternalServerError)
 		return
@@ -51,7 +51,7 @@ func showDiffPage(c *iris.Context) {
 }
 
 func showOldPage(c *iris.Context) {
-	pv, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
+	pv, err := mdl.GetViewByID(c.URLParam("oldid"))
 	if err != nil {
 		c.EmitError(http.StatusInternalServerError)
 		return
@@ -85,7 +85,7 @@ func wikiPage(c *iris.Context) {
 	}
 
 	// Showing regular page
-	pv := mdl.GetPageView("", pageTitle)
+	pv := mdl.GetView("", pageTitle)
 
 	if pv.NiceTitle != "" && !pv.Deleted {
 		val := c.Session().Get("user")

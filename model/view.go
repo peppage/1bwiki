@@ -60,8 +60,8 @@ func diffPretty(diffs []diffmatchpatch.Diff) string {
 	return buff.String()
 }
 
-// GetPageView gets all information to show a page to a user
-func GetPageView(namespace string, title string) *View {
+// GetView gets all information to show a page to a user
+func GetView(namespace string, title string) *View {
 	var p View
 	db.Get(&p, `SELECT page.namespace, page.title, page.nicetitle, text.text,
 				revision.timestamp, revision.deleted FROM page JOIN revision ON
@@ -71,7 +71,7 @@ func GetPageView(namespace string, title string) *View {
 	return &p
 }
 
-func GetPageVeiwByID(revID string) (*View, error) {
+func GetViewByID(revID string) (*View, error) {
 	var p View
 	err := db.Get(&p, `SELECT page.namespace, page.title, page.nicetitle, text.text,
 				revision.timestamp, revision.deleted
@@ -83,14 +83,14 @@ func GetPageVeiwByID(revID string) (*View, error) {
 	return &p, nil
 }
 
-func GetRandomPageViewTitle() string {
+func GetRandomViewTitle() string {
 	title := []string{}
 	db.Select(&title, `SELECT title FROM page JOIN revision on page.revisionid = revision.id
 		WHERE namespace="" AND revision.deleted=0 ORDER BY title`)
 	return title[rand.Intn(len(title))]
 }
 
-func GetPageViews() ([]*View, error) {
+func GetViews() ([]*View, error) {
 	var pages []*View
 	err := db.Select(&pages, `SELECT page.namespace, page.title, page.nicetitle, text.text,
 				revision.timestamp, revision.deleted FROM page JOIN revision ON

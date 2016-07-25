@@ -21,7 +21,7 @@ func edit(c *iris.Context) {
 		return
 	}
 
-	pv := mdl.GetPageView("", pageTitle)
+	pv := mdl.GetView("", pageTitle)
 
 	if pv.NiceTitle == "" {
 		pv.NameSpace = ""
@@ -45,7 +45,7 @@ func history(c *iris.Context) {
 		c.Redirect("/special/history?title="+urlTitle, http.StatusMovedPermanently)
 		return
 	}
-	
+
 	p, _ := strconv.Atoi(c.URLParam("page"))
 	revs, err := mdl.GetPageRevisions(pageTitle, p, 50)
 	if err != nil {
@@ -91,7 +91,7 @@ func recentChanges(c *iris.Context) {
 }
 
 func pages(c *iris.Context) {
-	p, err := mdl.GetPageViews()
+	p, err := mdl.GetViews()
 	if err != nil {
 		c.EmitError(http.StatusInternalServerError)
 	}
@@ -106,7 +106,7 @@ func pages(c *iris.Context) {
 }
 
 func random(c *iris.Context) {
-	t := mdl.GetRandomPageViewTitle()
+	t := mdl.GetRandomViewTitle()
 	c.Redirect("/pages/"+t, http.StatusTemporaryRedirect)
 }
 
