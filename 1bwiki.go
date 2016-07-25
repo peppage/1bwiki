@@ -28,7 +28,7 @@ func root(c *iris.Context) {
 	c.Redirect("/pages/Main_Page", http.StatusMovedPermanently)
 }
 
-func showDiffPage(c *iris.Context, oldid, diff string) {
+func showDiffPage(c *iris.Context) {
 	oldPage, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
 	if err != nil {
 		c.EmitError(http.StatusInternalServerError)
@@ -50,7 +50,7 @@ func showDiffPage(c *iris.Context, oldid, diff string) {
 	c.HTML(http.StatusOK, "")
 }
 
-func showOldPage(c *iris.Context, oldid string) {
+func showOldPage(c *iris.Context) {
 	pv, err := mdl.GetPageVeiwByID(c.URLParam("oldid"))
 	if err != nil {
 		c.EmitError(http.StatusInternalServerError)
@@ -75,12 +75,12 @@ func wikiPage(c *iris.Context) {
 	}
 
 	if c.URLParam("oldid") != "" && c.URLParam("diff") != "" {
-		showDiffPage(c, c.URLParam("oldid"), c.URLParam("diff"))
+		showDiffPage(c)
 		return
 	}
 
 	if c.URLParam("oldid") != "" {
-		showOldPage(c, c.URLParam("oldid"))
+		showOldPage(c)
 		return
 	}
 
