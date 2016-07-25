@@ -125,7 +125,7 @@ func pages(c *iris.Context) {
 
 func random(c *iris.Context) {
 	t := mdl.GetRandomPageViewTitle()
-	c.Redirect("/"+t, http.StatusTemporaryRedirect)
+	c.Redirect("/pages/"+t, http.StatusTemporaryRedirect)
 }
 
 func delete(c *iris.Context) {
