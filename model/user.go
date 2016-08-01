@@ -17,6 +17,8 @@ type User struct {
 	Admin        bool
 }
 
+var userFields = "name, registration, realname"
+
 // CreateUser creates record of a new user
 func CreateUser(u *User) (err error) {
 	err = u.EncodePassword()
@@ -68,7 +70,7 @@ func (u *User) IsLoggedIn() bool {
 
 func GetUsers() ([]*User, error) {
 	var users []*User
-	err := db.Select(&users, `SELECT name FROM user ORDER BY name DESC`)
+	err := db.Select(&users, `SELECT `+userFields+` FROM user ORDER BY name DESC`)
 	if err != nil {
 		return users, err
 	}
