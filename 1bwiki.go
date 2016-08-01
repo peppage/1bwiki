@@ -177,16 +177,16 @@ func main() {
 	special.Get("/delete", delete)
 	special.Post("/delete", deleteHandle)
 
-	user := iris.Party("/preferences")
-	user.Use(&loggedInMiddleware{})
-	user.Get("", prefs)
-	user.Get("/password", prefsPasword)
-	user.Post("/password", handlePrefsPassword)
+	preferences := special.Party("/preferences")
+	preferences.Use(&loggedInMiddleware{})
+	preferences.Get("", prefs)
+	preferences.Get("/password", prefsPasword)
+	preferences.Post("/password", handlePrefsPassword)
 
-	a := iris.Party("/admin")
-	a.Use(&adminMiddleware{})
-	a.Get("", admin)
-	a.Post("", adminHandle)
+	administration := special.Party("/admin")
+	administration.Use(&adminMiddleware{})
+	administration.Get("", admin)
+	administration.Post("", adminHandle)
 
 	iris.Listen(":" + setting.HttpPort)
 }
