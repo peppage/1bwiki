@@ -38,8 +38,7 @@ func (s *loggedInMiddleware) Serve(c *iris.Context) {
 		c.Next()
 		return
 	}
-	c.Error("Must be logged in ", http.StatusUnauthorized)
-	return
+	c.Redirect("/special/login", http.StatusUnauthorized)
 }
 
 type adminMiddleware struct{}
@@ -51,6 +50,5 @@ func (s *adminMiddleware) Serve(c *iris.Context) {
 		c.Next()
 		return
 	}
-	c.Error("Must be admin ", http.StatusUnauthorized)
-	return
+	c.Redirect("/special/login", http.StatusUnauthorized)
 }
