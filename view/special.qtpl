@@ -53,7 +53,7 @@ type DeletePage struct {
         <form class="ui form" method="post">
             <input type="hidden" name="title" value="@pageTitle">
             <button class="ui primary button" type="submit">Delete</button>
-            <a class="ui button" href="/@pageTitle">Cancel</a>
+            <a class="ui button" href="/pages/@pageTitle">Cancel</a>
         </form>
     </div>
 {% endfunc %}
@@ -150,15 +150,15 @@ type RecentChangesPage struct {
                 }
             %}
             {%if v.Deleted %}
-                {%s v.UserText %} deleted page <a class="new" href="/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a><br>
+                {%s v.UserText %} deleted page <a class="new" href="/pages/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a><br>
             {% else %}
                 {% if showTime %}
                     <h4>{%s prevDate %}</h4>
                 {% endif %}
                 {%s= minor %} {%s= newEdit %}
-                {%s tOut %}<a href="/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a> (
+                {%s tOut %}<a href="/pages/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a> (
                     {%if v.ParentID != 0 %}
-                        <a href="/{%s v.PageTitle %}?oldid={%v v.ParentID %}&amp;diff={%v v.ID %}">diff</a>
+                        <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ParentID %}&amp;diff={%v v.ID %}">diff</a>
                     {% else %}
                         <span>diff</span>
                     {% endif %}

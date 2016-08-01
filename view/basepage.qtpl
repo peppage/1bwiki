@@ -129,7 +129,7 @@ overriding only certain Page methods
 {% func (p *BasePage) SpecialNav(url string) %}
     <div class="ui tabs container">
         <div class="ui tabular menu">
-            <a class="item active" href="{%s= url %}">
+            <a class="item active" href="/{%s= url %}">
                 Special page
             </a>
         </div>
