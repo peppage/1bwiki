@@ -23,7 +23,7 @@ type UsersListPage struct {
             {%code
                 t := time.Unix(u.Registration, 0)
             %}
-            <a href="/user/{%s u.Name %}">{%s u.Name %}</a> (<a href="/user/{%s u.Name %}/talk">talk</a>|<a href="/user/{%s u.Name %}/contribs">contribs</a>) (Created on {%v t.Format("_2 Jan 2006") %} at {%v t.Format("15:04:05") %})<br>
+            <a href="/user/{%s u.Name %}">{%s u.Name %}</a> (<a href="/user/{%s u.Name %}/talk">talk</a>|<a href="/user/{%s u.Name %}/contribs">contribs</a>) (Created on {%v t.Format("_2 Jan 2006") %} at {%v t.Format("15:04") %})<br>
         {% endfor %}
     </div>
 {% endfunc %}

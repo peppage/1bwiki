@@ -1,5 +1,6 @@
 {% import (
 		m "1bwiki/model"
+        "time"
 	) %}
 
 {% code
@@ -178,7 +179,7 @@ type PrefsPage struct {
                     </tr>
                     <tr>
                         <td class="label">Registration time:</td>
-                        <td>{%v p.User.Registration %}</td>
+                        <td>{%v time.Unix(p.User.Registration, 0).Format("15:04, _2 Jan 2006") %}</td>
                 </table>
             </div>
         </div>
