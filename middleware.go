@@ -36,6 +36,7 @@ func (s *loggedInMiddleware) Serve(c *iris.Context) {
 	u, ok := val.(*mdl.User)
 	if ok && u.IsLoggedIn() {
 		c.Next()
+		return
 	}
 	c.Error("Must be logged in ", http.StatusUnauthorized)
 	return
@@ -48,6 +49,7 @@ func (s *adminMiddleware) Serve(c *iris.Context) {
 	u, ok := val.(*mdl.User)
 	if ok && u.IsAdmin() {
 		c.Next()
+		return
 	}
 	c.Error("Must be admin ", http.StatusUnauthorized)
 	return
