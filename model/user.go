@@ -15,6 +15,7 @@ type User struct {
 	Registration int64
 	Anon         bool
 	Admin        bool
+	TimeZone     string
 }
 
 var userFields = "name, registration, realname"

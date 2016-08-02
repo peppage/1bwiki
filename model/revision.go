@@ -120,7 +120,8 @@ func GetAmountOfRevisionsForPage(title string) int {
 	return count
 }
 
-func (r *Revision) PrettyTime() string {
-	t := time.Unix(r.TimeStamp, 0).UTC()
+func (r *Revision) PrettyTime(timeZone string) string {
+	l, _ := time.LoadLocation(timeZone)
+	t := time.Unix(r.TimeStamp, 0).In(l)
 	return t.Format("15:04, 2 Jan 2006")
 }

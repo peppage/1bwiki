@@ -35,8 +35,9 @@ func (pv *View) Diff(pv2 *View) string {
 	return diffPretty(diffs)
 }
 
-func (pv *View) PrettyTime() string {
-	t := time.Unix(pv.TimeStamp, 0).UTC()
+func (pv *View) PrettyTime(timeZone string) string {
+	l, _ := time.LoadLocation(timeZone)
+	t := time.Unix(pv.TimeStamp, 0).In(l)
 	return t.Format("15:04, 2 Jan 2006")
 }
 

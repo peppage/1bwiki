@@ -48,7 +48,7 @@ type ArticleDiff struct {
     <div class="ui text container">
 	<h1>{%s p.Page.NiceTitle %}: Difference between revisions</h1>
 	<div class="ui orange message">
-	    Difference between a revision on {%s p.Page.PrettyTime() %} and {%s p.Page2.PrettyTime() %}
+	    Difference between a revision on {%s p.Page.PrettyTime(p.User.TimeZone) %} and {%s p.Page2.PrettyTime(p.User.TimeZone) %}
 	</div>
 </div>
 
@@ -107,7 +107,7 @@ type ArticleEdit struct {
                     If you are creating a new page with different content, please continue. If you are recreating a page similar to the previously deleted page, or are unsure, please first contact the deleting user using the information provided below.
                     <ul>
                         <li>
-                            {%s rev.PrettyTime() %} {%s rev.UserText %} deleted page
+                            {%s rev.PrettyTime(p.User.TimeZone) %} {%s rev.UserText %} deleted page
                         </li>
                     </ul>
                 </p>
@@ -212,7 +212,7 @@ type ArticleHistory struct {
                         {%for _, v := range p.Revs %}
                             {% if v.Deleted %}
                                 <li>
-                                    {%s v.PrettyTime() %} {%s v.UserText %} deleted page
+                                    {%s v.PrettyTime(p.User.TimeZone) %} {%s v.UserText %} deleted page
                                 </li>
                             {% endif %}
                         {% endfor %}
@@ -245,7 +245,7 @@ type ArticleHistory struct {
                     }
                 %}
                 <span>
-                    ({%s= cur %} | {%s= prev %}) <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ID %}">{%s v.PrettyTime() %}</a> <a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{%s v.UserText %}">talk</a> | contribs) {%s= minor %}.. ({%d v.Len %} bytes) {%s= lenDisplay %} .. (<i>{%s v.Comment %}</i>)<br>
+                    ({%s= cur %} | {%s= prev %}) <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ID %}">{%s v.PrettyTime(p.User.TimeZone) %}</a> <a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{%s v.UserText %}">talk</a> | contribs) {%s= minor %}.. ({%d v.Len %} bytes) {%s= lenDisplay %} .. (<i>{%s v.Comment %}</i>)<br>
                 </span>
             {% endfor %}
             <br>
