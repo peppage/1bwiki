@@ -21,7 +21,8 @@ type UsersListPage struct {
         </p>
         {% for _, u := range p.Users %}
             {%code
-                t := time.Unix(u.Registration, 0)
+                l, _ := time.LoadLocation(p.User.TimeZone)
+                t := time.Unix(u.Registration, 0).In(l)
             %}
             <a href="/user/{%s u.Name %}">{%s u.Name %}</a> (<a href="/user/{%s u.Name %}/talk">talk</a>|<a href="/user/{%s u.Name %}/contribs">contribs</a>) (Created on {%v t.Format("_2 Jan 2006") %} at {%v t.Format("15:04") %})<br>
         {% endfor %}
