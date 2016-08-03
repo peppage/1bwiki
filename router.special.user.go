@@ -96,7 +96,20 @@ func prefs(c *iris.Context) {
 		}
 		view.WritePageTemplate(c.GetRequestCtx(), p)
 		c.HTML(http.StatusOK, "")
-		return
+	}
+}
+
+func handlePrefs(c *iris.Context) {
+	val := c.Session().Get("user")
+	u, ok := val.(*mdl.User)
+	if ok {
+		u.TimeZone = c.FormValueString("timezone")
+		err := mdl.UpdateUserSettings(u)
+		if err != nil {
+			c.Error("Failed saving user", http.StatusInternalServerError)
+			return
+		}
+		c.Redirect("/special/preferences", http.StatusSeeOther)
 	}
 }
 
@@ -133,7 +146,7 @@ func handlePrefsPassword(c *iris.Context) {
 			c.Error("Failed", http.StatusInternalServerError)
 			return
 		}
-		err = mdl.UpdateUser(u)
+		err = mdl.UpdateUserPassword(u)
 		if err != nil {
 			c.EmitError(http.StatusInternalServerError)
 			return

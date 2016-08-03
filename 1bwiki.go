@@ -180,6 +180,7 @@ func main() {
 	preferences := special.Party("/preferences")
 	preferences.Use(&loggedInMiddleware{})
 	preferences.Get("", prefs)
+	preferences.Post("", handlePrefs)
 	preferences.Get("/password", prefsPasword)
 	preferences.Post("/password", handlePrefsPassword)
 

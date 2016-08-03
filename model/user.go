@@ -18,7 +18,7 @@ type User struct {
 	TimeZone     string
 }
 
-var userFields = "name, registration, realname"
+var userFields = "name, registration, realname, timezone"
 
 // CreateUser creates record of a new user
 func CreateUser(u *User) (err error) {
@@ -26,14 +26,18 @@ func CreateUser(u *User) (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = db.NamedExec(`INSERT INTO user (name, password, registration, realname)
-							VALUES (:name, :password, :registration, '')`, u)
+	_, err = db.NamedExec(`INSERT INTO user (name, password, registration, realname, timezone)
+							VALUES (:name, :password, :registration, '', :timezone)`, u)
 	return err
 }
 
-func UpdateUser(u *User) error {
-	_, err := db.NamedExec(`UPDATE user SET name=:name, password=:password,
-							realname=:realname WHERE id=:id`, u)
+func UpdateUserSettings(u *User) error {
+	_, err := db.NamedExec(`UPDATE user SET timezone=:timezone WHERE id=:id`, u)
+	return err
+}
+
+func UpdateUserPassword(u *User) error {
+	_, err := db.NamedExec(`UPDATE user SET password=:password WHERE id=:id`, u)
 	return err
 }
 
