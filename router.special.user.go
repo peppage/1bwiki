@@ -103,6 +103,33 @@ func handlePrefs(c *iris.Context) {
 	val := c.Session().Get("user")
 	u, ok := val.(*mdl.User)
 	if ok {
+		u.RealName = c.FormValueString("realname")
+		err := mdl.UpdateUserSettings(u)
+		if err != nil {
+			c.Error("Failed saving user", http.StatusInternalServerError)
+			return
+		}
+		c.Redirect("/special/preferences", http.StatusSeeOther)
+	}
+}
+
+func prefsAppearence(c *iris.Context) {
+	val := c.Session().Get("user")
+	u, ok := val.(*mdl.User)
+	if ok {
+		p := &view.AppearencePage{
+			User: u,
+			URL:  "/special/preferences/appearence",
+		}
+		view.WritePageTemplate(c.GetRequestCtx(), p)
+		c.HTML(http.StatusOK, "")
+	}
+}
+
+func handlePrefsAppearence(c *iris.Context) {
+	val := c.Session().Get("user")
+	u, ok := val.(*mdl.User)
+	if ok {
 		u.TimeZone = c.FormValueString("timezone")
 		err := mdl.UpdateUserSettings(u)
 		if err != nil {

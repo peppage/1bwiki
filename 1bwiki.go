@@ -181,6 +181,8 @@ func main() {
 	preferences.Use(&loggedInMiddleware{})
 	preferences.Get("", prefs)
 	preferences.Post("", handlePrefs)
+	preferences.Get("/appearence", prefsAppearence)
+	preferences.Post("/appearence", handlePrefsAppearence)
 	preferences.Get("/password", prefsPasword)
 	preferences.Post("/password", handlePrefsPassword)
 

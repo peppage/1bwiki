@@ -164,6 +164,9 @@ type PrefsPage struct {
                     <a class="active item" href="/special/preferences">
                         User Profile
                     </a>
+                    <a class="item" href="/special/preferences/appearence">
+                        Appearence
+                    </a>
                 </div>
             </div>
             <div class="twelve wide column">
@@ -182,6 +185,49 @@ type PrefsPage struct {
                         <td>{%v time.Unix(p.User.Registration, 0).Format("15:04, _2 Jan 2006") %}</td>
                     </tr>
                 </table>
+            </div>
+        </div>
+    </div>
+{% endfunc %}
+
+{% func (p *PrefsPage) Title() %}
+    User Preferences
+{% endfunc %}
+
+{% func (p *PrefsPage) Nav() %}
+    {%= p.BasePage.SpecialNav(p.URL) %}
+{% endfunc %}
+
+{% func (p *PrefsPage) UserMenu() %}
+    {% if p.User.Anon %}
+        {%= p.BasePage.UserMenu() %}
+    {% else %}
+        {%= p.BasePage.UserMenuLoggedIn(p.User) %}
+    {% endif %}
+{% endfunc %}
+
+{% code
+type AppearencePage struct {
+    BasePage
+    URL string
+    User *m.User
+}
+%}
+
+{% func (p *AppearencePage) Body() %}
+    <div class="ui container">
+        <div class="ui grid">
+            <div class="four wide column">
+                <div class="ui vertical menu">
+                    <a class="item" href="/special/preferences">
+                        User Profile
+                    </a>
+                    <a class="active item" href="/special/preferences/appearence">
+                        Appearence
+                    </a>
+                </div>
+            </div>
+            <div class="twelve wide column">
                 <h2>Appearence</h2>
                 <form method="post">
                     <table>
@@ -212,15 +258,15 @@ type PrefsPage struct {
     </div>
 {% endfunc %}
 
-{% func (p *PrefsPage) Title() %}
-    Change Password
+{% func (p *AppearencePage) Title() %}
+    User appearence settings
 {% endfunc %}
 
-{% func (p *PrefsPage) Nav() %}
+{% func (p *AppearencePage) Nav() %}
     {%= p.BasePage.SpecialNav(p.URL) %}
 {% endfunc %}
 
-{% func (p *PrefsPage) UserMenu() %}
+{% func (p *AppearencePage) UserMenu() %}
     {% if p.User.Anon %}
         {%= p.BasePage.UserMenu() %}
     {% else %}
