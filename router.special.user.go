@@ -135,6 +135,7 @@ func handlePrefsAppearence(c *iris.Context) {
 	u, ok := val.(*mdl.User)
 	if ok {
 		u.TimeZone = c.FormValueString("timezone")
+		u.DateFormat = c.FormValueString("dateformat")
 		err := mdl.UpdateUserSettings(u)
 		if err != nil {
 			c.Error("Failed saving user", http.StatusInternalServerError)

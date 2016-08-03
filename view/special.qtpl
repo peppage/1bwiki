@@ -1,6 +1,7 @@
 {% import (
         "strconv"
         "time"
+        "strings"
 		m "1bwiki/model"
 	) %}
     
@@ -24,7 +25,7 @@ type UsersListPage struct {
                 l, _ := time.LoadLocation(p.User.TimeZone)
                 t := time.Unix(u.Registration, 0).In(l)
             %}
-            <a href="/user/{%s u.Name %}">{%s u.Name %}</a> (<a href="/user/{%s u.Name %}/talk">talk</a>|<a href="/user/{%s u.Name %}/contribs">contribs</a>) (Created on {%v t.Format("_2 Jan 2006") %} at {%v t.Format("15:04") %})<br>
+            <a href="/user/{%s u.Name %}">{%s u.Name %}</a> (<a href="/user/{%s u.Name %}/talk">talk</a>|<a href="/user/{%s u.Name %}/contribs">contribs</a>) (Created on {%v t.Format(strings.Split(p.User.DateFormat, ",")[1]) %} at {%v t.Format(strings.Split(p.User.DateFormat, ",")[0]) %})<br>
         {% endfor %}
     </div>
 {% endfunc %}
@@ -134,7 +135,7 @@ type RecentChangesPage struct {
                 t := time.Unix(v.TimeStamp, 0).In(l)
                 tOut := t.Format("15:04")
 
-                dateHeader := t.Format("_2 Jan 2006")
+                dateHeader := t.Format(strings.Split(p.User.DateFormat, ",")[1])
                 if prevDate ==  dateHeader {
                     showTime = false
                 } else {

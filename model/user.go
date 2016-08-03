@@ -16,6 +16,7 @@ type User struct {
 	Anon         bool
 	Admin        bool
 	TimeZone     string
+	DateFormat   string
 }
 
 var userFields = "name, registration, realname, timezone"
@@ -32,7 +33,7 @@ func CreateUser(u *User) (err error) {
 }
 
 func UpdateUserSettings(u *User) error {
-	_, err := db.NamedExec(`UPDATE user SET timezone=:timezone, realname=:realname WHERE id=:id`, u)
+	_, err := db.NamedExec(`UPDATE user SET timezone=:timezone, realname=:realname, dateformat=:dateformat WHERE id=:id`, u)
 	return err
 }
 

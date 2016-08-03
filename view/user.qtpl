@@ -250,7 +250,7 @@ type AppearencePage struct {
                 <form method="post">
                     <table>
                         <tr>
-                            <td class="label">Timezone</td>
+                            <td class="label">Timezone:</td>
                             <td>
                                 <select name="timezone">
                                     <option value="{%s p.User.TimeZone %}" selected>{%s p.User.TimeZone %}</option>
@@ -262,6 +262,18 @@ type AppearencePage struct {
                                         <option value="US/Pacific">Pacific</option>
                                     </optgroup>
                                 </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Date Format:
+                            </td>
+                            <td>
+                                <input type="radio" name="dateformat" value="15:04, 2 January 2006">No preference<br>
+                                <input type="radio" name="dateformat" value="15:04, 2 January 2006">{%s time.Now().Format("15:04, 2 January 2006")%}<br>
+                                <input type="radio" name="dateformat" value="15:04, 2 Jan 2006">{%s time.Now().Format("15:04, 2 Jan 2006")%}<br>
+                                <input type="radio" name="dateformat" value="15:04, 2006 January 2">{%s time.Now().Format("15:04, 2006 January 2") %}<br>
+                                <input type="radio" name="dateformat" value="15:04, January 2 2006">{%s time.Now().Format("15:04, January 2 2006") %}<br>
                             </td>
                         </tr>
                         <tr>

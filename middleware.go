@@ -17,10 +17,11 @@ func (s *sessionMiddleware) Serve(c *iris.Context) {
 	if !ok {
 		remoteAddr := c.RemoteAddr()
 		user := &mdl.User{
-			ID:       0,
-			Name:     remoteAddr,
-			Anon:     true,
-			TimeZone: "UTC",
+			ID:         0,
+			Name:       remoteAddr,
+			Anon:       true,
+			TimeZone:   "UTC",
+			DateFormat: "15:04, 2 January 2006",
 		}
 		log.WithFields(log.Fields{
 			"user": user.Name,

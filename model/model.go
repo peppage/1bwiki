@@ -39,7 +39,8 @@ func SetupDb() {
 			len integer, PRIMARY KEY(title, namespace))`)
 	tx.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text UNIQUE,
 			realname text default "", password text, registration int, email text default "",
-			admin bool default false, timezone text default "", UNIQUE(id, name))`)
+			admin bool default false, timezone text default "UTC", dateformat text default "15:04, 2 January 2006"
+			UNIQUE(id, name))`)
 	tx.Exec(`CREATE TABLE IF NOT EXISTS settings (name text PRIMARY KEY, value text)`)
 	tx.Exec(`INSERT INTO settings (name, value) values ("anonediting", "true")`)
 	tx.Exec(`INSERT INTO settings (name, value) values ("allowsignups", "true")`)
@@ -70,9 +71,9 @@ func SetupDb() {
 		tx.Exec(`insert into temp select id, name, realname, password, registration, email, admin from user`)
 		tx.Exec(`drop table user`)
 		tx.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text UNIQUE,
-				realname text default "", timezone text default "", password text, registration int, email text default "",
+				realname text default "", timezone text default "UTC", dateformat text default "15:04, 2 January 2006", password text, registration int, email text default "",
 				admin bool default false, UNIQUE(id, name))`)
-		tx.Exec(`insert into user select id, name, realname, "", password, registration, email, admin from temp`)
+		tx.Exec(`insert into user select id, name, realname, "UTC", "15:04, 2 January 2006", password, registration, email, admin from temp`)
 		tx.Exec(`drop table temp`)
 		err = tx.Commit()
 		if err != nil {

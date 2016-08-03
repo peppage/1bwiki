@@ -48,7 +48,7 @@ type ArticleDiff struct {
     <div class="ui text container">
 	<h1>{%s p.Page.NiceTitle %}: Difference between revisions</h1>
 	<div class="ui orange message">
-	    Difference between a revision on {%s p.Page.PrettyTime(p.User.TimeZone) %} and {%s p.Page2.PrettyTime(p.User.TimeZone) %}
+	    Difference between a revision on {%s p.Page.PrettyTime(p.User.TimeZone, p.User.DateFormat) %} and {%s p.Page2.PrettyTime(p.User.TimeZone, p.User.DateFormat) %}
 	</div>
 </div>
 
@@ -107,7 +107,7 @@ type ArticleEdit struct {
                     If you are creating a new page with different content, please continue. If you are recreating a page similar to the previously deleted page, or are unsure, please first contact the deleting user using the information provided below.
                     <ul>
                         <li>
-                            {%s rev.PrettyTime(p.User.TimeZone) %} {%s rev.UserText %} deleted page
+                            {%s rev.PrettyTime(p.User.TimeZone, p.User.DateFormat) %} {%s rev.UserText %} deleted page
                         </li>
                     </ul>
                 </p>
@@ -212,7 +212,7 @@ type ArticleHistory struct {
                         {%for _, v := range p.Revs %}
                             {% if v.Deleted %}
                                 <li>
-                                    {%s v.PrettyTime(p.User.TimeZone) %} {%s v.UserText %} deleted page
+                                    {%s v.PrettyTime(p.User.TimeZone, p.User.DateFormat) %} {%s v.UserText %} deleted page
                                 </li>
                             {% endif %}
                         {% endfor %}
@@ -244,7 +244,7 @@ type ArticleHistory struct {
                             strconv.FormatInt(v.ID, 10) + `">prev</a>`
                     }
                 %}
-                ({%s= cur %} | {%s= prev %}) <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ID %}">{%s v.PrettyTime(p.User.TimeZone) %}</a> <span class="history-user"><a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{%s v.UserText %}">talk</a> | <a href="/user/{%s v.UserText %}/contribs">contribs</a>)</span> {%s= minor %}. . ({%d v.Len %} bytes) {%s= lenDisplay %} . . <span class="comment">({%s v.Comment %})</span><br>
+                ({%s= cur %} | {%s= prev %}) <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ID %}">{%s v.PrettyTime(p.User.TimeZone, p.User.DateFormat) %}</a> <span class="history-user"><a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{%s v.UserText %}">talk</a> | <a href="/user/{%s v.UserText %}/contribs">contribs</a>)</span> {%s= minor %}. . ({%d v.Len %} bytes) {%s= lenDisplay %} . . <span class="comment">({%s v.Comment %})</span><br>
             {% endfor %}
             <br>
             {%= pagination(p.Revs[0].PageTitle, p.Page, p.TotalPages) %}
