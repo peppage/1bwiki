@@ -1,12 +1,23 @@
 package model
 
 import (
+	"database/sql"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sqlx.DB
+
+type dbrows struct {
+	Cid     int            `db:"cid"`
+	Name    string         `db:"name"`
+	Type    string         `db:"type"`
+	NotNull bool           `db:"notnull"`
+	Default sql.NullString `db:"dflt_value"`
+	Pk      int            `db:"pk"`
+}
 
 func init() {
 	var err error
@@ -27,8 +38,8 @@ func SetupDb() {
 			namespace text, nicetitle text, redirect integer, revisionid integer,
 			len integer, PRIMARY KEY(title, namespace))`)
 	tx.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text UNIQUE,
-			realname text text default "", password text, registration int, email text default "",
-			admin bool default false, UNIQUE(id, name))`)
+			realname text default "", password text, registration int, email text default "",
+			admin bool default false, timezone text default "", UNIQUE(id, name))`)
 	tx.Exec(`CREATE TABLE IF NOT EXISTS settings (name text PRIMARY KEY, value text)`)
 	tx.Exec(`INSERT INTO settings (name, value) values ("anonediting", "true")`)
 	tx.Exec(`INSERT INTO settings (name, value) values ("allowsignups", "true")`)
@@ -37,6 +48,37 @@ func SetupDb() {
 	if err != nil {
 		tx.Rollback()
 		log.WithError(err).Error("Failed initializing db")
+	}
+
+	// Upgrade user's table to have timezone (from beta3)
+	rows := []dbrows{}
+	hasTimeZone := false
+	err = db.Select(&rows, `PRAGMA table_info("user")`)
+	if err != nil {
+		log.WithError(err).Error("failed getting users table columns")
+	}
+	for _, r := range rows {
+		if r.Name == "timezone" {
+			hasTimeZone = true
+		}
+	}
+	if !hasTimeZone {
+		tx := db.MustBegin()
+		tx.Exec(`create temporary table temp(id integer PRIMARY KEY, name text UNIQUE,
+				realname text default "", password text, registration int, email text default "",
+				admin bool default false, UNIQUE(id, name))`)
+		tx.Exec(`insert into temp select id, name, realname, password, registration, email, admin from user`)
+		tx.Exec(`drop table user`)
+		tx.Exec(`CREATE TABLE IF NOT EXISTS user (id integer PRIMARY KEY, name text UNIQUE,
+				realname text default "", timezone text default "", password text, registration int, email text default "",
+				admin bool default false, UNIQUE(id, name))`)
+		tx.Exec(`insert into user select id, name, realname, "", password, registration, email, admin from temp`)
+		tx.Exec(`drop table temp`)
+		err = tx.Commit()
+		if err != nil {
+			tx.Rollback()
+			log.WithError(err).Error("Failed upgrading user table")
+		}
 	}
 
 	var texts int
