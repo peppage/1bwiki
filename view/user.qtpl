@@ -189,10 +189,7 @@ type PrefsPage struct {
                             <td class="label">Timezone</td>
                             <td>
                                 <select name="timezone">
-                                    {%code
-                                        l, _ := time.LoadLocation(p.User.TimeZone)
-                                    %}
-                                    <option value="{%s p.User.TimeZone %}" selected>{%s l.String() %}</option>
+                                    <option value="{%s p.User.TimeZone %}" selected>{%s p.User.TimeZone %}</option>
                                     <option value="UTC">Use wiki default (UTC)</option>
                                     <optgroup label="America">
                                         <option value="US/Central">Central</option>
