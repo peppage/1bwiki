@@ -171,20 +171,31 @@ type PrefsPage struct {
             </div>
             <div class="twelve wide column">
                 <h2>Basic Information</h2>
-                <table>
-                    <tr>
-                        <td class="label">Username:</td>
-                        <td>{%s p.User.Name %}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Password:</td>
-                        <td><a href="/special/preferences/password">Change Password</a></td>
-                    </tr>
-                    <tr>
-                        <td class="label">Registration time:</td>
-                        <td>{%v time.Unix(p.User.Registration, 0).Format("15:04, _2 Jan 2006") %}</td>
-                    </tr>
-                </table>
+                <form method="post">
+                    <table>
+                        <tr>
+                            <td class="label">Username:</td>
+                            <td>{%s p.User.Name %}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Real Name:</td>
+                            <td><input name="realname" value="{%s p.User.RealName %}" />
+                        </tr>
+                        <tr>
+                            <td class="label">Password:</td>
+                            <td><a href="/special/preferences/password">Change Password</a></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Registration time:</td>
+                            <td>{%v time.Unix(p.User.Registration, 0).Format("15:04, _2 Jan 2006") %}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button class="ui primary button" type="submit">Save</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
             </div>
         </div>
     </div>

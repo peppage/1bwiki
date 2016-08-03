@@ -32,7 +32,7 @@ func CreateUser(u *User) (err error) {
 }
 
 func UpdateUserSettings(u *User) error {
-	_, err := db.NamedExec(`UPDATE user SET timezone=:timezone WHERE id=:id`, u)
+	_, err := db.NamedExec(`UPDATE user SET timezone=:timezone, realname=:realname WHERE id=:id`, u)
 	return err
 }
 
