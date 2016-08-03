@@ -164,13 +164,13 @@ type RecentChangesPage struct {
                     <h4>{%s prevDate %}</h4>
                 {% endif %}
                 {%s= minor %} {%s= newEdit %}
-                {%s tOut %}<a href="/pages/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a> (
+                {%s tOut %}&nbsp;<a href="/pages/{%s v.PageTitle %}">{%s m.NiceTitle(v.PageTitle) %}</a> (
                     {%if v.ParentID != 0 %}
                         <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ParentID %}&amp;diff={%v v.ID %}">diff</a>
                     {% else %}
                         <span>diff</span>
                     {% endif %}
-                    | <a href="/special/history?title={%s v.PageTitle %}">hist</a>)..{%s= lenDisplay %} ..<a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{s v.UserText %}">talk</a>|contribs) ({%s v.Comment %})<br>
+                    | <a href="/special/history?title={%s v.PageTitle %}">hist</a>) . . {%s= lenDisplay %}  . . <a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/user/{%s v.UserText %}/talk">talk</a> | <a href="/user/{%s v.UserText %}/contribs">contribs</a>) <span class="comment">({%s v.Comment %})</span><br>
 
             {% endif %}
         {% endfor %}

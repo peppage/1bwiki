@@ -85,3 +85,12 @@ tr {
 .new:hover {
   color: darkred;
 }
+
+.history-user {
+  margin-left: 0.4em;
+  margin-right: 0.2em;
+}
+
+.comment {
+  font-style: italic;
+}

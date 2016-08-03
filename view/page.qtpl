@@ -230,7 +230,7 @@ type ArticleHistory struct {
                     }
                     minor := ""
                     if v.Minor {
-                        minor = `<span class="minoredit">m</span>`
+                        minor = `<abbr class="minoredit" title="This is a minor edit">m</abbr> `
                     }
                     cur := "cur"
                     if i != 0 {
@@ -244,9 +244,7 @@ type ArticleHistory struct {
                             strconv.FormatInt(v.ID, 10) + `">prev</a>`
                     }
                 %}
-                <span>
-                    ({%s= cur %} | {%s= prev %}) <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ID %}">{%s v.PrettyTime(p.User.TimeZone) %}</a> <a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{%s v.UserText %}">talk</a> | contribs) {%s= minor %}.. ({%d v.Len %} bytes) {%s= lenDisplay %} .. (<i>{%s v.Comment %}</i>)<br>
-                </span>
+                ({%s= cur %} | {%s= prev %}) <a href="/pages/{%s v.PageTitle %}?oldid={%v v.ID %}">{%s v.PrettyTime(p.User.TimeZone) %}</a> <span class="history-user"><a href="/User:{%s v.UserText %}">{%s v.UserText %}</a> (<a href="/User_Talk:{%s v.UserText %}">talk</a> | <a href="/user/{%s v.UserText %}/contribs">contribs</a>)</span> {%s= minor %}. . ({%d v.Len %} bytes) {%s= lenDisplay %} . . <span class="comment">({%s v.Comment %})</span><br>
             {% endfor %}
             <br>
             {%= pagination(p.Revs[0].PageTitle, p.Page, p.TotalPages) %}
