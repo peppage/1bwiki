@@ -75,6 +75,7 @@ func SetupDb() {
 				admin bool default false, UNIQUE(id, name))`)
 		tx.Exec(`insert into user select id, name, realname, "UTC", "15:04, 2 January 2006", password, registration, email, admin from temp`)
 		tx.Exec(`drop table temp`)
+		tx.Exec(`UPDATE page SET namespace = "page"`)
 		err = tx.Commit()
 		if err != nil {
 			tx.Rollback()
@@ -95,7 +96,7 @@ func SetupDb() {
 		}
 		CreateOrUpdatePage(u, CreatePageOptions{
 			Title:     "Main_Page",
-			Namespace: "",
+			Namespace: NameSpace[WikiPage],
 			Text:      string(data),
 			Comment:   "",
 			IsMinor:   false,

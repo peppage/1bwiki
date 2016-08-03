@@ -22,6 +22,18 @@ type CreatePageOptions struct {
 	IsMinor   bool
 }
 
+const (
+	WikiPage = iota
+	UserPage
+	TalkPage
+)
+
+var NameSpace = []string{
+	WikiPage: "page",
+	UserPage: "user",
+	TalkPage: "talk",
+}
+
 // CreateOrUpdatePage updates or creates a new page in the wiki
 func CreateOrUpdatePage(u *User, opts CreatePageOptions) error {
 	var err error

@@ -85,7 +85,7 @@ func wikiPage(c *iris.Context) {
 	}
 
 	// Showing regular page
-	pv := mdl.GetView("", pageTitle)
+	pv := mdl.GetView(mdl.NameSpace[mdl.WikiPage], pageTitle)
 
 	if pv.NiceTitle != "" && !pv.Deleted {
 		val := c.Session().Get("user")
@@ -116,12 +116,13 @@ func savePage(c *iris.Context) {
 	minor := c.FormValueString("minor") == "on"
 	err := mdl.CreateOrUpdatePage(u, mdl.CreatePageOptions{
 		Title:     c.FormValueString("title"),
-		Namespace: c.FormValueString("namespace"),
+		Namespace: mdl.NameSpace[mdl.WikiPage],
 		Text:      c.FormValueString("text"),
 		Comment:   c.FormValueString("summary"),
 		IsMinor:   minor,
 	})
 	if err != nil {
+		log.WithError(err).Error("Failed creating/saving page")
 		c.EmitError(http.StatusBadRequest)
 		return
 	}

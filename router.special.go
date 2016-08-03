@@ -21,7 +21,7 @@ func edit(c *iris.Context) {
 		return
 	}
 
-	pv := mdl.GetView("", pageTitle)
+	pv := mdl.GetView(mdl.NameSpace[mdl.WikiPage], pageTitle)
 
 	if pv.NiceTitle == "" {
 		pv.NameSpace = ""

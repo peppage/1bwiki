@@ -130,7 +130,6 @@ type ArticleEdit struct {
         </div>
 
         <form class="ui form" method="post">
-            <input type="hidden" name="namespace" value="{%s p.Page.NameSpace %}">
             <input type="hidden" name="title" value="{%s p.Page.Title %}">
 
             <div id="in" class="field">
