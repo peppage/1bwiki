@@ -57,9 +57,11 @@ func registerHandle(c *iris.Context) {
 
 func login(c *iris.Context) {
 	val := c.Session().Get("user")
+	flash, _ := c.GetFlash("error")
 	p := &view.LoginPage{
-		User: val.(*mdl.User),
-		URL:  "/special/login",
+		User:    val.(*mdl.User),
+		URL:     "/special/login",
+		Message: flash,
 	}
 	view.WritePageTemplate(c.GetRequestCtx(), p)
 	c.HTML(http.StatusOK, "")
@@ -68,7 +70,8 @@ func login(c *iris.Context) {
 func loginHandle(c *iris.Context) {
 	u, err := mdl.GetUserByName(c.FormValueString("username"))
 	if err != nil {
-		c.Error("User doesn't exist? Maybe.", http.StatusUnauthorized)
+		c.SetFlash("error", "Username doesn't exist")
+		c.Redirect("/special/login", http.StatusUnauthorized)
 		return
 	}
 
@@ -78,7 +81,8 @@ func loginHandle(c *iris.Context) {
 		return
 	}
 
-	c.Error("Failed login", http.StatusUnauthorized)
+	c.SetFlash("error", "Login Failed")
+	c.Redirect("/special/login", http.StatusUnauthorized)
 }
 
 func logout(c *iris.Context) {

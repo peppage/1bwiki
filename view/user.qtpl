@@ -60,11 +60,18 @@ type LoginPage struct {
     BasePage
     URL string
     User *m.User
+    Message string
 }
 %}
 
 {% func (p *LoginPage) Body() %}
     <div class="ui text container">
+        {% if p.Message != "" %}
+            <div class="ui negative message">
+                <div class="header">{%s p.Message %}</div>
+            </div>
+        {% endif %}
+
         <form class="ui form" method="post">
             <div class="field">
                 <label>Username</label>
