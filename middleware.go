@@ -5,8 +5,8 @@ import (
 
 	mdl "1bwiki/model"
 
-	log "github.com/Sirupsen/logrus"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
+	log "github.com/sirupsen/logrus"
 )
 
 type sessionMiddleware struct{}

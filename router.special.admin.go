@@ -6,8 +6,8 @@ import (
 	mdl "1bwiki/model"
 	"1bwiki/view"
 
-	log "github.com/Sirupsen/logrus"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
+	log "github.com/sirupsen/logrus"
 )
 
 func admin(c *iris.Context) {
