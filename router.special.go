@@ -9,7 +9,7 @@ import (
 
 	"1bwiki/view"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 func edit(c *iris.Context) {

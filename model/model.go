@@ -3,9 +3,9 @@ package model
 import (
 	"database/sql"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	log "github.com/sirupsen/logrus"
 )
 
 var db *sqlx.DB

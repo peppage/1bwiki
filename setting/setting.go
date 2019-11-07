@@ -4,8 +4,8 @@ import (
 	"crypto/rand"
 	"os"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/pelletier/go-toml"
+	log "github.com/sirupsen/logrus"
 )
 
 var (

@@ -10,8 +10,8 @@ import (
 	"1bwiki/setting"
 	"1bwiki/view"
 
-	log "github.com/Sirupsen/logrus"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
+	log "github.com/sirupsen/logrus"
 )
 
 // NeedsRedirect checks that the page title is properly formatted
